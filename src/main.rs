@@ -37,8 +37,7 @@ struct StatusFrame {
     height: usize,
 }
 
-struct Tem {
-    // name suggestions: matilda, lino
+struct Lino {
     lines: Vec<Vec<Character>>,
     term_width: usize,
     term_height: usize,
@@ -50,8 +49,8 @@ struct Tem {
     is_rendering: bool,
 }
 
-impl Tem {
-    fn new(characters: &Vec<char>) -> crossterm::Result<Tem> {
+impl Lino {
+    fn new(characters: &Vec<char>) -> crossterm::Result<Lino> {
         let mut lines = vec![vec![]];
         for character in characters {
             if character == &'\n' {
@@ -77,7 +76,7 @@ impl Tem {
         let text_frame_width = term_width as usize - line_nums_frame_width;
         let text_frame_height = term_height - status_frame_height;
 
-        let tem = Tem {
+        let lino = Lino {
             lines: lines,
             term_width: term_width as usize,
             term_height: term_height as usize,
@@ -104,7 +103,7 @@ impl Tem {
             is_rendering: false,
         };
 
-        Ok(tem)
+        Ok(lino)
     }
 
     // fn print_character(&self, character: &Character) -> crossterm::Result<()> {
@@ -795,6 +794,6 @@ Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et M
 abc    ").chars() {
         input.push(c);
     }
-    let mut tem = Tem::new(&input).unwrap();
-    tem.run().unwrap();
+    let mut lino = Lino::new(&input).unwrap();
+    lino.run().unwrap();
 }

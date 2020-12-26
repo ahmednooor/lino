@@ -280,7 +280,9 @@ impl Lino {
         let mut should_scroll_up = false;
         let mut should_scroll_down = false;
         let mut should_move_cursor_left = false;
+        let mut should_move_cursor_left_by_word = false;
         let mut should_move_cursor_right = false;
+        let mut should_move_cursor_right_by_word = false;
         let mut should_move_cursor_up = false;
         let mut should_move_cursor_down = false;
         let mut should_clear_selection = false;
@@ -374,6 +376,11 @@ impl Lino {
             crossterm::event::KeyCode::Left => {
                 should_move_cursor_left = true;
 
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    should_move_cursor_left = false;
+                    should_move_cursor_left_by_word = true;
+                }
+
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
                 } else {
@@ -382,6 +389,11 @@ impl Lino {
             },
             crossterm::event::KeyCode::Right => {
                 should_move_cursor_right = true;
+                
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    should_move_cursor_right = false;
+                    should_move_cursor_right_by_word = true;
+                }
 
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
@@ -426,7 +438,9 @@ impl Lino {
         if should_scroll_up { self.scroll_up(); }
         if should_scroll_down { self.scroll_down(); }
         if should_move_cursor_left { self.move_cursor_left(); }
+        if should_move_cursor_left_by_word { self.move_cursor_left_by_word(); }
         if should_move_cursor_right { self.move_cursor_right(); }
+        if should_move_cursor_right_by_word { self.move_cursor_right_by_word(); }
         if should_move_cursor_up { self.move_cursor_up(); }
         if should_move_cursor_down { self.move_cursor_down(); }
         if should_clear_selection { self.clear_selection(); }
@@ -609,6 +623,39 @@ impl Lino {
         }
     }
 
+    fn move_cursor_left_by_word(&mut self) {
+        let mut is_cursor_at_line_start = self.cursor.col == 0;
+        if is_cursor_at_line_start {
+            self.move_cursor_left();
+            return;
+        }
+
+        let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+        if is_cursor_at_line_end {
+            self.move_cursor_left();
+        }
+        
+        let special_chars = 
+            [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
+            '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
+            '/', '?', '\\', '|'];
+        let is_starting_char_a_special_char = 
+            special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+            
+        while !is_cursor_at_line_start {
+            let is_current_char_a_special_char = 
+                special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+            if is_starting_char_a_special_char && !is_current_char_a_special_char {
+                break;
+            }
+            if !is_starting_char_a_special_char && is_current_char_a_special_char {
+                break;
+            }
+            self.move_cursor_left();
+            is_cursor_at_line_start = self.cursor.col == 0;
+        }
+    }
+
     fn move_cursor_right(&mut self) {
         let is_last_line = self.cursor.row == self.lines.len() - 1;
         let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
@@ -627,6 +674,34 @@ impl Lino {
         if is_cursor_mid_line_or_start {
             self.cursor.col += 1;
             return;
+        }
+    }
+
+    fn move_cursor_right_by_word(&mut self) {
+        let mut is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+        if is_cursor_at_line_end {
+            self.move_cursor_right();
+            return;
+        }
+        
+        let special_chars = 
+            [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
+            '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
+            '/', '?', '\\', '|'];
+        let is_starting_char_a_special_char = 
+            special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+        
+        while !is_cursor_at_line_end {
+            let is_current_char_a_special_char = 
+                special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+            if is_starting_char_a_special_char && !is_current_char_a_special_char {
+                break;
+            }
+            if !is_starting_char_a_special_char && is_current_char_a_special_char {
+                break;
+            }
+            self.move_cursor_right();
+            is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
         }
     }
 

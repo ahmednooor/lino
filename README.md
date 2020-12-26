@@ -12,7 +12,7 @@ A command-line text editor with notepad-like key-bindings. [WIP]
 - [x] move right
 - [x] move up
 - [x] move down
-- [ ] ctrl+arrow to move by words
+- [x] ctrl+arrow to move by words
 - [x] edit text
 - [x] scroll (adjust frames) on move
 - [x] home key to move at line start

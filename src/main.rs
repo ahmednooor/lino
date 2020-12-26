@@ -768,20 +768,23 @@ impl Lino {
         let is_selecting_backward = 
             (self.selection.end_point.row < self.selection.start_point.row 
             || self.selection.end_point.col < self.selection.start_point.col)
-            && self.selection.end_point.col < self.lines[self.selection.end_point.row].len() - 1
+            && (self.selection.end_point.col as isize) < 
+                (self.lines[self.selection.end_point.row].len() as isize) - 1
             && self.selection.end_point.col != 0;
         if is_selecting_backward {
             self.selection.end_point.col += 1;
         }
         
         let is_start_point_after_line_end = 
-            self.selection.start_point.col == self.lines[self.selection.start_point.row].len();
+            self.selection.start_point.col == self.lines[self.selection.start_point.row].len()
+            && self.selection.start_point.col > 0;
         if is_start_point_after_line_end {
             self.selection.start_point.col -= 1;
         }
 
         let is_end_point_after_line_end = 
-            self.selection.end_point.col == self.lines[self.selection.end_point.row].len();
+            self.selection.end_point.col == self.lines[self.selection.end_point.row].len()
+            && self.selection.end_point.col > 0;
         if is_end_point_after_line_end {
             self.selection.end_point.col -= 1;
         }

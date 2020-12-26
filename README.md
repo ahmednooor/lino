@@ -21,7 +21,7 @@ A command-line text editor with notepad-like key-bindings. [WIP]
 - [x] page down to scroll down
 - [x] ctrl+q to quit
 - [x] text selection with shift+ arrow, page up/down, home/end
-- [ ] text selection by words with ctrl+shift+arrow
+- [x] text selection by words with ctrl+shift+arrow
 - [x] ctrl+a to select all
 - [ ] ctrl+c to copy
 - [ ] ctrl+x to cut

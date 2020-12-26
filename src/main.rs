@@ -117,6 +117,11 @@ abc    -").chars() {
 }
 
 
+static SPECIAL_CHARS: [char; 30] = 
+    [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
+    '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
+    '/', '?', '\\', '|'];
+
 struct Character {
     background: crossterm::style::Color,
     foreground: crossterm::style::Color,
@@ -376,12 +381,16 @@ impl Lino {
             crossterm::event::KeyCode::Left => {
                 should_move_cursor_left = true;
 
-                if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL 
+                | crossterm::event::KeyModifiers::SHIFT {
                     should_move_cursor_left = false;
                     should_move_cursor_left_by_word = true;
                 }
 
-                if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
+                if event.modifiers == crossterm::event::KeyModifiers::SHIFT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL 
+                | crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
                 } else {
                     should_clear_selection = true;
@@ -390,12 +399,16 @@ impl Lino {
             crossterm::event::KeyCode::Right => {
                 should_move_cursor_right = true;
                 
-                if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL 
+                | crossterm::event::KeyModifiers::SHIFT {
                     should_move_cursor_right = false;
                     should_move_cursor_right_by_word = true;
                 }
 
-                if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
+                if event.modifiers == crossterm::event::KeyModifiers::SHIFT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL 
+                | crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
                 } else {
                     should_clear_selection = true;
@@ -635,16 +648,12 @@ impl Lino {
             self.move_cursor_left();
         }
         
-        let special_chars = 
-            [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
-            '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
-            '/', '?', '\\', '|'];
         let is_starting_char_a_special_char = 
-            special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+            SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
             
         while !is_cursor_at_line_start {
             let is_current_char_a_special_char = 
-                special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+                SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
             if is_starting_char_a_special_char && !is_current_char_a_special_char {
                 break;
             }
@@ -684,16 +693,12 @@ impl Lino {
             return;
         }
         
-        let special_chars = 
-            [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
-            '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
-            '/', '?', '\\', '|'];
         let is_starting_char_a_special_char = 
-            special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+            SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
         
         while !is_cursor_at_line_end {
             let is_current_char_a_special_char = 
-                special_chars.contains(&self.lines[self.cursor.row][self.cursor.col].character);
+                SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
             if is_starting_char_a_special_char && !is_current_char_a_special_char {
                 break;
             }
@@ -1005,9 +1010,9 @@ impl Lino {
             crossterm::cursor::MoveTo(0, 0),
         )?;
 
-        self.update_line_nums_frame_content()?;
-        self.update_text_frame_content()?;
-        self.update_status_frame_content()?;
+        self.render_line_nums_frame_content()?;
+        self.render_text_frame_content()?;
+        self.render_status_frame_content()?;
         self.update_visible_cursor()?;
 
         stdout().flush()?;
@@ -1075,7 +1080,7 @@ impl Lino {
         self.status_frame.height = 1;
     }
 
-    fn update_line_nums_frame_content(&mut self) -> crossterm::Result<()> {
+    fn render_line_nums_frame_content(&mut self) -> crossterm::Result<()> {
         crossterm::queue!(
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
@@ -1127,7 +1132,7 @@ impl Lino {
         Ok(())
     }
 
-    fn update_text_frame_content(&mut self) -> crossterm::Result<()> {
+    fn render_text_frame_content(&mut self) -> crossterm::Result<()> {
         let visible_frame_starting_row = self.text_frame.start_row;
         let mut visible_frame_ending_row = visible_frame_starting_row + self.text_frame.height;
         
@@ -1241,7 +1246,7 @@ impl Lino {
         Ok(())
     }
 
-    fn update_status_frame_content(&mut self) -> crossterm::Result<()> {
+    fn render_status_frame_content(&mut self) -> crossterm::Result<()> {
         crossterm::queue!(
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::White),

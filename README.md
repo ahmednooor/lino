@@ -23,17 +23,19 @@ A command-line text editor with notepad-like key-bindings. [WIP]
 - [x] text selection with shift+ arrow, page up/down, home/end
 - [x] text selection by words with ctrl+shift+arrow
 - [x] ctrl+a to select all
-- [ ] ctrl+c to copy
-- [ ] ctrl+x to cut
-- [ ] ctrl+v to paste
-- [ ] ctrl+s to save
+- [x] ctrl+x to cut
+- [x] ctrl+c to copy
+- [x] ctrl+v to paste
 - [ ] ctrl+z to undo
 - [ ] ctrl+y to redo
 - [ ] ctrl+shift+z to redo
 - [ ] file i/o
+- [ ] ctrl+s to save
 - [ ] enhance status bar (filename etc.)
 - [ ] syntax highlighting
 - [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
 
 ### Dependencies
-- crossterm
+- crossterm (For interacting with terminal)
+- ctrlc (For preventing close on Ctrl+c)
+- copypasta (For clipboard functionality)

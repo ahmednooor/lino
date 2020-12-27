@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 crossterm = "0.18.2"
+ctrlc = "3.1.7"
+copypasta = "0.7.1"

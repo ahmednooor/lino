@@ -1,5 +1,8 @@
 use std::io::{stdout, Write};
 use crossterm;
+extern crate copypasta;
+use copypasta::ClipboardContext;
+use copypasta::ClipboardProvider;
 
 fn main() {
     let mut input = vec![];
@@ -157,6 +160,10 @@ struct Selection {
     end_point: Cursor,
 }
 
+struct Clipboard {
+    context: copypasta::ClipboardContext,
+}
+
 struct Lino {
     lines: Vec<Vec<Character>>,
     term_width: usize,
@@ -168,6 +175,7 @@ struct Lino {
     status_frame: StatusFrame,
     should_exit: bool,
     is_rendering: bool,
+    clipboard: Clipboard,
 }
 
 impl Lino {
@@ -233,17 +241,25 @@ impl Lino {
             },
             should_exit: false,
             is_rendering: false,
+            clipboard: Clipboard{
+                context: ClipboardContext::new().unwrap(),
+            }
         };
 
         Ok(lino)
     }
 
     fn run(&mut self) -> crossterm::Result<()> {
+        ctrlc::set_handler(|| ()).expect("Error setting Ctrl-C handler");
+
         crossterm::terminal::enable_raw_mode()?;
         crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)?;
+        
         self.initiate_input_event_loop()?;
+        
         crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
         crossterm::terminal::disable_raw_mode()?;
+        
         Ok(())
     }
 
@@ -298,6 +314,9 @@ impl Lino {
             row: self.cursor.row,
             col: self.cursor.col,
         };
+        let mut should_perform_copy = false;
+        let mut should_perform_cut = false;
+        let mut should_perform_paste = false;
 
         match event.code {
             crossterm::event::KeyCode::Char(c) => {
@@ -317,8 +336,25 @@ impl Lino {
                 && (c == 'a' || c == 'A') {
                     should_select_all = true;
                 }
+
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'c' || c == 'C') {
+                    should_perform_copy = true;
+                }
                 
-                should_clear_selection = true;
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'x' || c == 'X') {
+                    should_perform_cut = true;
+                    should_delete_selected = true;
+                }
+                
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'v' || c == 'V') {
+                    should_delete_selected = true;
+                    should_perform_paste = true;
+                }
+                
+                // should_clear_selection = true;
             },
             crossterm::event::KeyCode::Tab => {
                 if event.modifiers == crossterm::event::KeyModifiers::NONE {
@@ -439,6 +475,7 @@ impl Lino {
         }
 
         // ordering is importtant here
+        if should_perform_cut { self.perform_copy(); }
         if should_delete_selected { self.delete_selected(); }
         if should_input_character { self.input_character(character_input.unwrap()); }
         if should_quit_editor { self.quit_editor(); }
@@ -459,6 +496,8 @@ impl Lino {
         if should_clear_selection { self.clear_selection(); }
         if should_make_selection { self.make_selection(&previous_cursor); }
         if should_select_all { self.select_all(); }
+        if should_perform_copy { self.perform_copy(); }
+        if should_perform_paste { self.perform_paste(); }
 
         Ok(())
     }
@@ -800,6 +839,7 @@ impl Lino {
 
     fn delete_selected(&mut self) {
         if !self.selection.is_selecting { return; }
+        
         let selection = self.get_sorted_selection_points();
         if selection.is_none() { return; }
         let selection = selection.unwrap();
@@ -844,6 +884,78 @@ impl Lino {
         self.selection.end_point.col = self.lines[self.selection.end_point.row].len() - 1;
         self.cursor.row = self.selection.end_point.row;
         self.cursor.col = self.selection.end_point.col;
+    }
+
+    fn perform_copy(&mut self) {
+        if !self.selection.is_selecting { return; }
+        
+        let selection = self.get_sorted_selection_points();
+        if selection.is_none() { return; }
+        let selection = selection.unwrap();
+        let current_cursor_backup = Cursor{
+            row: self.cursor.row,
+            col: self.cursor.col,
+        };
+        let mut copied_string = String::new();
+
+        self.cursor.row = selection.start_point.row;
+        self.cursor.col = selection.start_point.col;
+
+        loop {
+            let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+
+            if is_cursor_at_line_end {
+                copied_string.push('\n');
+            } else {
+                copied_string.push(self.lines[self.cursor.row][self.cursor.col].character);
+            }
+
+            self.move_cursor_right();
+            
+            if self.cursor.row == selection.end_point.row
+            && self.cursor.col > selection.end_point.col {
+                break;
+            }
+        }
+
+        self.cursor.row = current_cursor_backup.row;
+        self.cursor.col = current_cursor_backup.col;
+
+        self.clipboard.context.set_contents(copied_string).unwrap();
+    }
+
+    fn perform_paste(&mut self) {
+        let copied_string = self.clipboard.context.get_contents().unwrap();
+
+        for c in copied_string.chars() {
+            if c == '\n' {
+                self.enter_newline();
+            } else {
+                self.input_character(c);
+            }
+        }
+
+        // loop {
+        //     let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+
+        //     if is_cursor_at_line_end {
+        //         copied_string.push('\n');
+        //     } else {
+        //         copied_string.push(self.lines[self.cursor.row][self.cursor.col].character);
+        //     }
+
+        //     self.move_cursor_right();
+            
+        //     if self.cursor.row == selection.end_point.row
+        //     && self.cursor.col > selection.end_point.col {
+        //         break;
+        //     }
+        // }
+
+        // self.cursor.row = current_cursor_backup.row;
+        // self.cursor.col = current_cursor_backup.col;
+
+        // self.clipboard.context.set_contents(copied_string).unwrap();
     }
 
     fn get_sorted_selection_points(&self) -> Option<Selection> {

@@ -50,10 +50,6 @@ struct Selection {
     end_point: Cursor,
 }
 
-struct Clipboard {
-    context: copypasta::ClipboardContext,
-}
-
 #[derive(Clone)]
 struct History {
     lines: Vec<Vec<Character>>,
@@ -61,6 +57,7 @@ struct History {
     selection: Selection,
 }
 
+#[derive(Clone)]
 pub struct Lino {
     lines: Vec<Vec<Character>>,
     term_width: usize,
@@ -73,7 +70,6 @@ pub struct Lino {
     status_frame: StatusFrame,
     should_exit: bool,
     is_rendering: bool,
-    clipboard: Clipboard,
     undo_list: Vec<History>,
     redo_list: Vec<History>,
 }
@@ -145,9 +141,6 @@ impl Lino {
             },
             should_exit: false,
             is_rendering: false,
-            clipboard: Clipboard{
-                context: ClipboardContext::new().unwrap(),
-            },
             undo_list: vec![],
             redo_list: vec![],
         };
@@ -183,7 +176,8 @@ impl Lino {
         loop {
             if self.is_rendering { continue; }
             
-            match crossterm::event::read()? { // `read()` blocks until an `Event` is available
+            // `read()` blocks until an `Event` is available
+            match crossterm::event::read()? {
                 crossterm::event::Event::Key(event) => {
                     self.handle_key_event(&event)?;
                     self.render()?;
@@ -900,11 +894,13 @@ impl Lino {
         self.cursor.row = current_cursor_backup.row;
         self.cursor.col = current_cursor_backup.col;
 
-        self.clipboard.context.set_contents(copied_string).unwrap();
+        let mut clipboard_ctx = ClipboardContext::new().unwrap();
+        clipboard_ctx.set_contents(copied_string).unwrap();
     }
 
     fn perform_paste(&mut self) {
-        let copied_string = self.clipboard.context.get_contents().unwrap();
+        let mut clipboard_ctx = ClipboardContext::new().unwrap();
+        let copied_string = clipboard_ctx.get_contents().unwrap();
 
         for c in copied_string.chars() {
             if c == '\n' {

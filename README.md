@@ -1,6 +1,8 @@
-# lino
-
-A command-line text editor with notepad-like key-bindings. [WIP]
+<div align="center">
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" height="143" class="center" /></span>
+    <h3 align="center">A command line text editor with notepad like key bindings. [WIP]</h3>
+    <hr />
+</div>
 
 ### TODO
 - [x] input text
@@ -37,6 +39,6 @@ A command-line text editor with notepad-like key-bindings. [WIP]
 - [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
 
 ### Dependencies
-- crossterm (For interacting with terminal)
-- ctrlc (For preventing close on Ctrl+c)
-- copypasta (For clipboard functionality)
+- [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
+- [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
+- [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)

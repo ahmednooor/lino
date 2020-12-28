@@ -9,10 +9,6 @@ static SPECIAL_CHARS: [char; 29] =
     '=', '+', '[', ']', '{', '}', ';', ':', '\'', ',', '.', '<', '>', 
     '/', '?', '\\', '|'];
 
-// static mut HISTORY: Vec<Lino> = vec![];
-// static mut CURRENT_HISTORY_INDEX: usize = 0;
-
-
 #[derive(Copy, Clone)]
 struct Character {
     background: crossterm::style::Color,
@@ -86,6 +82,9 @@ impl Lino {
     pub fn new(characters: &Vec<char>) -> crossterm::Result<Lino> {
         let mut lines = vec![vec![]];
         for character in characters {
+            if character == &'\r' {
+                continue;
+            }
             if character == &'\n' {
                 lines.push(vec![]);
             } else {
@@ -423,7 +422,7 @@ impl Lino {
         if should_delete_selected { self.delete_selected(); }
         if should_input_character { self.input_character(character_input.unwrap()); }
         if should_quit_editor { self.quit_editor(); }
-        if should_input_tab { self.input_tab()?; }
+        if should_input_tab { self.input_tab(); }
         if should_enter_newline { self.enter_newline(); }
         if should_perform_backspace { self.perform_backspace(); }
         if should_perform_delete { self.perform_delete(); }
@@ -448,8 +447,15 @@ impl Lino {
         Ok(())
     }
 
+    fn quit_editor(&mut self) {
+        self.should_exit = true;
+    }
     
     fn input_character(&mut self, character: char) {
+        if character == '\r' { return; }
+        if character == '\n' { self.enter_newline(); return; }
+        if character == '\t' { self.input_tab(); return; }
+
         self.lines[self.cursor.row].insert(
             self.cursor.col,
             Character{
@@ -457,15 +463,12 @@ impl Lino {
                 foreground: crossterm::style::Color::White,
                 character: character,
             });
-        self.cursor.col += 1;
+        
+            self.cursor.col += 1;
     }
 
-    fn quit_editor(&mut self) {
-        self.should_exit = true;
-    }
-
-    fn input_tab(&mut self) -> crossterm::Result<()> {
-        let tab_width = self.calculate_tab_width()?;
+    fn input_tab(&mut self) {
+        let tab_width = self.calculate_tab_width().unwrap();
                     
         for _i in 0..tab_width {
             self.lines[self.cursor.row].insert(
@@ -477,8 +480,6 @@ impl Lino {
                 });
             self.cursor.col += 1;
         }
-
-        Ok(())
     }
 
     fn enter_newline(&mut self) {
@@ -856,7 +857,10 @@ impl Lino {
             self.selection.end_point.row = self.lines.len();
         }
 
-        self.selection.end_point.col = self.lines[self.selection.end_point.row].len() - 1;
+        self.selection.end_point.col = 0;
+        if self.lines[self.selection.end_point.row].len() > 0 {
+            self.selection.end_point.col = self.lines[self.selection.end_point.row].len() - 1;
+        }
         self.cursor.row = self.selection.end_point.row;
         self.cursor.col = self.selection.end_point.col;
     }

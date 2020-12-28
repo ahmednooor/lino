@@ -26,12 +26,13 @@ A command-line text editor with notepad-like key-bindings. [WIP]
 - [x] ctrl+x to cut
 - [x] ctrl+c to copy
 - [x] ctrl+v to paste
-- [ ] ctrl+z to undo
-- [ ] ctrl+y to redo
-- [ ] ctrl+shift+z to redo
+- [x] ctrl+z to undo
+- [x] ctrl+y to redo
+- [x] ctrl+shift+z to redo
 - [ ] file i/o
 - [ ] ctrl+s to save
 - [ ] enhance status bar (filename etc.)
+- [ ] settings
 - [ ] syntax highlighting
 - [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
 

@@ -98,7 +98,7 @@ impl Lino {
         let status_frame_height = 1;
 
         let line_nums_frame_boundary_r = String::from(" | ");
-        let line_nums_frame_width = lines.len().to_string().len() + line_nums_frame_boundary_r.len();
+        let line_nums_frame_width = lines.len().to_string().len() + 1 + line_nums_frame_boundary_r.len();
         let line_nums_frame_height = term_height - status_frame_height;
 
         let text_frame_width = term_width as usize - line_nums_frame_width;
@@ -1109,7 +1109,7 @@ impl Lino {
             should_update_text_frame = true;
         }
         
-        self.line_nums_frame.width = self.lines.len().to_string().len() + self.line_nums_frame.boundary_r.len();
+        self.line_nums_frame.width = self.lines.len().to_string().len() + 1 + self.line_nums_frame.boundary_r.len();
         self.line_nums_frame.height = self.term_height - self.status_frame.height;
         
         if should_update_text_frame {
@@ -1178,7 +1178,7 @@ impl Lino {
             let mut rendered_lines_col = 
                 (self.term_width - self.text_frame.width - self.line_nums_frame.width) as usize;
 
-            let num_string = format!("{:width$}", i + 1, width = line_num_width);
+            let num_string = format!(" {:width$}", i + 1, width = line_num_width);
             let num_string = String::from(num_string) + &self.line_nums_frame.boundary_r;
 
             for line_num_char in num_string.chars() {

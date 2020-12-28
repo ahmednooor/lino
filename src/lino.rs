@@ -45,7 +45,7 @@ struct StatusFrame {
 
 #[derive(Copy, Clone)]
 struct Selection {
-    is_selecting: bool,
+    is_selected: bool,
     start_point: Cursor,
     end_point: Cursor,
 }
@@ -114,7 +114,7 @@ impl Lino {
             },
             last_cursor_col: 0,
             selection: Selection{
-                is_selecting: false,
+                is_selected: false,
                 start_point: Cursor{
                     row: 0,
                     col: 0,
@@ -300,14 +300,14 @@ impl Lino {
                 should_save_to_history = true;
             },
             crossterm::event::KeyCode::Backspace => {
-                if !self.selection.is_selecting {
+                if !self.selection.is_selected {
                     should_perform_backspace = true;
                 }
                 should_delete_selected = true;
                 should_save_to_history = true;
             },
             crossterm::event::KeyCode::Delete => {
-                if !self.selection.is_selecting {
+                if !self.selection.is_selected {
                     should_perform_delete = true;
                 }
                 should_delete_selected = true;
@@ -748,39 +748,39 @@ impl Lino {
     }
 
     fn make_selection(&mut self, previous_cursor: &Cursor) {
-        if !self.selection.is_selecting {
-            self.selection.is_selecting = true;
+        if !self.selection.is_selected {
+            self.selection.is_selected = true;
             self.selection.start_point.row = previous_cursor.row;
             self.selection.start_point.col = previous_cursor.col;
 
-            let is_selecting_backward = 
+            let is_selected_backward = 
                 (self.cursor.row < previous_cursor.row 
                 || self.cursor.col < previous_cursor.col)
                 && self.selection.start_point.col > 0;
-            if is_selecting_backward {
+            if is_selected_backward {
                 self.selection.start_point.col -= 1;
             }
         }
 
-        self.selection.is_selecting = true;
+        self.selection.is_selected = true;
         self.selection.end_point.row = self.cursor.row;
         self.selection.end_point.col = self.cursor.col;
 
-        let is_selecting_forward = 
+        let is_selected_forward = 
             (self.selection.end_point.row > self.selection.start_point.row 
             || self.selection.end_point.col > self.selection.start_point.col)
             && self.selection.end_point.col > 0;
-        if is_selecting_forward {
+        if is_selected_forward {
             self.selection.end_point.col -= 1;
         }
         
-        let is_selecting_backward = 
+        let is_selected_backward = 
             (self.selection.end_point.row < self.selection.start_point.row 
             || self.selection.end_point.col < self.selection.start_point.col)
             && (self.selection.end_point.col as isize) < 
                 (self.lines[self.selection.end_point.row].len() as isize) - 1
             && self.selection.end_point.col != 0;
-        if is_selecting_backward {
+        if is_selected_backward {
             self.selection.end_point.col += 1;
         }
         
@@ -800,7 +800,7 @@ impl Lino {
     }
 
     fn clear_selection(&mut self) {
-        self.selection.is_selecting = false;
+        self.selection.is_selected = false;
         self.selection.start_point.row = self.cursor.row;
         self.selection.start_point.col = self.cursor.col;
         self.selection.end_point.row = self.cursor.row;
@@ -808,7 +808,7 @@ impl Lino {
     }
 
     fn delete_selected(&mut self) {
-        if !self.selection.is_selecting { return; }
+        if !self.selection.is_selected { return; }
         
         let selection = self.get_sorted_selection_points();
         if selection.is_none() { return; }
@@ -841,7 +841,7 @@ impl Lino {
             return;
         }
         
-        self.selection.is_selecting = true;
+        self.selection.is_selected = true;
         self.selection.start_point.row = 0;
         self.selection.start_point.col = 0;
 
@@ -860,7 +860,7 @@ impl Lino {
     }
 
     fn perform_copy(&mut self) {
-        if !self.selection.is_selecting { return; }
+        if !self.selection.is_selected { return; }
         
         let selection = self.get_sorted_selection_points();
         if selection.is_none() { return; }
@@ -963,12 +963,12 @@ impl Lino {
     }
 
     fn get_sorted_selection_points(&self) -> Option<Selection> {
-        if !self.selection.is_selecting {
+        if !self.selection.is_selected {
             return None;
         }
 
         let start_point_as_smaller = Some(Selection{
-            is_selecting: self.selection.is_selecting,
+            is_selected: self.selection.is_selected,
             start_point: Cursor{
                 row: self.selection.start_point.row,
                 col: self.selection.start_point.col,
@@ -979,7 +979,7 @@ impl Lino {
             },
         });
         let end_point_as_smaller = Some(Selection{
-            is_selecting: self.selection.is_selecting,
+            is_selected: self.selection.is_selected,
             start_point: Cursor{
                 row: self.selection.end_point.row,
                 col: self.selection.end_point.col,
@@ -1080,9 +1080,9 @@ impl Lino {
 
         crossterm::queue!(
             stdout(),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
-            crossterm::style::Print(' '),
+            // crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
+            // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            // crossterm::style::Print(' '),
             crossterm::cursor::Hide,
             crossterm::cursor::MoveTo(0, 0),
         )?;
@@ -1357,21 +1357,26 @@ impl Lino {
         let col = (self.cursor.col - self.text_frame.start_col) + (self.line_nums_frame.width);
         let row = self.cursor.row - self.text_frame.start_row;
 
-        // let mut cursor_char = ' ';
+        let mut background = crossterm::style::Color::Black;
+        let mut foreground = crossterm::style::Color::White;
+        let mut cursor_char = ' ';
 
-        // if self.cursor.col < self.lines[self.cursor.row].len() {
-        //     cursor_char = self.lines[self.cursor.row][self.cursor.col].character;
-        // }
+        if self.cursor.col < self.lines[self.cursor.row].len() {
+            background = self.lines[self.cursor.row][self.cursor.col].background;
+            foreground = self.lines[self.cursor.row][self.cursor.col].foreground;
+            cursor_char = self.lines[self.cursor.row][self.cursor.col].character;
+        }
 
         crossterm::queue!(
             stdout(),
             crossterm::cursor::MoveTo(col as u16, row as u16),
-            // crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
-            // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
-            // crossterm::style::SetAttribute(crossterm::style::Attribute::Reverse),
-            // crossterm::style::Print(cursor_char),
+            crossterm::style::SetBackgroundColor(background),
+            crossterm::style::SetForegroundColor(foreground),
+            crossterm::style::SetAttribute(crossterm::style::Attribute::Underlined),
+            crossterm::style::Print(cursor_char),
+            crossterm::style::SetAttribute(crossterm::style::Attribute::Reset),
+            crossterm::cursor::MoveTo(col as u16, row as u16),
             crossterm::cursor::Show,
-            // crossterm::style::SetAttribute(crossterm::style::Attribute::Reset),
         )?;
 
         Ok(())

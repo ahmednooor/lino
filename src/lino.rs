@@ -3,6 +3,14 @@ use crossterm;
 extern crate copypasta;
 use copypasta::ClipboardContext;
 use copypasta::ClipboardProvider;
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::Path;
+
+// ---------
+// tempnote: if on linux xorg-dev not works then install following as well
+// libxcb-present-dev libxcb-composite0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+// ---------
 
 static SPECIAL_CHARS: [char; 29] = 
     ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', 
@@ -58,7 +66,15 @@ struct History {
 }
 
 #[derive(Clone)]
+struct FileData {
+    path: String,
+    is_saved: bool,
+    should_save_as: bool,
+}
+
+#[derive(Clone)]
 pub struct Lino {
+    saved_lines: Vec<Vec<Character>>,
     lines: Vec<Vec<Character>>,
     term_width: usize,
     term_height: usize,
@@ -72,10 +88,52 @@ pub struct Lino {
     is_rendering: bool,
     undo_list: Vec<History>,
     redo_list: Vec<History>,
+    file: FileData,
 }
 
 impl Lino {
-    pub fn new(characters: &Vec<char>) -> crossterm::Result<Lino> {
+    pub fn new() -> Lino {
+        Lino::from_string(&"".to_string())
+    }
+    
+    pub fn from_file(file_path: &String) -> Lino {
+        // Create a path to the desired file
+        let path = Path::new(file_path.as_str());
+        let display = path.display();
+
+        // Open the path in read-only mode, returns `io::Result<File>`
+        let mut file = match File::open(&path) {
+            Err(why) => panic!("couldn't open {}: {}", display, why),
+            Ok(file) => file,
+        };
+
+        // Read the file contents into a string, returns `io::Result<usize>`
+        let mut input_string = String::new();
+        match file.read_to_string(&mut input_string) {
+            Err(why) => panic!("couldn't read {}: {}", display, why),
+            Ok(_) => (),
+        }
+
+        let mut lino = Lino::from_string(&input_string);
+
+        lino.file.path = path.to_str().unwrap().to_string();
+        lino.file.is_saved = true;
+        lino.file.should_save_as = false;
+
+        lino
+    }
+    
+    pub fn from_string(input_string: &String) -> Lino {
+        let mut input_vec = vec![];
+        
+        for c in input_string.chars() {
+            input_vec.push(c);
+        }
+
+        Lino::init(&input_vec)
+    }
+
+    fn init(characters: &Vec<char>) -> Lino {
         let mut lines = vec![vec![]];
         for character in characters {
             if character == &'\r' {
@@ -92,7 +150,7 @@ impl Lino {
             }
         }
 
-        let (term_width, term_height) = crossterm::terminal::size()?;
+        let (term_width, term_height) = crossterm::terminal::size().unwrap();
         
         let status_frame_width = term_height;
         let status_frame_height = 1;
@@ -105,7 +163,8 @@ impl Lino {
         let text_frame_height = term_height - status_frame_height;
 
         let mut lino = Lino {
-            lines: lines,
+            saved_lines: lines.clone(),
+            lines: lines.clone(),
             term_width: term_width as usize,
             term_height: term_height as usize,
             cursor: Cursor{
@@ -143,6 +202,11 @@ impl Lino {
             is_rendering: false,
             undo_list: vec![],
             redo_list: vec![],
+            file: FileData{
+                path: "".to_string(),
+                is_saved: true,
+                should_save_as: true,
+            }
         };
 
         lino.undo_list.push(History{
@@ -151,21 +215,19 @@ impl Lino {
             selection: lino.selection.clone(),
         });
 
-        Ok(lino)
+        lino
     }
 
     pub fn run(&mut self) -> crossterm::Result<()> {
-
-
         ctrlc::set_handler(|| ()).expect("Error setting Ctrl-C handler");
 
-        crossterm::terminal::enable_raw_mode()?;
         crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)?;
+        crossterm::terminal::enable_raw_mode()?;
         
         self.initiate_input_event_loop()?;
         
-        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
         crossterm::terminal::disable_raw_mode()?;
+        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
         
         Ok(())
     }
@@ -180,17 +242,19 @@ impl Lino {
             match crossterm::event::read()? {
                 crossterm::event::Event::Key(event) => {
                     self.handle_key_event(&event)?;
-                    self.render()?;
+                    // self.render()?;
                 },
                 crossterm::event::Event::Mouse(_event) => (),
                 crossterm::event::Event::Resize(width, height) => {
                     self.term_width = width as usize;
                     self.term_height = height as usize;
-                    self.render()?;
+                    // self.render()?;
                 },
             }
             
             if self.should_exit { break; }
+            
+            self.render()?;
         }
 
         Ok(())
@@ -199,7 +263,8 @@ impl Lino {
     fn handle_key_event(&mut self, event: &crossterm::event::KeyEvent) -> crossterm::Result<()>{
         let mut should_input_character = false;
         let mut character_input: Option<char> = None;
-        let mut should_quit_editor = false;
+        let mut should_exit_from_editor = false;
+        let mut should_perform_save = false;
         let mut should_input_tab = false;
         let mut should_enter_newline = false;
         let mut should_perform_backspace = false;
@@ -218,10 +283,7 @@ impl Lino {
         let mut should_make_selection = false;
         let mut should_select_all = false;
         let mut should_delete_selected = false;
-        let previous_cursor = Cursor{
-            row: self.cursor.row,
-            col: self.cursor.col,
-        };
+        let previous_cursor = self.cursor.clone();
         let mut should_perform_copy = false;
         let mut should_perform_cut = false;
         let mut should_perform_paste = false;
@@ -244,7 +306,12 @@ impl Lino {
 
                 if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'q' || c == 'Q') {
-                    should_quit_editor = true;
+                    should_exit_from_editor = true;
+                }
+
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 's' || c == 'S') {
+                    should_perform_save = true;
                 }
 
                 if event.modifiers == crossterm::event::KeyModifiers::CONTROL
@@ -415,7 +482,8 @@ impl Lino {
         if should_perform_cut { self.perform_copy(); }
         if should_delete_selected { self.delete_selected(); }
         if should_input_character { self.input_character(character_input.unwrap()); }
-        if should_quit_editor { self.quit_editor(); }
+        if should_exit_from_editor { self.exit_from_editor(); }
+        if should_perform_save { self.perform_save()?; }
         if should_input_tab { self.input_tab(); }
         if should_enter_newline { self.enter_newline(); }
         if should_perform_backspace { self.perform_backspace(); }
@@ -438,11 +506,151 @@ impl Lino {
         if should_perform_undo { self.perform_undo(); }
         if should_perform_redo { self.perform_redo(); }
 
+        self.set_file_unsaved_if_applicable();
+
         Ok(())
     }
 
-    fn quit_editor(&mut self) {
+    fn initiate_exit_procedure(&mut self) -> crossterm::Result<()> {
+        if self.file.is_saved {
+            return Ok(());
+        }
+
+        self.render_unsaved_changes_frame()?;
+        self.handle_unsaved_changes_frame_input()?;
+
+        if self.file.should_save_as {
+            self.render_save_as_frame()?;
+            self.handle_save_as_frame_input()?;
+        }
+
+        Ok(())
+    }
+
+    fn handle_unsaved_changes_frame_input(&mut self) -> crossterm::Result<()> {
+        loop {
+            match crossterm::event::read()? { // read is a blocking call
+                crossterm::event::Event::Key(event) => {
+                    match event.code {
+                        crossterm::event::KeyCode::Char(c) => {
+                            if c == 'y' || c == 'Y' {
+                                if self.file.path == "" {
+                                    self.file.should_save_as = true;
+                                } else {
+                                    self.file.should_save_as = false;
+                                    self.save_to_file();
+                                }
+                                break;
+                            }
+                            if c == 'n' || c == 'N' {
+                                self.file.should_save_as = false;
+                                break;
+                            }
+                        },
+                        crossterm::event::KeyCode::Esc => {
+                            self.file.should_save_as = false;
+                            self.should_exit = false;
+                            break;
+                        },
+                        _ => ()
+                    }
+                },
+                _ => ()
+            }
+        };
+
+        Ok(())
+    }
+    
+    fn handle_save_as_frame_input(&mut self) -> crossterm::Result<()> {
+        loop {
+            match crossterm::event::read()? { // read is a blocking call
+                crossterm::event::Event::Key(event) => {
+                    match event.code {
+                        crossterm::event::KeyCode::Char(c) => {
+                            self.file.path.push(c);
+                        },
+                        crossterm::event::KeyCode::Backspace => {
+                            self.file.path.pop();
+                        },
+                        crossterm::event::KeyCode::Enter => {
+                            self.save_to_file();
+                            break;
+                        },
+                        crossterm::event::KeyCode::Esc => {
+                            self.should_exit = false;
+                            break;
+                        },
+                        _ => ()
+                    }
+                },
+                _ => ()
+            };
+
+            self.render_save_as_frame()?;
+        };
+
+        Ok(())
+    }
+
+    fn save_to_file(&mut self) {
+        let path_str = &self.file.path;
+        let path = Path::new(&path_str);
+        let display = path.display();
+
+        let mut file = match File::create(&path) {
+            Err(why) => panic!("couldn't create {}: {}", display, why),
+            Ok(file) => file,
+        };
+        
+        let output_string = Lino::get_2d_text_as_string(&self.lines);
+
+        match file.write_all(output_string.as_bytes()) {
+            Err(why) => panic!("couldn't write to {}: {}", display, why),
+            Ok(_) => (),
+        }
+
+        self.saved_lines = self.lines.clone();
+        self.file.should_save_as = false;
+    }
+
+    fn get_2d_text_as_string(lines: &Vec<Vec<Character>>) -> String {
+        let mut output_string = String::new();
+        for line in lines {
+            for character in line {
+                output_string.push(character.character);
+            }
+            output_string.push('\n');
+        }
+        output_string.pop();
+        output_string
+    }
+
+    fn set_file_unsaved_if_applicable(&mut self) {
+        let current_text_string = Lino::get_2d_text_as_string(&self.lines);
+        let saved_text_string = Lino::get_2d_text_as_string(&self.saved_lines);
+
+        if current_text_string != saved_text_string {
+            self.file.is_saved = false;
+        } else {
+            self.file.is_saved = true;
+        }
+    }
+
+    fn perform_save(&mut self) -> crossterm::Result<()> {
+        if self.file.path == "" || self.file.should_save_as {
+            self.render_save_as_frame()?;
+            self.handle_save_as_frame_input()?;
+        } else {
+            self.save_to_file();
+        }
+
+        Ok(())
+    }
+
+    fn exit_from_editor(&mut self) {
         self.should_exit = true;
+        self.initiate_exit_procedure().unwrap();
     }
     
     fn input_character(&mut self, character: char) {
@@ -865,10 +1073,7 @@ impl Lino {
         let selection = self.get_sorted_selection_points();
         if selection.is_none() { return; }
         let selection = selection.unwrap();
-        let current_cursor_backup = Cursor{
-            row: self.cursor.row,
-            col: self.cursor.col,
-        };
+        let current_cursor_backup = self.cursor.clone();
         let mut copied_string = String::new();
 
         self.cursor.row = selection.start_point.row;
@@ -876,6 +1081,15 @@ impl Lino {
 
         loop {
             let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+            let is_cursor_at_file_end = 
+                self.cursor.row == self.lines.len() - 1
+                && self.cursor.col == self.lines[self.cursor.row].len();
+            
+            if (self.cursor.row == selection.end_point.row
+            && self.cursor.col > selection.end_point.col)
+            || is_cursor_at_file_end {
+                break;
+            }
 
             if is_cursor_at_line_end {
                 copied_string.push('\n');
@@ -885,10 +1099,6 @@ impl Lino {
 
             self.move_cursor_right();
             
-            if self.cursor.row == selection.end_point.row
-            && self.cursor.col > selection.end_point.col {
-                break;
-            }
         }
 
         self.cursor.row = current_cursor_backup.row;
@@ -1074,9 +1284,9 @@ impl Lino {
 
     fn render(&mut self) -> crossterm::Result<()> {
         self.is_rendering = true;
+        self.update_status_frame();
         self.update_line_nums_frame();
         self.update_text_frame();
-        self.update_status_frame();
 
         crossterm::queue!(
             stdout(),
@@ -1338,17 +1548,72 @@ impl Lino {
                 crossterm::style::Print(' '),
             )?;
         }
+
+        let file_name = 
+            if self.file.path != "" { String::from(&self.file.path) }
+            else { String::from("[NEW]") };
         let status_string = 
-            String::from("Ln:") + &(self.cursor.row + 1).to_string()
-            + &String::from(",Col:") + &(self.cursor.col + 1).to_string();
+            file_name + if !self.file.is_saved { &"* - "} else { &" - "}
+            + &String::from("Ln:") + &(self.cursor.row + 1).to_string()
+            + &String::from(", Col:") + &(self.cursor.col + 1).to_string();
         
         crossterm::queue!(
             stdout(),
             crossterm::cursor::MoveTo(0, (self.term_height - 1) as u16),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
             crossterm::style::Print(status_string),
         )?;
+
+        Ok(())
+    }
+
+    fn render_unsaved_changes_frame(&mut self) -> crossterm::Result<()> {
+        crossterm::queue!(
+            stdout(),
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
+            crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
+            crossterm::cursor::MoveTo(0, 0),
+            crossterm::style::Print("UNSAVED CHANGES"),
+            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
+            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("Would you like to save changes before you quit?"),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("y [yes], n [no], esc [go back]"),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("> "),
+        )?;
+
+        stdout().flush()?;
+
+        Ok(())
+    }
+
+    fn render_save_as_frame(&mut self) -> crossterm::Result<()> {
+        crossterm::queue!(
+            stdout(),
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
+            crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
+            crossterm::cursor::MoveTo(0, 0),
+            crossterm::style::Print("SAVE FILE"),
+            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
+            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("Enter file name."),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("enter [save], esc [go back]"),
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::Print("> ".to_string() + self.file.path.as_str()),
+        )?;
+
+        stdout().flush()?;
 
         Ok(())
     }

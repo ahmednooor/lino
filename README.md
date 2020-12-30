@@ -31,12 +31,18 @@
 - [x] ctrl+z to undo
 - [x] ctrl+y to redo
 - [x] ctrl+shift+z to redo
-- [ ] file i/o
-- [ ] ctrl+s to save
-- [ ] enhance status bar (filename etc.)
+- [x] file i/o
+- [x] ctrl+s to save
+- [x] enhance status bar (filename etc.)
+
+(hopefully soon)
+- [ ] find/search
 - [ ] settings
 - [ ] syntax highlighting
 - [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
+- [ ] better error handling
+- [ ] logging
+- [ ] tests
 
 ### Dependencies
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)

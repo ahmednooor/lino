@@ -2,9 +2,11 @@
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" height="143" class="center" /></span>
     <h3 align="center">A command line text editor with notepad like key bindings. [WIP]</h3>
     <hr />
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-screenshot.png" alt="screenshot" class="center" /></span>
+    <hr />
 </div>
 
-### Usage (Keybindings)
+### Usage (Key bindings)
 | Key | Function |
 | --- | --- |
 | <kbd>↑</kbd> , <kbd>↓</kbd> , <kbd>←</kbd> , <kbd>→</kbd> | `Move` |

@@ -58,6 +58,8 @@ If you get an error about something like couldn't like with `cc`, try installing
 sudo apt install gcc gcc-multilib binutils
 ```
 
+> DISCLAIMER: If you are unsure about above libraries, do it on a dev system or a vm.
+
 ### Dependencies
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)

@@ -1,4 +1,3 @@
-
 ### TODO
 - [x] input text
 - [x] render line numbers
@@ -29,11 +28,12 @@
 - [x] file i/o
 - [x] ctrl+s to save
 - [x] enhance status bar (filename etc.)
+- [x] enhance tab character rendering (right now it enters num of spaces for current tab width). (iter 1)> made it to behave partially like natural tab behaviour e.g. only add the remaining spaces of tab width based on current cursor position. but it still uses actual spaces instead of the tab charaacter. will probably stay that way.
+- [ ] better error handling
 
 **Planned**
-- [ ] better error handling
 - [ ] find/search
-- [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
+- [ ] word wrap
 - [ ] syntax highlighting
 - [ ] settings
 - [ ] logging

@@ -21,8 +21,6 @@ impl Lino {
         let display = path.display();
 
         if !path.is_file() {
-            self.lines = Lino::convert_string_to_2d_text(&"".to_string());
-            self.saved_lines = self.lines.clone();
             self.file.should_save_as = false;
             return;
         }
@@ -40,7 +38,9 @@ impl Lino {
             Ok(_) => (),
         }
 
-        self.lines = Lino::convert_string_to_2d_text(&input_string);
+        for character in input_string.chars() {
+            self.input_character(character);
+        }
         self.saved_lines = self.lines.clone();
         self.file.should_save_as = false;
     }
@@ -121,15 +121,16 @@ impl Lino {
                 background: crossterm::style::Color::Black,
                 foreground: crossterm::style::Color::White,
                 character: character,
-            });
+            }
+        );
         
-            self.cursor.col += 1;
+        self.cursor.col += 1;
     }
 
     pub(crate) fn input_tab(&mut self) {
-        let tab_width = self.calculate_tab_width().unwrap();
+        let tab_width = self.calculate_tab_width();
                     
-        for _i in 0..tab_width {
+        for _ in 0..tab_width {
             self.lines[self.cursor.row].insert(
                 self.cursor.col,
                 Character{
@@ -558,12 +559,8 @@ impl Lino {
             copied_string = self.clipboard.clone();
         }
 
-        for c in copied_string.chars() {
-            if c == '\n' {
-                self.enter_newline();
-            } else {
-                self.input_character(c);
-            }
+        for character in copied_string.chars() {
+            self.input_character(character);
         }
     }
 
@@ -627,6 +624,17 @@ impl Lino {
             self.cursor.col = self.last_cursor_col;
         }
     }
+    
+    pub(crate) fn update_terminal_size(&mut self) {
+        let (term_width, term_height) = crossterm::terminal::size().unwrap();
+        self.term_width = term_width as usize;
+        self.term_height = term_height as usize;
+    }
+    
+    pub(crate) fn update_status_frame(&mut self) {
+        self.status_frame.width = self.term_width;
+        self.status_frame.height = 1;
+    }
 
     pub(crate) fn update_line_nums_frame(&mut self) {
         let mut should_update_text_frame = false;
@@ -682,8 +690,4 @@ impl Lino {
         self.update_line_nums_frame();
     }
 
-    pub(crate) fn update_status_frame(&mut self) {
-        self.status_frame.width = self.term_width;
-        self.status_frame.height = 1;
-    }
 }

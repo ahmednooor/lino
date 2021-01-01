@@ -1,6 +1,6 @@
-use std::io::{stdout, Write};
-use crossterm;
-extern crate copypasta;
+// use std::io::{stdout, Write};
+// use crossterm;
+// extern crate copypasta;
 // use copypasta::ClipboardContext;
 // use copypasta::ClipboardProvider;
 // use std::fs::File;
@@ -43,7 +43,6 @@ impl Lino {
     pub(crate) fn is_cursor_lesser_than(&self, other_cursor: &Cursor) -> bool {
         return self.cursor.row < other_cursor.row
         || (self.cursor.row == other_cursor.row && self.cursor.col < other_cursor.col);
-        // return self.cursor.row <= other_cursor.row && self.cursor.col < other_cursor.col;
     }
 
     pub(crate) fn convert_2d_text_to_string(lines: &Vec<Vec<Character>>) -> String {
@@ -75,6 +74,13 @@ impl Lino {
             }
         }
         lines
+        // let mut temp_lino = Lino::from_string(&"".to_string());
+
+        // for character in input_string.chars() {
+        //     temp_lino.input_character(character);
+        // }
+        
+        // temp_lino.lines
     }
 
     pub(crate) fn get_sorted_selection_points(&self) -> Option<Selection> {
@@ -165,25 +171,27 @@ impl Lino {
         false
     }
 
-    pub(crate) fn calculate_tab_width(&self) -> crossterm::Result<usize> {
-        let (old_cursor_col, _old_cursor_row) = crossterm::cursor::position()?;
+    pub(crate) fn calculate_tab_width(&self) -> usize {
+        // let (old_cursor_col, _old_cursor_row) = crossterm::cursor::position()?;
         
-        crossterm::execute!(
-            stdout(),
-            crossterm::cursor::SavePosition,
-            crossterm::cursor::Hide,
-            crossterm::style::Print('\t'),
-            crossterm::style::ResetColor
-        )?;
+        // crossterm::execute!(
+        //     stdout(),
+        //     crossterm::cursor::SavePosition,
+        //     crossterm::cursor::Hide,
+        //     crossterm::style::Print('\t'),
+        //     crossterm::style::ResetColor
+        // )?;
         
-        let (new_cursor_col, _new_cursor_row) = crossterm::cursor::position()?;
+        // let (new_cursor_col, _new_cursor_row) = crossterm::cursor::position()?;
         
-        crossterm::execute!(
-            stdout(),
-            crossterm::cursor::RestorePosition,
-            crossterm::cursor::Show,
-        )?;
+        // crossterm::execute!(
+        //     stdout(),
+        //     crossterm::cursor::RestorePosition,
+        //     crossterm::cursor::Show,
+        // )?;
         
-        Ok((new_cursor_col - old_cursor_col) as usize)
+        // Ok((new_cursor_col - old_cursor_col) as usize)
+
+        return self.settings.tab_width - (self.cursor.col % self.settings.tab_width);
     }
 }

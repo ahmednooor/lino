@@ -67,6 +67,11 @@ pub(crate) struct FileData {
 }
 
 #[derive(Clone)]
+pub(crate) struct Settings {
+    tab_width: usize,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     saved_lines: Vec<Vec<Character>>,
     lines: Vec<Vec<Character>>,
@@ -84,4 +89,5 @@ pub struct Lino {
     redo_list: Vec<History>,
     file: FileData,
     clipboard: String,
+    settings: Settings
 }

@@ -7,6 +7,7 @@ use super::*;
 impl Lino {
     pub(crate) fn render(&mut self) -> crossterm::Result<()> {
         self.is_rendering = true;
+        self.update_terminal_size();
         self.update_status_frame();
         self.update_line_nums_frame();
         self.update_text_frame();

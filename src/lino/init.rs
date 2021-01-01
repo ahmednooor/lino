@@ -30,25 +30,11 @@ impl Lino {
     }
 
     pub(crate) fn init(input_string: &String) -> Lino {
-        let lines = Lino::convert_string_to_2d_text(&input_string);
-
-        let (term_width, term_height) = crossterm::terminal::size().unwrap();
-        
-        let status_frame_width = term_height;
-        let status_frame_height = 1;
-
-        let line_nums_frame_boundary_r = String::from(" | ");
-        let line_nums_frame_width = lines.len().to_string().len() + 1 + line_nums_frame_boundary_r.len();
-        let line_nums_frame_height = term_height - status_frame_height;
-
-        let text_frame_width = term_width as usize - line_nums_frame_width;
-        let text_frame_height = term_height - status_frame_height;
-
         let mut lino = Lino {
-            saved_lines: lines.clone(),
-            lines: lines.clone(),
-            term_width: term_width as usize,
-            term_height: term_height as usize,
+            saved_lines: vec![vec![]],
+            lines: vec![vec![]],
+            term_width: 0,
+            term_height: 0,
             cursor: Cursor{
                 row: 0,
                 col: 0
@@ -66,19 +52,19 @@ impl Lino {
                 },
             },
             text_frame: TextFrame{
-                width: text_frame_width as usize,
-                height: text_frame_height as usize,
+                width: 0,
+                height: 0,
                 start_row: 0,
                 start_col: 0,
             },
             line_nums_frame: LineNumsFrame{
-                width: line_nums_frame_width as usize,
-                height: line_nums_frame_height as usize,
-                boundary_r: line_nums_frame_boundary_r,
+                width: 0,
+                height: 0,
+                boundary_r: String::from(" | "),
             },
             status_frame: StatusFrame{
-                width: status_frame_width as usize,
-                height: status_frame_height as usize,
+                width: 0,
+                height: 0,
             },
             should_exit: false,
             is_rendering: false,
@@ -90,8 +76,20 @@ impl Lino {
                 should_save_as: true,
             },
             clipboard: "".to_string(),
+            settings: Settings{
+                tab_width: 4,
+            }
         };
 
+        for character in input_string.chars() {
+            lino.input_character(character);
+        }
+
+        lino.saved_lines = lino.lines.clone();
+        lino.update_terminal_size();
+        lino.update_status_frame();
+        lino.update_line_nums_frame();
+        lino.update_text_frame();
         lino.clear_history();
         lino.save_to_history();
 

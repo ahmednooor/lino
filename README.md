@@ -1,6 +1,6 @@
 <div align="center">
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" height="143" class="center" /></span>
-    <h3 align="center">A command line text editor with notepad like keybindings. [WIP]</h3>
+    <h3 align="center">A command line text editor with notepad like key bindings. [WIP]</h3>
     <hr />
 </div>
 

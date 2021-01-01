@@ -531,13 +531,24 @@ impl Lino {
         self.cursor.row = current_cursor_backup.row;
         self.cursor.col = current_cursor_backup.col;
 
-        let mut clipboard_ctx = ClipboardContext::new().unwrap();
-        clipboard_ctx.set_contents(copied_string).unwrap();
+        let clipboard_ctx = ClipboardContext::new();
+        if clipboard_ctx.is_ok() {
+            let mut clipboard_ctx = clipboard_ctx.unwrap();
+            clipboard_ctx.set_contents(copied_string.clone()).unwrap();
+        } else {
+            self.clipboard = copied_string.clone();
+        }
     }
 
     pub(crate) fn perform_paste(&mut self) {
-        let mut clipboard_ctx = ClipboardContext::new().unwrap();
-        let copied_string = clipboard_ctx.get_contents().unwrap();
+        let clipboard_ctx = ClipboardContext::new();
+        let copied_string: String;
+        if clipboard_ctx.is_ok() {
+            let mut clipboard_ctx = clipboard_ctx.unwrap();
+            copied_string = clipboard_ctx.get_contents().unwrap();
+        } else {
+            copied_string = self.clipboard.clone();
+        }
 
         for c in copied_string.chars() {
             if c == '\n' {

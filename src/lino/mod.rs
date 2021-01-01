@@ -78,4 +78,5 @@ pub struct Lino {
     undo_list: Vec<History>,
     redo_list: Vec<History>,
     file: FileData,
+    clipboard: String,
 }

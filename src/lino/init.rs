@@ -88,7 +88,8 @@ impl Lino {
                 path: "".to_string(),
                 is_saved: true,
                 should_save_as: true,
-            }
+            },
+            clipboard: "".to_string(),
         };
 
         lino.clear_history();

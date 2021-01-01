@@ -35,11 +35,11 @@
 - [x] ctrl+s to save
 - [x] enhance status bar (filename etc.)
 
-(planned)
+**Planned**
 - [ ] better error handling
 - [ ] find/search
-- [ ] syntax highlighting
 - [ ] enhance tab character rendering (right now it enters num of spaces for current tab width)
+- [ ] syntax highlighting
 - [ ] logging
 - [ ] tests
 - [ ] settings

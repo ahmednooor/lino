@@ -97,58 +97,21 @@ impl Lino {
     }
     
     pub fn from_file(file_path: &String) -> Lino {
-        // Create a path to the desired file
-        let path = Path::new(file_path.as_str());
-        let display = path.display();
-
-        // Open the path in read-only mode, returns `io::Result<File>`
-        let mut file = match File::open(&path) {
-            Err(why) => panic!("couldn't open {}: {}", display, why),
-            Ok(file) => file,
-        };
-
-        // Read the file contents into a string, returns `io::Result<usize>`
-        let mut input_string = String::new();
-        match file.read_to_string(&mut input_string) {
-            Err(why) => panic!("couldn't read {}: {}", display, why),
-            Ok(_) => (),
-        }
-
-        let mut lino = Lino::from_string(&input_string);
-
-        lino.file.path = path.to_str().unwrap().to_string();
+        let mut lino = Lino::new();
+        lino.file.path = Path::new(file_path.as_str()).to_str().unwrap().to_string();
         lino.file.is_saved = true;
         lino.file.should_save_as = false;
+        lino.read_from_file();
 
         lino
     }
     
     pub fn from_string(input_string: &String) -> Lino {
-        let mut input_vec = vec![];
-        
-        for c in input_string.chars() {
-            input_vec.push(c);
-        }
-
-        Lino::init(&input_vec)
+        Lino::init(&input_string)
     }
 
-    fn init(characters: &Vec<char>) -> Lino {
-        let mut lines = vec![vec![]];
-        for character in characters {
-            if character == &'\r' {
-                continue;
-            }
-            if character == &'\n' {
-                lines.push(vec![]);
-            } else {
-                lines.last_mut().unwrap().push(Character{
-                    background: crossterm::style::Color::Black,
-                    foreground: crossterm::style::Color::White,
-                    character: character.clone(),
-                })
-            }
-        }
+    fn init(input_string: &String) -> Lino {
+        let lines = Lino::convert_string_to_2d_text(&input_string);
 
         let (term_width, term_height) = crossterm::terminal::size().unwrap();
         
@@ -231,6 +194,13 @@ impl Lino {
         
         Ok(())
     }
+
+
+    // ====================================
+    // ====================================
+    //  HANDLE SECTION
+    // ====================================
+    // ====================================
 
     fn initiate_input_event_loop(&mut self) -> crossterm::Result<()> {
         self.render()?;
@@ -477,7 +447,7 @@ impl Lino {
             _ => ()
         }
 
-        // ordering is importtant here
+        // ordering is important here
         if should_save_to_history { self.save_to_history(); }
         if should_perform_cut { self.perform_copy(); }
         if should_delete_selected { self.delete_selected(); }
@@ -507,22 +477,6 @@ impl Lino {
         if should_perform_redo { self.perform_redo(); }
 
         self.set_file_unsaved_if_applicable();
-
-        Ok(())
-    }
-
-    fn initiate_exit_procedure(&mut self) -> crossterm::Result<()> {
-        if self.file.is_saved {
-            return Ok(());
-        }
-
-        self.render_unsaved_changes_frame()?;
-        self.handle_unsaved_changes_frame_input()?;
-
-        if self.file.should_save_as {
-            self.render_save_as_frame()?;
-            self.handle_save_as_frame_input()?;
-        }
 
         Ok(())
     }
@@ -574,10 +528,14 @@ impl Lino {
                             self.file.path.pop();
                         },
                         crossterm::event::KeyCode::Enter => {
+                            if self.file.path == "" {
+                                continue;
+                            }
                             self.save_to_file();
                             break;
                         },
                         crossterm::event::KeyCode::Esc => {
+                            self.file.path = "".to_string();
                             self.should_exit = false;
                             break;
                         },
@@ -593,6 +551,34 @@ impl Lino {
         Ok(())
     }
 
+
+    // ====================================
+    // ====================================
+    //  TRANSFORM SECTION
+    // ====================================
+    // ====================================
+
+    fn read_from_file(&mut self) {
+        // Create a path to the desired file
+        let path = Path::new(self.file.path.as_str());
+        let display = path.display();
+
+        // Open the path in read-only mode, returns `io::Result<File>`
+        let mut file = match File::open(&path) {
+            Err(why) => panic!("couldn't open {}: {}", display, why),
+            Ok(file) => file,
+        };
+
+        // Read the file contents into a string, returns `io::Result<usize>`
+        let mut input_string = String::new();
+        match file.read_to_string(&mut input_string) {
+            Err(why) => panic!("couldn't read {}: {}", display, why),
+            Ok(_) => (),
+        }
+
+        self.lines = Lino::convert_string_to_2d_text(&input_string);
+    }
+
     fn save_to_file(&mut self) {
         let path_str = &self.file.path;
         let path = Path::new(&path_str);
@@ -603,7 +589,7 @@ impl Lino {
             Ok(file) => file,
         };
         
-        let output_string = Lino::get_2d_text_as_string(&self.lines);
+        let output_string = Lino::convert_2d_text_to_string(&self.lines);
 
         match file.write_all(output_string.as_bytes()) {
             Err(why) => panic!("couldn't write to {}: {}", display, why),
@@ -614,7 +600,7 @@ impl Lino {
         self.file.should_save_as = false;
     }
 
-    fn get_2d_text_as_string(lines: &Vec<Vec<Character>>) -> String {
+    fn convert_2d_text_to_string(lines: &Vec<Vec<Character>>) -> String {
         let mut output_string = String::new();
         for line in lines {
             for character in line {
@@ -626,9 +612,28 @@ impl Lino {
         output_string
     }
 
+    fn convert_string_to_2d_text(input_string: &String) -> Vec<Vec<Character>> {
+        let mut lines = vec![vec![]];
+        for character in input_string.chars() {
+            if character == '\r' {
+                continue;
+            }
+            if character == '\n' {
+                lines.push(vec![]);
+            } else {
+                lines.last_mut().unwrap().push(Character{
+                    background: crossterm::style::Color::Black,
+                    foreground: crossterm::style::Color::White,
+                    character: character.clone(),
+                })
+            }
+        }
+        lines
+    }
+
     fn set_file_unsaved_if_applicable(&mut self) {
-        let current_text_string = Lino::get_2d_text_as_string(&self.lines);
-        let saved_text_string = Lino::get_2d_text_as_string(&self.saved_lines);
+        let current_text_string = Lino::convert_2d_text_to_string(&self.lines);
+        let saved_text_string = Lino::convert_2d_text_to_string(&self.saved_lines);
 
         if current_text_string != saved_text_string {
             self.file.is_saved = false;
@@ -651,6 +656,22 @@ impl Lino {
     fn exit_from_editor(&mut self) {
         self.should_exit = true;
         self.initiate_exit_procedure().unwrap();
+    }
+
+    fn initiate_exit_procedure(&mut self) -> crossterm::Result<()> {
+        if self.file.is_saved {
+            return Ok(());
+        }
+
+        self.render_unsaved_changes_frame()?;
+        self.handle_unsaved_changes_frame_input()?;
+
+        if self.file.should_save_as {
+            self.render_save_as_frame()?;
+            self.handle_save_as_frame_input()?;
+        }
+
+        Ok(())
     }
     
     fn input_character(&mut self, character: char) {
@@ -1282,32 +1303,6 @@ impl Lino {
         Ok((new_cursor_col - old_cursor_col) as usize)
     }
 
-    fn render(&mut self) -> crossterm::Result<()> {
-        self.is_rendering = true;
-        self.update_status_frame();
-        self.update_line_nums_frame();
-        self.update_text_frame();
-
-        crossterm::queue!(
-            stdout(),
-            // crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
-            // crossterm::style::Print(' '),
-            crossterm::cursor::Hide,
-            crossterm::cursor::MoveTo(0, 0),
-        )?;
-
-        self.render_line_nums_frame_content()?;
-        self.render_text_frame_content()?;
-        self.render_status_frame_content()?;
-        self.update_visible_cursor()?;
-
-        stdout().flush()?;
-        
-        self.is_rendering = false;
-        Ok(())
-    }
-
     fn update_line_nums_frame(&mut self) {
         let mut should_update_text_frame = false;
         
@@ -1365,6 +1360,39 @@ impl Lino {
     fn update_status_frame(&mut self) {
         self.status_frame.width = self.term_width;
         self.status_frame.height = 1;
+    }
+
+
+    // ====================================
+    // ====================================
+    //  RENDER SECTION
+    // ====================================
+    // ====================================
+
+    fn render(&mut self) -> crossterm::Result<()> {
+        self.is_rendering = true;
+        self.update_status_frame();
+        self.update_line_nums_frame();
+        self.update_text_frame();
+
+        crossterm::queue!(
+            stdout(),
+            // crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
+            // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            // crossterm::style::Print(' '),
+            crossterm::cursor::Hide,
+            crossterm::cursor::MoveTo(0, 0),
+        )?;
+
+        self.render_line_nums_frame_content()?;
+        self.render_text_frame_content()?;
+        self.render_status_frame_content()?;
+        self.update_visible_cursor()?;
+
+        stdout().flush()?;
+        
+        self.is_rendering = false;
+        Ok(())
     }
 
     fn render_line_nums_frame_content(&mut self) -> crossterm::Result<()> {

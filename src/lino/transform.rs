@@ -20,6 +20,13 @@ impl Lino {
         let path = Path::new(self.file.path.as_str());
         let display = path.display();
 
+        if !path.is_file() {
+            self.lines = Lino::convert_string_to_2d_text(&"".to_string());
+            self.saved_lines = self.lines.clone();
+            self.file.should_save_as = false;
+            return;
+        }
+
         // Open the path in read-only mode, returns `io::Result<File>`
         let mut file = match File::open(&path) {
             Err(why) => panic!("couldn't open {}: {}", display, why),
@@ -35,6 +42,7 @@ impl Lino {
 
         self.lines = Lino::convert_string_to_2d_text(&input_string);
         self.saved_lines = self.lines.clone();
+        self.file.should_save_as = false;
     }
 
     pub(crate) fn save_to_file(&mut self) {

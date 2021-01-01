@@ -6,6 +6,11 @@ mod transform;
 mod render;
 mod util;
 
+// ---------
+// tempnote: if on linux xorg-dev not works then install following as well
+// libxcb-present-dev libxcb-composite0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+// ---------
+
 #[derive(Copy, Clone)]
 pub(crate) struct Character {
     background: crossterm::style::Color,

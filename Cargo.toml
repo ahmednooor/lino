@@ -2,6 +2,9 @@
 name = "lino"
 version = "0.1.0"
 authors = ["ahmednooor <ahmednooorr@gmail.com>"]
+description = "A command line text editor with notepad like keybindings."
+repository = "https://github.com/ahmednooor/lino"
+homepage = "https://github.com/ahmednooor/lino"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

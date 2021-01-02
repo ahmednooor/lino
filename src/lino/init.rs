@@ -110,3 +110,14 @@ impl Lino {
         Ok(())
     }
 }
+
+impl Drop for Lino {
+    fn drop(&mut self) {
+        // crossterm::execute!(
+        //     stdout(),
+        //     crossterm::terminal::LeaveAlternateScreen
+        // ).unwrap();
+        crossterm::terminal::disable_raw_mode().unwrap();
+        println!("drop called for Lino");
+    }
+}

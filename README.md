@@ -1,12 +1,15 @@
 <div align="center">
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" height="143" class="center" /></span>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" class="center" /></span>
     <h3 align="center">A command line text editor with notepad like key bindings. [WIP]</h3>
-    <hr />
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-screenshot.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
 
-### Usage (Key bindings)
+![Crates.io](https://img.shields.io/crates/v/lino)
+![Crates.io](https://img.shields.io/crates/l/lino)
+![Crates.io](https://img.shields.io/crates/d/lino)
+
+### Usage (Key Bindings)
 | Key | Function |
 | --- | --- |
 | <kbd>↑</kbd> , <kbd>↓</kbd> , <kbd>←</kbd> , <kbd>→</kbd> | `Move` |
@@ -29,22 +32,41 @@
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
 | <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Quit` |
 
-### Building/Running
+### Installation
+**You will need to have Rust (2018 or higher) installed on your system before proceeding.**
 
-**You will need to have Rust (2018 or higher), installed on your system before proceeding. Install it from; [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)**
+**Install it from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)**
+
+1. **Install with Cargo**
+```sh
+cargo install lino
+```
+
+2. **Run**
+```sh
+lino <optional-filename>
+```
+
+> Tested on `Windows 10` and `WSL (Ubuntu 18.04)`
+
+### Building
+
+**You will need to have Rust (2018 or higher) installed on your system before proceeding.**
+
+**Install it from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)**
 
 1. **Clone this repo**
-    ```sh
-    git clone https://github.com/ahmednooor/lino.git
-    ```
-2. **Go into the loned repo directory**
-    ```sh
-    cd ./lino/
-    ```
-3. **Run with cargo**
-    ```sh
-    cargo run <optional-filename>
-    ```
+```sh
+git clone https://github.com/ahmednooor/lino.git
+```
+2. **Go into the cloned repo directory**
+```sh
+cd ./lino/
+```
+3. **Build & run with Cargo**
+```sh
+cargo run <optional-filename>
+```
 
 On `Linux (Debian based)`, if you head into problems, try installing the following libraries and re run with cargo.
 
@@ -58,9 +80,9 @@ If you get an error about something like couldn't like with `cc`, try installing
 sudo apt install gcc gcc-multilib binutils
 ```
 
-> DISCLAIMER: If you are unsure about above libraries, do it on a dev system or a vm.
+> NOTE: If you are unsure about above mentioned Linux libraries, do it on a dev system or a vm instead of your daily driver.
 
-### Dependencies
+### Rust Dependencies
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)

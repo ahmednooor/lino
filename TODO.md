@@ -33,13 +33,17 @@
 
 **Planned**
 - [ ] better error handling
-- [ ] find/search
-- [ ] word wrap
 - [ ] Ctrl+[, Ctrl+] for indentation
 - [ ] Alt+Up, Alt+Down to move current line up and down
 - [ ] Shift+Del to delete whole line
+- [ ] Ctrl+Backspace to delete previous word
+- [ ] Ctrl+Del to delete next word
 - [ ] auto indent on new line based on previous line
+- [ ] find/search
+- [ ] word wrap
 - [ ] syntax highlighting
 - [ ] settings
-- [ ] logging
-- [ ] tests
+- [ ] logging*
+- [ ] tests*
+
+* Maybe

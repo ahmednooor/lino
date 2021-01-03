@@ -9,7 +9,7 @@
 ![Crates.io](https://img.shields.io/crates/l/lino)
 ![Crates.io](https://img.shields.io/crates/d/lino)
 
-### Usage (Key Bindings)
+## Usage (Key Bindings)
 | Key | Function |
 | --- | --- |
 | <kbd>↑</kbd> , <kbd>↓</kbd> , <kbd>←</kbd> , <kbd>→</kbd> | `Move` |
@@ -32,38 +32,35 @@
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
 | <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Quit` |
 
-### Installation
-**You will need to have Rust (2018 or higher) installed on your system before proceeding.**
-
+## Install
+> You will need to have Rust (2018 or higher) installed on your system before proceeding.\
 **Install it from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)**
 
-1. **Install with Cargo**
+**1. Install with Cargo**
 ```sh
 cargo install lino
 ```
 
-2. **Run**
+**2. Run**
 ```sh
 lino <optional-filename>
 ```
 
 > Tested on `Windows 10` and `WSL (Ubuntu 18.04)`
 
-### Building
-
-**You will need to have Rust (2018 or higher) installed on your system before proceeding.**
-
+## Build
+> You will need to have Rust (2018 or higher) installed on your system before proceeding.\
 **Install it from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)**
 
-1. **Clone this repo**
+**1. Clone this repo**
 ```sh
 git clone https://github.com/ahmednooor/lino.git
 ```
-2. **Go into the cloned repo directory**
+**2. Go into the cloned repo directory**
 ```sh
 cd ./lino/
 ```
-3. **Build & run with Cargo**
+**3. Build & run with Cargo**
 ```sh
 cargo run <optional-filename>
 ```
@@ -82,7 +79,7 @@ sudo apt install gcc gcc-multilib binutils
 
 > NOTE: If you are unsure about above mentioned Linux libraries, do it on a dev system or a vm instead of your daily driver.
 
-### Rust Dependencies
+## Rust Dependencies
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)

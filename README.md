@@ -5,9 +5,9 @@
     <hr />
 </div>
 
-![Crates.io](https://img.shields.io/crates/v/lino)
-![Crates.io](https://img.shields.io/crates/l/lino)
-![Crates.io](https://img.shields.io/crates/d/lino)
+[![Crates.io](https://img.shields.io/crates/v/lino)](https://crates.io/crates/lino)
+[![Crates.io](https://img.shields.io/crates/l/lino)](https://github.com/ahmednooor/lino/blob/main/LICENSE)
+[![Crates.io](https://img.shields.io/crates/d/lino)](https://crates.io/crates/lino)
 
 ## Usage (Key Bindings)
 | Key | Function |

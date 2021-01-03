@@ -32,7 +32,7 @@ impl Lino {
     }
 
     pub(crate) fn is_document_empty(&self) -> bool {
-        return self.lines.len() == 0;
+        return self.lines.len() == 1 && self.lines[0].len() == 0;
     }
 
     pub(crate) fn is_cursor_greater_than(&self, other_cursor: &Cursor) -> bool {

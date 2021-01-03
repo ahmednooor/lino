@@ -421,7 +421,7 @@ impl Lino {
 
     pub(crate) fn make_selection(&mut self, previous_cursor: &Cursor) {
         if self.is_document_empty() { 
-            self.clear_selection();
+            self.clear_selection(&self.cursor.clone());
             return;
         }
 
@@ -452,12 +452,47 @@ impl Lino {
         }
     }
 
-    pub(crate) fn clear_selection(&mut self) {
+    pub(crate) fn clear_selection(&mut self, previous_cursor: &Cursor) {
+        if self.selection.is_selected == false {
+            self.selection.start_point = self.cursor.clone();
+            self.selection.end_point = self.cursor.clone();
+            return;
+        }
+
+        let sorted_selection_points = self.get_sorted_selection_points();
+        
+        if !sorted_selection_points.is_none() {
+            self.selection = sorted_selection_points.unwrap();
+        }
+
+        let is_cursor_going_forward_from_start_point = 
+            self.is_cursor_greater_than(&previous_cursor)
+            && self.is_cursor_lesser_than(&self.selection.end_point);
+        let is_cursor_going_backward_from_end_point = 
+            self.is_cursor_lesser_than(&previous_cursor)
+            && self.is_cursor_greater_than(&self.selection.start_point);
+        let is_cursor_going_forward_from_end_point = 
+            self.is_cursor_greater_than(&previous_cursor)
+            && self.is_cursor_greater_than(&self.selection.end_point);
+        let is_cursor_going_backward_from_start_point = 
+            self.is_cursor_lesser_than(&previous_cursor)
+            && self.is_cursor_lesser_than(&self.selection.start_point);
+        
+        if is_cursor_going_forward_from_start_point {
+            self.cursor = self.selection.end_point.clone();
+            self.move_cursor_right();
+        } else if is_cursor_going_backward_from_end_point {
+            self.cursor = self.selection.start_point.clone();
+        } else if is_cursor_going_forward_from_end_point {
+            self.cursor = self.selection.end_point.clone();
+            self.move_cursor_right();
+        } else if is_cursor_going_backward_from_start_point {
+            self.cursor = self.selection.start_point.clone();
+        }
+        
         self.selection.is_selected = false;
-        self.selection.start_point.row = self.cursor.row;
-        self.selection.start_point.col = self.cursor.col;
-        self.selection.end_point.row = self.cursor.row;
-        self.selection.end_point.col = self.cursor.col;
+        self.selection.start_point = self.cursor.clone();
+        self.selection.end_point = self.cursor.clone();
     }
 
     pub(crate) fn delete_selected(&mut self) {
@@ -479,15 +514,12 @@ impl Lino {
             }
         }
 
-        self.clear_selection();
+        self.clear_selection(&self.cursor.clone());
     }
 
     pub(crate) fn select_all(&mut self) {
-        let is_document_empty = 
-            self.lines.len() == 1 && self.lines[0].len() == 0;
-
-        if is_document_empty {
-            self.clear_selection();
+        if self.is_document_empty() {
+            self.clear_selection(&self.cursor.clone());
             return;
         }
         
@@ -505,8 +537,7 @@ impl Lino {
         if self.lines[self.selection.end_point.row].len() > 0 {
             self.selection.end_point.col = self.lines[self.selection.end_point.row].len() - 1;
         }
-        self.cursor.row = self.selection.end_point.row;
-        self.cursor.col = self.selection.end_point.col;
+        self.cursor = self.selection.end_point.clone();
     }
 
     pub(crate) fn perform_copy(&mut self) {

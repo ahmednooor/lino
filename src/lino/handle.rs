@@ -275,7 +275,7 @@ impl Lino {
         if should_move_cursor_right_by_word { self.move_cursor_right_by_word(); }
         if should_move_cursor_up { self.move_cursor_up(); }
         if should_move_cursor_down { self.move_cursor_down(); }
-        if should_clear_selection { self.clear_selection(); }
+        if should_clear_selection { self.clear_selection(&previous_cursor); }
         if should_make_selection { self.make_selection(&previous_cursor); }
         if should_select_all { self.select_all(); }
         if should_perform_copy { self.perform_copy(); }

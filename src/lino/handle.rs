@@ -23,9 +23,8 @@ impl Lino {
                     // self.render()?;
                 },
                 crossterm::event::Event::Mouse(_event) => (),
-                crossterm::event::Event::Resize(width, height) => {
-                    self.term_width = width as usize;
-                    self.term_height = height as usize;
+                crossterm::event::Event::Resize(_, _) => {
+                    self.update_terminal_size();
                     // self.render()?;
                 },
             }

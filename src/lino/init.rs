@@ -84,7 +84,8 @@ impl Lino {
         for character in input_string.chars() {
             lino.input_character(character);
         }
-
+        
+        lino.reset_cursor();
         lino.saved_lines = lino.lines.clone();
         lino.update_terminal_size();
         lino.update_status_frame();
@@ -99,13 +100,13 @@ impl Lino {
     pub fn run(&mut self) -> crossterm::Result<()> {
         ctrlc::set_handler(|| ()).expect("Error setting Ctrl-C handler");
 
-        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)?;
         crossterm::terminal::enable_raw_mode()?;
+        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)?;
         
         self.initiate_input_event_loop()?;
         
-        crossterm::terminal::disable_raw_mode()?;
-        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
+        // crossterm::terminal::disable_raw_mode()?;
+        // crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
         
         Ok(())
     }
@@ -113,11 +114,7 @@ impl Lino {
 
 impl Drop for Lino {
     fn drop(&mut self) {
-        // crossterm::execute!(
-        //     stdout(),
-        //     crossterm::terminal::LeaveAlternateScreen
-        // ).unwrap();
+        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap();
         crossterm::terminal::disable_raw_mode().unwrap();
-        println!("drop called for Lino");
     }
 }

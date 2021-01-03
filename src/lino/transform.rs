@@ -41,6 +41,7 @@ impl Lino {
         for character in input_string.chars() {
             self.input_character(character);
         }
+        self.reset_cursor();
         self.saved_lines = self.lines.clone();
         self.file.should_save_as = false;
     }
@@ -265,6 +266,11 @@ impl Lino {
         }
 
         self.restore_last_cursor_col_if_applicable();
+    }
+
+    pub(crate) fn reset_cursor(&mut self) {
+        self.cursor.row = 0;
+        self.cursor.col = 0;
     }
 
     pub(crate) fn move_cursor_left(&mut self) {

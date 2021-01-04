@@ -78,7 +78,12 @@ impl Lino {
             clipboard: "".to_string(),
             settings: Settings{
                 tab_width: 4,
-            }
+            },
+            error: Error{
+                is_occured: false,
+                code: 0,
+                message: "".to_string()
+            },
         };
 
         for character in input_string.chars() {
@@ -98,23 +103,55 @@ impl Lino {
     }
 
     pub fn run(&mut self) -> crossterm::Result<()> {
-        ctrlc::set_handler(|| ()).expect("Error setting Ctrl-C handler");
-
-        crossterm::terminal::enable_raw_mode()?;
-        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)?;
+        ctrlc::set_handler(|| ())
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR1.0.to_string(), errors::ERR1.1));
+        crossterm::terminal::enable_raw_mode()
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR2.0.to_string(), errors::ERR2.1));
+        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR3.0.to_string(), errors::ERR3.1));
         
-        self.initiate_input_event_loop()?;
+        self.initiate_input_event_loop();
         
         // crossterm::terminal::disable_raw_mode()?;
         // crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
         
         Ok(())
     }
+
+    pub(crate) fn panic_gracefully(&mut self, error_message: String, error_code: isize) {
+        self.error.is_occured = true;
+        self.error.message = error_message;
+        self.error.code = error_code;
+        
+        let mut temp_file_path = std::env::current_dir().unwrap();
+        temp_file_path.push("lino_recov.tmp.txt");
+        self.file.path = temp_file_path.to_str().unwrap().to_string();
+        self.file.is_saved = false;
+        self.save_to_file();
+        
+        panic!();
+    }
 }
 
 impl Drop for Lino {
     fn drop(&mut self) {
-        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap();
-        crossterm::terminal::disable_raw_mode().unwrap();
+        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap_or(());
+        crossterm::terminal::disable_raw_mode().unwrap_or(());
+        
+        let mut exiting_message = String::new();
+        
+        if self.error.is_occured {
+            let err_str = format!("[ERROR] {} (code: {})\n", self.error.message.clone(), self.error.code);
+            exiting_message.push_str(&err_str);
+        }
+        
+        if self.error.is_occured && self.file.is_saved {
+            let err_str = format!(
+                "[RECOVERY] Your unsaved data has been saved at \"{}\" , You can recover it from there.\n", 
+                self.file.path);
+            exiting_message.push_str(&err_str);
+        }
+
+        println!("{}", exiting_message);
     }
 }

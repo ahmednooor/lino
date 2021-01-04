@@ -5,7 +5,7 @@ extern crate copypasta;
 use super::*;
 
 impl Lino {
-    pub(crate) fn render(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render(&mut self) {
         self.is_rendering = true;
         self.update_terminal_size();
         self.update_status_frame();
@@ -19,25 +19,25 @@ impl Lino {
             // crossterm::style::Print(' '),
             crossterm::cursor::Hide,
             crossterm::cursor::MoveTo(0, 0),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR7.0.to_string(), errors::ERR7.1));
 
-        self.render_line_nums_frame_content()?;
-        self.render_text_frame_content()?;
-        self.render_status_frame_content()?;
-        self.update_visible_cursor()?;
+        self.render_line_nums_frame_content();
+        self.render_text_frame_content();
+        self.render_status_frame_content();
+        self.update_visible_cursor();
 
-        stdout().flush()?;
+        stdout().flush()
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR8.0.to_string(), errors::ERR8.1));
         
         self.is_rendering = false;
-        Ok(())
     }
 
-    pub(crate) fn render_line_nums_frame_content(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render_line_nums_frame_content(&mut self) {
         crossterm::queue!(
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
             crossterm::style::SetForegroundColor(crossterm::style::Color::DarkGrey),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR9.0.to_string(), errors::ERR9.1));
 
         let visible_frame_starting_line_num = self.text_frame.start_row;
         let mut visible_frame_ending_line_num = visible_frame_starting_line_num + self.text_frame.height;
@@ -68,7 +68,7 @@ impl Lino {
                 stdout(),
                 crossterm::cursor::MoveTo(rendered_lines_col as u16, rendered_lines_row as u16),
                 crossterm::style::Print(num_string),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR10.0.to_string(), errors::ERR10.1));
         }
 
         let remaining_lines_start_row = (visible_frame_ending_line_num - visible_frame_starting_line_num) as usize;
@@ -92,13 +92,11 @@ impl Lino {
                 stdout(),
                 crossterm::cursor::MoveTo(line_nums_frame_start_col as u16, i as u16),
                 crossterm::style::Print(empty_string),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR11.0.to_string(), errors::ERR11.1));
         }
-
-        Ok(())
     }
 
-    pub(crate) fn render_text_frame_content(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render_text_frame_content(&mut self) {
         let visible_frame_starting_row = self.text_frame.start_row;
         let mut visible_frame_ending_row = visible_frame_starting_row + self.text_frame.height;
         
@@ -114,7 +112,7 @@ impl Lino {
                 crossterm::cursor::MoveTo(
                     (self.term_width - self.text_frame.width) as u16,
                     (i - visible_frame_starting_row) as u16),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR12.0.to_string(), errors::ERR12.1));
          
             let mut visible_frame_starting_col = self.text_frame.start_col;
             let mut visible_frame_ending_col = visible_frame_starting_col + self.text_frame.width;
@@ -137,7 +135,7 @@ impl Lino {
                 stdout(),
                 crossterm::style::SetBackgroundColor(prev_background),
                 crossterm::style::SetForegroundColor(prev_foreground),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR13.0.to_string(), errors::ERR13.1));
 
             let mut same_styled_text = String::new();
 
@@ -161,7 +159,8 @@ impl Lino {
                         stdout(),
                         crossterm::cursor::MoveTo(rendered_lines_col as u16, rendered_lines_row as u16),
                         crossterm::style::Print(same_styled_text.clone()),
-                    )?;
+                    ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR25.0.to_string(), errors::ERR25.1));
+
                     rendered_lines_col += same_styled_text.chars().count();
                     same_styled_text = String::new();
                 }
@@ -170,7 +169,8 @@ impl Lino {
                     crossterm::queue!(
                         stdout(),
                         crossterm::style::SetBackgroundColor(background),
-                    )?;
+                    ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR14.0.to_string(), errors::ERR14.1));
+
                     prev_background = background;
                 }
                 
@@ -178,7 +178,8 @@ impl Lino {
                     crossterm::queue!(
                         stdout(),
                         crossterm::style::SetForegroundColor(foreground),
-                    )?;
+                    ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR15.0.to_string(), errors::ERR15.1));
+
                     prev_foreground = foreground;
                 }
 
@@ -198,7 +199,7 @@ impl Lino {
                     stdout(),
                     crossterm::cursor::MoveTo(rendered_lines_col as u16, rendered_lines_row as u16),
                     crossterm::style::Print(same_styled_text.clone()),
-                )?;
+                ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR16.0.to_string(), errors::ERR16.1));
             }
             
             let text_frame_start_col = (self.term_width - self.text_frame.width) as usize;
@@ -221,7 +222,7 @@ impl Lino {
                 crossterm::style::SetForegroundColor(crossterm::style::Color::White),
                 crossterm::cursor::MoveTo(remaining_chars_start_col as u16, rendered_lines_row as u16),
                 crossterm::style::Print(empty_string),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR17.0.to_string(), errors::ERR17.1));
         }
 
         let remaining_lines_start_row = (visible_frame_ending_row - visible_frame_starting_row) as usize;
@@ -232,7 +233,7 @@ impl Lino {
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
             crossterm::style::SetForegroundColor(crossterm::style::Color::DarkGrey),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR18.0.to_string(), errors::ERR18.1));
 
         for i in remaining_lines_start_row..self.text_frame.height {
             // for j in text_frame_start_col..text_frame_end_col {
@@ -250,13 +251,11 @@ impl Lino {
                 stdout(),
                 crossterm::cursor::MoveTo(text_frame_start_col as u16, i as u16),
                 crossterm::style::Print(empty_string),
-            )?;
+            ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR19.0.to_string(), errors::ERR19.1));
         }
-
-        Ok(())
     }
 
-    pub(crate) fn render_status_frame_content(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render_status_frame_content(&mut self) {
         let mut empty_string = String::new();
         for _ in 0..self.status_frame.width {
             empty_string.push(' ');
@@ -267,7 +266,7 @@ impl Lino {
             crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
             crossterm::cursor::MoveTo(0, (self.term_height - 1) as u16),
             crossterm::style::Print(empty_string),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR26.0.to_string(), errors::ERR26.1));
 
         let file_name = 
             if self.file.path != "" { String::from(&self.file.path) }
@@ -281,12 +280,10 @@ impl Lino {
             stdout(),
             crossterm::cursor::MoveTo(0, (self.term_height - 1) as u16),
             crossterm::style::Print(status_string),
-        )?;
-
-        Ok(())
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR27.0.to_string(), errors::ERR27.1));
     }
 
-    pub(crate) fn render_unsaved_changes_frame(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render_unsaved_changes_frame(&mut self) {
         crossterm::queue!(
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
@@ -307,14 +304,13 @@ impl Lino {
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("> "),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR20.0.to_string(), errors::ERR20.1));
 
-        stdout().flush()?;
-
-        Ok(())
+        stdout().flush()
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR21.0.to_string(), errors::ERR21.1));
     }
 
-    pub(crate) fn render_save_as_frame(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn render_save_as_frame(&mut self) {
         crossterm::queue!(
             stdout(),
             crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
@@ -335,14 +331,13 @@ impl Lino {
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("> ".to_string() + self.file.path.as_str()),
-        )?;
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR22.0.to_string(), errors::ERR22.1));
 
-        stdout().flush()?;
-
-        Ok(())
+        stdout().flush()
+            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR23.0.to_string(), errors::ERR23.1));
     }
 
-    pub(crate) fn update_visible_cursor(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn update_visible_cursor(&mut self) {
         let col = (self.cursor.col - self.text_frame.start_col) + (self.line_nums_frame.width);
         let row = self.cursor.row - self.text_frame.start_row;
 
@@ -373,8 +368,6 @@ impl Lino {
             // crossterm::style::SetAttribute(crossterm::style::Attribute::Reset),
             // crossterm::cursor::MoveTo(col as u16, row as u16),
             crossterm::cursor::Show,
-        )?;
-
-        Ok(())
+        ).unwrap_or_else(|_| self.panic_gracefully(errors::ERR24.0.to_string(), errors::ERR24.1));
     }
 }

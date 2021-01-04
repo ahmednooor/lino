@@ -5,11 +5,7 @@ mod handle;
 mod transform;
 mod render;
 mod util;
-
-// ---------
-// tempnote: if on linux xorg-dev not works then install following as well
-// libxcb-present-dev libxcb-composite0-dev libxcb-shape0-dev libxcb-xfixes0-dev
-// ---------
+mod errors;
 
 #[derive(Copy, Clone)]
 pub(crate) struct Character {
@@ -72,6 +68,13 @@ pub(crate) struct Settings {
 }
 
 #[derive(Clone)]
+pub(crate) struct Error {
+    is_occured: bool,
+    code: isize,
+    message: String,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     saved_lines: Vec<Vec<Character>>,
     lines: Vec<Vec<Character>>,
@@ -89,5 +92,6 @@ pub struct Lino {
     redo_list: Vec<History>,
     file: FileData,
     clipboard: String,
-    settings: Settings
+    settings: Settings,
+    error: Error
 }

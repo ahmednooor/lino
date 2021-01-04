@@ -79,36 +79,32 @@ impl Lino {
         }
     }
 
-    pub(crate) fn perform_save(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn perform_save(&mut self) {
         if self.file.path == "" || self.file.should_save_as {
-            self.render_save_as_frame()?;
-            self.handle_save_as_frame_input()?;
+            self.render_save_as_frame();
+            self.handle_save_as_frame_input();
         } else {
             self.save_to_file();
         }
-
-        Ok(())
     }
 
     pub(crate) fn exit_from_editor(&mut self) {
         self.should_exit = true;
-        self.initiate_exit_procedure().unwrap();
+        self.initiate_exit_procedure();
     }
 
-    pub(crate) fn initiate_exit_procedure(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn initiate_exit_procedure(&mut self) {
         if self.file.is_saved {
-            return Ok(());
+            return;
         }
 
-        self.render_unsaved_changes_frame()?;
-        self.handle_unsaved_changes_frame_input()?;
+        self.render_unsaved_changes_frame();
+        self.handle_unsaved_changes_frame_input();
 
         if self.file.should_save_as {
-            self.render_save_as_frame()?;
-            self.handle_save_as_frame_input()?;
+            self.render_save_as_frame();
+            self.handle_save_as_frame_input();
         }
-
-        Ok(())
     }
     
     pub(crate) fn input_character(&mut self, character: char) {

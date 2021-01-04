@@ -10,19 +10,25 @@ extern crate copypasta;
 use super::*;
 
 impl Lino {
-    pub(crate) fn initiate_input_event_loop(&mut self) -> crossterm::Result<()> {
-        self.render()?;
+    pub(crate) fn initiate_input_event_loop(&mut self) {
+        self.render();
 
         loop {
             if self.is_rendering { continue; }
             
             // `read()` blocks until an `Event` is available
-            match crossterm::event::read()? {
-                crossterm::event::Event::Key(event) => {
-                    self.handle_key_event(&event)?;
+            let event = crossterm::event::read();
+
+            if event.is_err() {
+                self.panic_gracefully(errors::ERR4.0.to_string(), errors::ERR4.1);
+            }
+                
+            match event.unwrap() {
+                crossterm::event::Event::Key(key_event) => {
+                    self.handle_key_event(&key_event);
                     // self.render()?;
                 },
-                crossterm::event::Event::Mouse(_event) => (),
+                crossterm::event::Event::Mouse(_) => (),
                 crossterm::event::Event::Resize(_, _) => {
                     self.update_terminal_size();
                     // self.render()?;
@@ -31,13 +37,11 @@ impl Lino {
             
             if self.should_exit { break; }
             
-            self.render()?;
+            self.render();
         }
-
-        Ok(())
     }
 
-    pub(crate) fn handle_key_event(&mut self, event: &crossterm::event::KeyEvent) -> crossterm::Result<()>{
+    pub(crate) fn handle_key_event(&mut self, event: &crossterm::event::KeyEvent) {
         let mut should_input_character = false;
         let mut character_input: Option<char> = None;
         let mut should_exit_from_editor = false;
@@ -254,13 +258,15 @@ impl Lino {
             _ => ()
         }
 
+        
+
         // ordering is important here
         if should_save_to_history { self.save_to_history(); }
         if should_perform_cut { self.perform_copy(); }
         if should_delete_selected { self.delete_selected(); }
         if should_input_character { self.input_character(character_input.unwrap()); }
         if should_exit_from_editor { self.exit_from_editor(); }
-        if should_perform_save { self.perform_save()?; }
+        if should_perform_save { self.perform_save(); }
         if should_input_tab { self.input_tab(); }
         if should_enter_newline { self.enter_newline(); }
         if should_perform_backspace { self.perform_backspace(); }
@@ -285,14 +291,19 @@ impl Lino {
 
         self.set_file_unsaved_if_applicable();
 
-        Ok(())
     }
 
-    pub(crate) fn handle_unsaved_changes_frame_input(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn handle_unsaved_changes_frame_input(&mut self) {
         loop {
-            match crossterm::event::read()? { // read is a blocking call
-                crossterm::event::Event::Key(event) => {
-                    match event.code {
+            let event = crossterm::event::read();
+
+            if event.is_err() {
+                self.panic_gracefully(errors::ERR5.0.to_string(), errors::ERR5.1);
+            }
+
+            match event.unwrap() { // read is a blocking call
+                crossterm::event::Event::Key(key_event) => {
+                    match key_event.code {
                         crossterm::event::KeyCode::Char(c) => {
                             if c == 'y' || c == 'Y' {
                                 if self.file.path == "" {
@@ -319,15 +330,19 @@ impl Lino {
                 _ => ()
             }
         };
-
-        Ok(())
     }
     
-    pub(crate) fn handle_save_as_frame_input(&mut self) -> crossterm::Result<()> {
+    pub(crate) fn handle_save_as_frame_input(&mut self) {
         loop {
-            match crossterm::event::read()? { // read is a blocking call
-                crossterm::event::Event::Key(event) => {
-                    match event.code {
+            let event = crossterm::event::read();
+
+            if event.is_err() {
+                self.panic_gracefully(errors::ERR6.0.to_string(), errors::ERR6.1);
+            }
+
+            match event.unwrap() { // read is a blocking call
+                crossterm::event::Event::Key(key_event) => {
+                    match key_event.code {
                         crossterm::event::KeyCode::Char(c) => {
                             self.file.path.push(c);
                         },
@@ -352,10 +367,8 @@ impl Lino {
                 _ => ()
             };
 
-            self.render_save_as_frame()?;
+            self.render_save_as_frame();
         };
-
-        Ok(())
     }
 
 }

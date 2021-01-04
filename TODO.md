@@ -29,10 +29,10 @@
 - [x] ctrl+s to save
 - [x] enhance status bar (filename etc.)
 - [x] enhance tab character rendering (right now it enters num of spaces for current tab width). (iter 1)> made it to behave partially like natural tab behaviour e.g. only add the remaining spaces of tab width based on current cursor position. but it still uses actual spaces instead of the tab character. will probably stay that way.
+- [x] better error handling. (in case of error, save data to a temp file, prepare err feedback, panic and let the user know the err msg and recovery file path.)
 
 
 **Planned**
-- [ ] better error handling
 - [ ] Ctrl+[, Ctrl+] for indentation
 - [ ] Alt+Up, Alt+Down to move current line up and down
 - [ ] Shift+Del to delete whole line

@@ -46,4 +46,4 @@
 - [ ] logging*
 - [ ] tests*
 
-* Maybe
+\* Maybe

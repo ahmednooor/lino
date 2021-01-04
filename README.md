@@ -71,7 +71,7 @@ On `Linux (Debian based)`, if you head into problems, try installing the followi
 sudo apt install xorg-dev libxcb-present-dev libxcb-composite0-dev libxcb-shape0-dev libxcb-xfixes0-dev
 ```
 
-If you get an error about something like couldn't like with `cc`, try installing the following.
+If you get an error about something like couldn't link with `cc`, try installing the following.
 
 ```sh
 sudo apt install gcc gcc-multilib binutils

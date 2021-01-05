@@ -11,7 +11,7 @@
    ░ ░    ▒ ░   ░   ░ ░ ░ ░ ░ ▒  
      ░  ░ ░           ░     ░ ░  
                                      
-LINO ~ A COMMAND-LINE TEXT EDITOR WITH NOTEPAD LIKE KEY-BINDINGS
+LINO ~ A COMMAND LINE TEXT EDITOR WITH NOTEPAD LIKE KEY BINDINGS
 
 ••• ♥♥♥ ÄÄÄÄÄ Ä ÄÄÄÄÄ  ♥♥♥ •••
 

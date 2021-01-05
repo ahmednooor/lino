@@ -28,7 +28,7 @@ impl Lino {
     }
     
     pub(crate) fn is_cursor_at_last_line(&self) -> bool {
-        return self.cursor.row == self.lines.len();
+        return self.cursor.row == self.lines.len() - 1;
     }
 
     pub(crate) fn is_document_empty(&self) -> bool {

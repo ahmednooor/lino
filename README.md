@@ -23,7 +23,7 @@
 | <kbd>Shift</kbd> + <kbd>Home</kbd> | `Select upto line start` |
 | <kbd>Shift</kbd> + <kbd>End</kbd> | `Select upto line end` |
 | <kbd>Backspace</kbd> | `Delete backwards` |
-| <kbd>Del</kbd> | `Delete forwards` |
+| <kbd>Delete</kbd> | `Delete forwards` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | `Paste` |
@@ -83,3 +83,5 @@ sudo apt install gcc gcc-multilib binutils
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
+> A big Thanks to the authors of these libraries.
+

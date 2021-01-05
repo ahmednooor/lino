@@ -7,6 +7,7 @@ keywords = ["notepad-like", "terminal", "command-line", "text", "editor"]
 categories = ["command-line-utilities", "development-tools", "text-editors"]
 repository = "https://github.com/ahmednooor/lino"
 homepage = "https://github.com/ahmednooor/lino"
+readme = "README.md"
 edition = "2018"
 license = "MIT"
 
@@ -16,5 +17,4 @@ license = "MIT"
 crossterm = "0.18.2"
 ctrlc = "3.1.7"
 copypasta = "0.7.1"
-#clipboard-ext = "0.2.0"
 #clipboard = "0.5.0"

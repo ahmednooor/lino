@@ -71,6 +71,10 @@ impl Lino {
         let mut should_perform_undo = false;
         let mut should_perform_redo = false;
         let mut should_save_to_history = false;
+        let mut should_increase_indentation = false;
+        let mut should_decrease_indentation = false;
+        let mut should_swap_line_upward = false;
+        let mut should_swap_line_downward = false;
 
         match event.code {
             crossterm::event::KeyCode::Char(c) => {
@@ -134,6 +138,17 @@ impl Lino {
                 && (c == 'y' || c == 'Y') {
                     should_perform_redo = true;
                 }
+
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                && c == ']' {
+                    should_increase_indentation = true;
+                }
+
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                && c == '[' {
+                    should_decrease_indentation = true;
+                }
+                
             },
             crossterm::event::KeyCode::Tab => {
                 if event.modifiers == crossterm::event::KeyModifiers::NONE {
@@ -241,6 +256,12 @@ impl Lino {
                 } else {
                     should_clear_selection = true;
                 }
+                
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    should_swap_line_upward = true;
+                    should_move_cursor_up = false;
+                }
             },
             crossterm::event::KeyCode::Down => {
                 should_move_cursor_down = true;
@@ -249,6 +270,12 @@ impl Lino {
                     should_make_selection = true;
                 } else {
                     should_clear_selection = true;
+                }
+
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    should_swap_line_downward = true;
+                    should_move_cursor_down = false;
                 }
             },
             crossterm::event::KeyCode::Esc => {
@@ -288,6 +315,10 @@ impl Lino {
         if should_perform_paste { self.perform_paste(); }
         if should_perform_undo { self.perform_undo(); }
         if should_perform_redo { self.perform_redo(); }
+        if should_increase_indentation { self.increase_indentation(); }
+        if should_decrease_indentation { self.decrease_indentation(); }
+        if should_swap_line_upward { self.swap_line_upward(); }
+        if should_swap_line_downward { self.swap_line_downward(); }
 
         self.set_file_unsaved_if_applicable();
 

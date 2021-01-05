@@ -33,8 +33,9 @@
 
 
 **Planned**
-- [ ] Ctrl+[, Ctrl+] for indentation
-- [ ] Alt+Up, Alt+Down to move current line up and down
+- [x] Alt+[, Alt+] for indentation
+- [x] Ctrl+Up/Alt+Up, Ctrl+Down/Alt+Down to move current line up and down
+- [ ] Alt+Shift+Up, Alt+Shift+Down to duplicate current line up and down
 - [ ] Shift+Del to delete whole line
 - [ ] Ctrl+Backspace to delete previous word
 - [ ] Ctrl+Del to delete next word

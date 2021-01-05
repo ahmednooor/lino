@@ -415,6 +415,65 @@ impl Lino {
         self.restore_last_cursor_col_if_applicable();
     }
 
+    pub(crate) fn increase_indentation(&mut self) {
+        for _ in 0..self.settings.tab_width {
+            self.lines[self.cursor.row].insert(0, Character{
+                background: crossterm::style::Color::Black,
+                foreground: crossterm::style::Color::White,
+                character: ' ',
+            });
+            self.move_cursor_right();
+        }
+    }
+
+    pub(crate) fn decrease_indentation(&mut self) {
+        if self.is_current_line_empty() {
+            return;
+        }
+
+        if self.lines[self.cursor.row][0].character != ' ' {
+            return;
+        }
+
+        let mut indent_width = self.settings.tab_width;
+        if self.lines[self.cursor.row].len() < self.settings.tab_width {
+            indent_width = self.lines[self.cursor.row].len();
+        }
+
+        for _ in 0..indent_width {
+            if self.lines[self.cursor.row][0].character == ' ' {
+                self.move_cursor_left();
+                self.lines[self.cursor.row].remove(0);
+            } else {
+                break;
+            }
+        }
+    }
+
+    pub(crate) fn swap_line_upward(&mut self) {
+        if self.is_cursor_at_first_line() {
+            return;
+        }
+
+        let current_line = self.lines[self.cursor.row].clone();
+        self.lines[self.cursor.row] = self.lines[self.cursor.row - 1].clone();
+        self.lines[self.cursor.row - 1] = current_line;
+
+        self.move_cursor_up();
+    }
+
+    pub(crate) fn swap_line_downward(&mut self) {
+        if self.is_cursor_at_last_line() {
+            return;
+        }
+
+        let current_line = self.lines[self.cursor.row].clone();
+        self.lines[self.cursor.row] = self.lines[self.cursor.row + 1].clone();
+        self.lines[self.cursor.row + 1] = current_line;
+
+        self.move_cursor_down();
+    }
+
     pub(crate) fn make_selection(&mut self, previous_cursor: &Cursor) {
         if self.is_document_empty() { 
             self.clear_selection(&self.cursor.clone());

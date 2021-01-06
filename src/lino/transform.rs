@@ -161,6 +161,20 @@ impl Lino {
         }
     }
 
+    pub(crate) fn auto_indent_if_applicable(&mut self) {
+        if self.is_cursor_at_first_line() {
+            return;
+        }
+
+        for i in 0..self.lines[self.cursor.row - 1].len() {
+            if self.lines[self.cursor.row - 1][i].character != ' ' {
+                break;
+            }
+
+            self.input_character(' ');
+        }
+    }
+
     pub(crate) fn perform_backspace(&mut self) {
         let is_first_line = self.cursor.row == 0;
         let is_current_line_empty = self.lines[self.cursor.row].is_empty();
@@ -293,42 +307,6 @@ impl Lino {
         }
     }
 
-    pub(crate) fn move_cursor_left_by_word(&mut self) {
-        let mut is_cursor_at_line_start = self.cursor.col == 0;
-        if is_cursor_at_line_start {
-            self.move_cursor_left();
-            return;
-        }
-
-        let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
-        if is_cursor_at_line_end {
-            self.move_cursor_left();
-        }
-        
-        let is_starting_char_a_space = self.lines[self.cursor.row][self.cursor.col].character == ' ';
-        let is_starting_char_a_special_char = 
-            SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
-        let is_starting_char_a_normal_char = 
-            !is_starting_char_a_space && !is_starting_char_a_special_char;
-            
-        while !is_cursor_at_line_start {
-            let is_current_char_a_space = self.lines[self.cursor.row][self.cursor.col].character == ' ';
-            let is_current_char_a_special_char = 
-                SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
-            let is_current_char_a_normal_char = 
-                !is_current_char_a_space && !is_current_char_a_special_char;
-            
-            if (is_starting_char_a_space && !is_current_char_a_space)
-            || (is_starting_char_a_special_char && !is_current_char_a_special_char)
-            || (is_starting_char_a_normal_char && !is_current_char_a_normal_char) {
-                break;
-            }
-            
-            self.move_cursor_left();
-            is_cursor_at_line_start = self.cursor.col == 0;
-        }
-    }
-
     pub(crate) fn move_cursor_right(&mut self) {
         let is_last_line = self.cursor.row == self.lines.len() - 1;
         let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
@@ -352,35 +330,74 @@ impl Lino {
         }
     }
 
+    pub(crate) fn move_cursor_left_by_word(&mut self) {
+        if self.is_cursor_at_line_start() {
+            self.move_cursor_left();
+            return;
+        }
+
+        self.move_cursor_left();
+        
+        loop {
+            if self.is_cursor_at_line_start() {
+                break;
+            }
+
+            if self.lines[self.cursor.row][self.cursor.col].character != ' ' 
+            && self.lines[self.cursor.row][self.cursor.col - 1].character == ' ' {
+                break;
+            }
+
+            if !SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character)
+            && SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col - 1].character) {
+                break;
+            }
+
+            self.move_cursor_left();
+        }
+    }
+
     pub(crate) fn move_cursor_right_by_word(&mut self) {
-        let mut is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
-        if is_cursor_at_line_end {
+        if self.is_cursor_at_line_end() {
             self.move_cursor_right();
             return;
         }
+
+        self.move_cursor_right();
         
-        let is_starting_char_a_space = self.lines[self.cursor.row][self.cursor.col].character == ' ';
-        let is_starting_char_a_special_char = 
-            SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
-        let is_starting_char_a_normal_char = 
-            !is_starting_char_a_space && !is_starting_char_a_special_char;
-        
-        while !is_cursor_at_line_end {
-            let is_current_char_a_space = self.lines[self.cursor.row][self.cursor.col].character == ' ';
-            let is_current_char_a_special_char = 
-                SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character);
-            let is_current_char_a_normal_char = 
-                !is_current_char_a_space && !is_current_char_a_special_char;
-            
-            if (is_starting_char_a_space && !is_current_char_a_space)
-            || (is_starting_char_a_special_char && !is_current_char_a_special_char)
-            || (is_starting_char_a_normal_char && !is_current_char_a_normal_char) {
+        loop {
+            if self.is_cursor_at_line_end() {
+                break;
+            }
+
+            if self.lines[self.cursor.row][self.cursor.col].character == ' ' 
+            && self.lines[self.cursor.row][self.cursor.col - 1].character != ' ' {
+                break;
+            }
+
+            if SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col].character)
+            && !SPECIAL_CHARS.contains(&self.lines[self.cursor.row][self.cursor.col - 1].character) {
                 break;
             }
             
             self.move_cursor_right();
-            is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
         }
+    }
+
+    pub(crate) fn delete_left_by_word(&mut self) {
+        let previous_cursor = self.cursor.clone();
+        self.clear_selection(&previous_cursor);
+        self.move_cursor_left_by_word();
+        self.make_selection(&previous_cursor);
+        self.delete_selected();
+    }
+
+    pub(crate) fn delete_right_by_word(&mut self) {
+        let previous_cursor = self.cursor.clone();
+        self.clear_selection(&previous_cursor);
+        self.move_cursor_right_by_word();
+        self.make_selection(&previous_cursor);
+        self.delete_selected();
     }
 
     pub(crate) fn move_cursor_up(&mut self) {
@@ -471,6 +488,36 @@ impl Lino {
         self.lines[self.cursor.row] = self.lines[self.cursor.row + 1].clone();
         self.lines[self.cursor.row + 1] = current_line;
 
+        self.move_cursor_down();
+    }
+
+    pub(crate) fn delete_current_line(&mut self) {
+        if self.is_document_empty() {
+            return;
+        }
+
+        let should_move_curor_up = self.is_cursor_at_last_line();
+
+        self.lines.remove(self.cursor.row);
+
+        if should_move_curor_up && self.lines.len() > 0 {
+            self.move_cursor_up();
+        } else if self.lines.len() < 1 {
+            self.lines.push(vec![]);
+            self.reset_cursor();
+        }
+
+        if self.cursor.col > self.lines[self.cursor.row].len() {
+            self.cursor.col = self.lines[self.cursor.row].len();
+        }
+    }
+
+    pub(crate) fn duplicate_line_upward(&mut self) {
+        self.lines.insert(self.cursor.row, self.lines[self.cursor.row].clone());
+    }
+
+    pub(crate) fn duplicate_line_downward(&mut self) {
+        self.lines.insert(self.cursor.row, self.lines[self.cursor.row].clone());
         self.move_cursor_down();
     }
 

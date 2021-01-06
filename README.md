@@ -1,6 +1,6 @@
 <div align="center">
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" class="center" /></span>
-    <h3 align="center">A command line text editor with notepad like key bindings. [WIP]</h3>
+    <h3 align="center">A command line text editor with notepad like key bindings.</h3>
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-screenshot.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
@@ -12,7 +12,7 @@
 ## Usage (Key Bindings)
 | Key | Function |
 | --- | --- |
-| <kbd>↑</kbd> , <kbd>↓</kbd> , <kbd>←</kbd> , <kbd>→</kbd> | `Move` |
+| <kbd>↑</kbd> , <kbd>↓</kbd> , <kbd>←</kbd> , <kbd>→</kbd> | `Move cursor` |
 | <kbd>Ctrl</kbd> + <kbd>←</kbd> , <kbd>→</kbd> | `Move by word` |
 | <kbd>Page Up</kbd> , <kbd>Page Down</kbd> | `Move by page (scrolling)` |
 | <kbd>Home</kbd> | `Move to line start` |
@@ -22,8 +22,19 @@
 | <kbd>Shift</kbd> + <kbd>Page Up</kbd> , <kbd>Page down</kbd> | `Select by page` |
 | <kbd>Shift</kbd> + <kbd>Home</kbd> | `Select upto line start` |
 | <kbd>Shift</kbd> + <kbd>End</kbd> | `Select upto line end` |
-| <kbd>Backspace</kbd> | `Delete backwards` |
-| <kbd>Delete</kbd> | `Delete forwards` |
+| <kbd>Backspace</kbd> | `Delete backward` |
+| <kbd>Delete</kbd> | `Delete forward` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Backspace</kbd> | `Delete backward by word` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Delete</kbd> | `Delete forward by word` |
+| <kbd>Shift</kbd> + <kbd>Delete</kbd> | `Delete current line` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↑</kbd> | `Swap current line with the line above` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↓</kbd> | `Swap current line with the line below` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal` |
+| <kbd>Alt</kbd> + <kbd>]</kbd> | `Increase indentation` |
+| <kbd>Alt</kbd> + <kbd>[</kbd> | `Decrease indentation` |
+| <kbd>Enter</kbd> | `Enter new line` |
+| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter auto-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | `Paste` |
@@ -65,7 +76,7 @@ cd ./lino/
 cargo run <optional-filename>
 ```
 
-On `Linux (Debian based)`, if you head into problems, try installing the following libraries and re run with cargo.
+On `Linux (Debian based)`, if you head into problems, try installing the following libraries and re-run with cargo.
 
 ```sh
 sudo apt install xorg-dev libxcb-present-dev libxcb-composite0-dev libxcb-shape0-dev libxcb-xfixes0-dev
@@ -84,4 +95,3 @@ sudo apt install gcc gcc-multilib binutils
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
 > A big Thanks to the authors of these libraries.
-

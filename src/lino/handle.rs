@@ -48,6 +48,7 @@ impl Lino {
         let mut should_perform_save = false;
         let mut should_input_tab = false;
         let mut should_enter_newline = false;
+        let mut should_auto_indent_if_applicable = false;
         let mut should_perform_backspace = false;
         let mut should_perform_delete = false;
         let mut should_goto_line_start = false;
@@ -55,9 +56,11 @@ impl Lino {
         let mut should_scroll_up = false;
         let mut should_scroll_down = false;
         let mut should_move_cursor_left = false;
-        let mut should_move_cursor_left_by_word = false;
         let mut should_move_cursor_right = false;
+        let mut should_move_cursor_left_by_word = false;
         let mut should_move_cursor_right_by_word = false;
+        let mut should_delete_left_by_word = false;
+        let mut should_delete_right_by_word = false;
         let mut should_move_cursor_up = false;
         let mut should_move_cursor_down = false;
         let mut should_clear_selection = false;
@@ -75,6 +78,9 @@ impl Lino {
         let mut should_decrease_indentation = false;
         let mut should_swap_line_upward = false;
         let mut should_swap_line_downward = false;
+        let mut should_duplicate_line_upward = false;
+        let mut should_duplicate_line_downward = false;
+        let mut should_delete_current_line = false;
 
         match event.code {
             crossterm::event::KeyCode::Char(c) => {
@@ -84,9 +90,7 @@ impl Lino {
                     character_input = Some(c);
                     should_delete_selected = true;
                     
-                    if c == ' ' {
-                        should_save_to_history = true;
-                    }
+                    should_save_to_history = true;
                 }
 
                 if event.modifiers == crossterm::event::KeyModifiers::CONTROL
@@ -102,7 +106,6 @@ impl Lino {
                 if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'a' || c == 'A') {
                     should_select_all = true;
-                    should_save_to_history = true;
                 }
 
                 if event.modifiers == crossterm::event::KeyModifiers::CONTROL
@@ -142,11 +145,13 @@ impl Lino {
                 if event.modifiers == crossterm::event::KeyModifiers::ALT
                 && c == ']' {
                     should_increase_indentation = true;
+                    should_save_to_history = true;
                 }
 
                 if event.modifiers == crossterm::event::KeyModifiers::ALT
                 && c == '[' {
                     should_decrease_indentation = true;
+                    should_save_to_history = true;
                 }
                 
             },
@@ -161,19 +166,50 @@ impl Lino {
                 should_enter_newline = true;
                 should_delete_selected = true;
                 should_save_to_history = true;
+
+                if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    should_auto_indent_if_applicable = true;
+                }
             },
             crossterm::event::KeyCode::Backspace => {
                 if !self.selection.is_selected {
                     should_perform_backspace = true;
+                } else {
+                    should_delete_selected = true;
                 }
-                should_delete_selected = true;
+                
+                if !self.selection.is_selected
+                && (event.modifiers == crossterm::event::KeyModifiers::ALT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL) {
+                    should_delete_left_by_word = true;
+                    should_perform_backspace = false;
+                    should_delete_selected = false;
+                }
+                
                 should_save_to_history = true;
             },
             crossterm::event::KeyCode::Delete => {
                 if !self.selection.is_selected {
                     should_perform_delete = true;
+                } else {
+                    should_delete_selected = true;
                 }
-                should_delete_selected = true;
+                
+                if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
+                    should_delete_current_line = true;
+                    should_perform_delete = false;
+                    should_delete_selected = false;
+                    should_clear_selection = true;
+                }
+
+                if !self.selection.is_selected
+                && (event.modifiers == crossterm::event::KeyModifiers::ALT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL) {
+                    should_delete_right_by_word = true;
+                    should_perform_delete = false;
+                    should_delete_selected = false;
+                }
+
                 should_save_to_history = true;
             },
             crossterm::event::KeyCode::Home => {
@@ -262,6 +298,14 @@ impl Lino {
                     should_swap_line_upward = true;
                     should_move_cursor_up = false;
                 }
+                
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                | crossterm::event::KeyModifiers::SHIFT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                | crossterm::event::KeyModifiers::SHIFT {
+                    should_duplicate_line_upward = true;
+                    should_move_cursor_up = false;
+                }
             },
             crossterm::event::KeyCode::Down => {
                 should_move_cursor_down = true;
@@ -277,6 +321,14 @@ impl Lino {
                     should_swap_line_downward = true;
                     should_move_cursor_down = false;
                 }
+
+                if event.modifiers == crossterm::event::KeyModifiers::ALT
+                | crossterm::event::KeyModifiers::SHIFT
+                || event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                | crossterm::event::KeyModifiers::SHIFT {
+                    should_duplicate_line_downward = true;
+                    should_move_cursor_down = false;
+                }
             },
             crossterm::event::KeyCode::Esc => {
                 should_clear_selection = true;
@@ -284,8 +336,6 @@ impl Lino {
             },
             _ => ()
         }
-
-        
 
         // ordering is important here
         if should_save_to_history { self.save_to_history(); }
@@ -296,6 +346,7 @@ impl Lino {
         if should_perform_save { self.perform_save(); }
         if should_input_tab { self.input_tab(); }
         if should_enter_newline { self.enter_newline(); }
+        if should_auto_indent_if_applicable { self.auto_indent_if_applicable(); }
         if should_perform_backspace { self.perform_backspace(); }
         if should_perform_delete { self.perform_delete(); }
         if should_goto_line_start { self.goto_line_start(); }
@@ -303,9 +354,11 @@ impl Lino {
         if should_scroll_up { self.scroll_up(); }
         if should_scroll_down { self.scroll_down(); }
         if should_move_cursor_left { self.move_cursor_left(); }
-        if should_move_cursor_left_by_word { self.move_cursor_left_by_word(); }
         if should_move_cursor_right { self.move_cursor_right(); }
+        if should_move_cursor_left_by_word { self.move_cursor_left_by_word(); }
         if should_move_cursor_right_by_word { self.move_cursor_right_by_word(); }
+        if should_delete_left_by_word { self.delete_left_by_word(); }
+        if should_delete_right_by_word { self.delete_right_by_word(); }
         if should_move_cursor_up { self.move_cursor_up(); }
         if should_move_cursor_down { self.move_cursor_down(); }
         if should_clear_selection { self.clear_selection(&previous_cursor); }
@@ -319,6 +372,9 @@ impl Lino {
         if should_decrease_indentation { self.decrease_indentation(); }
         if should_swap_line_upward { self.swap_line_upward(); }
         if should_swap_line_downward { self.swap_line_downward(); }
+        if should_duplicate_line_upward { self.duplicate_line_upward(); }
+        if should_duplicate_line_downward { self.duplicate_line_downward(); }
+        if should_delete_current_line { self.delete_current_line(); }
 
         self.set_file_unsaved_if_applicable();
 

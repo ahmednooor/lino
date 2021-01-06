@@ -124,7 +124,7 @@ impl Lino {
         self.error.code = error_code;
         
         let mut temp_file_path = std::env::current_dir().unwrap();
-        temp_file_path.push("lino_recov.tmp.txt");
+        temp_file_path.push("lino.tmp.txt");
         self.file.path = temp_file_path.to_str().unwrap().to_string();
         self.file.is_saved = false;
         self.save_to_file();
@@ -147,7 +147,7 @@ impl Drop for Lino {
         
         if self.error.is_occured && self.file.is_saved {
             let err_str = format!(
-                "[RECOVERY] Your unsaved data has been saved at \"{}\" , You can recover it from there.\n", 
+                "[RECOVERY] Your data has been saved in \"{}\" , You can recover it from there.\n", 
                 self.file.path);
             exiting_message.push_str(&err_str);
         }

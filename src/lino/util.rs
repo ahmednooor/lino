@@ -30,6 +30,10 @@ impl Lino {
     pub(crate) fn is_cursor_at_last_line(&self) -> bool {
         return self.cursor.row == self.lines.len() - 1;
     }
+    
+    pub(crate) fn is_cursor_at_file_end(&self) -> bool {
+        return self.is_cursor_at_last_line() && self.is_cursor_at_line_end();
+    }
 
     pub(crate) fn is_document_empty(&self) -> bool {
         return self.lines.len() == 1 && self.lines[0].len() == 0;

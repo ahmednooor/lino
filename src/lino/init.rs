@@ -20,7 +20,7 @@ impl Lino {
         lino.read_from_file();
         lino.set_file_unsaved_if_applicable();
         lino.clear_history();
-        lino.save_to_history();
+        // lino.save_to_history();
 
         lino
     }
@@ -31,7 +31,7 @@ impl Lino {
 
     pub(crate) fn init(input_string: &String) -> Lino {
         let mut lino = Lino {
-            saved_lines: vec![vec![]],
+            saved_text: "".to_string(),
             lines: vec![vec![]],
             term_width: 0,
             term_height: 0,
@@ -81,8 +81,24 @@ impl Lino {
             },
             error: Error{
                 is_occured: false,
+                message: "".to_string(),
                 code: 0,
-                message: "".to_string()
+            },
+            theming: Theming {
+                line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                line_nums_frame_fg: crossterm::style::Color::DarkGrey,
+                line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                line_nums_frame_highlighted_fg: crossterm::style::Color::White,
+                
+                text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                text_frame_fg: crossterm::style::Color::White,
+                text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                text_frame_highlighted_fg: crossterm::style::Color::White,
+                text_frame_selection_bg: crossterm::style::Color::White,
+                text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+
+                status_frame_bg: crossterm::style::Color::White,
+                status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
             },
         };
 
@@ -91,37 +107,45 @@ impl Lino {
         }
         
         lino.reset_cursor();
-        lino.saved_lines = lino.lines.clone();
+        lino.last_cursor_col = lino.cursor.col;
+        lino.saved_text = Lino::convert_2d_text_to_string(&lino.lines);
         lino.update_terminal_size();
         lino.update_status_frame();
         lino.update_line_nums_frame();
         lino.update_text_frame();
         lino.clear_history();
-        lino.save_to_history();
+        // lino.save_to_history();
 
         lino
     }
 
-    pub fn run(&mut self) -> crossterm::Result<()> {
+    pub fn run(&mut self) {
         ctrlc::set_handler(|| ())
-            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR1.0.to_string(), errors::ERR1.1));
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err1()));
+        
         crossterm::terminal::enable_raw_mode()
-            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR2.0.to_string(), errors::ERR2.1));
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err2()));
+        
         crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)
-            .unwrap_or_else(|_| self.panic_gracefully(errors::ERR3.0.to_string(), errors::ERR3.1));
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
         
-        self.initiate_input_event_loop();
-        
-        // crossterm::terminal::disable_raw_mode()?;
-        // crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen)?;
-        
-        Ok(())
+        let mut syntect_config = self.create_syntect_config();
+
+        self.apply_syntax_highlighting_on_all_lines(&mut syntect_config);
+        self.clear_history();
+
+        self.initiate_input_event_loop(&mut syntect_config);
     }
 
-    pub(crate) fn panic_gracefully(&mut self, error_message: String, error_code: isize) {
-        self.error.is_occured = true;
-        self.error.message = error_message;
-        self.error.code = error_code;
+    pub fn close(&mut self) {
+        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap_or(());
+        crossterm::terminal::disable_raw_mode().unwrap_or(());
+    }
+
+    pub(crate) fn panic_gracefully(&mut self, error: &Error) {
+        self.error.is_occured = error.is_occured;
+        self.error.message = error.message.clone();
+        self.error.code = error.code;
         
         let mut temp_file_path = std::env::current_dir().unwrap();
         temp_file_path.push("lino.tmp.txt");
@@ -135,8 +159,7 @@ impl Lino {
 
 impl Drop for Lino {
     fn drop(&mut self) {
-        crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap_or(());
-        crossterm::terminal::disable_raw_mode().unwrap_or(());
+        self.close();
         
         let mut exiting_message = String::new();
         
@@ -152,6 +175,8 @@ impl Drop for Lino {
             exiting_message.push_str(&err_str);
         }
 
-        println!("{}", exiting_message);
+        if !exiting_message.is_empty() {
+            println!("{}", exiting_message);
+        }
     }
 }

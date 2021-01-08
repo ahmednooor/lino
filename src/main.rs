@@ -1,6 +1,6 @@
+use std;
 mod lino;
 use lino::Lino;
-use std;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -12,5 +12,5 @@ fn main() {
         lino = Lino::from_file(&args[1].to_string());
     }
     
-    lino.run().unwrap();
+    lino.run();
 }

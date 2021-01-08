@@ -27,9 +27,15 @@
 - [x] Ctrl+shift+z to redo
 - [x] file i/o
 - [x] Ctrl+s to save
-- [x] enhance status bar (filename etc.)
-- [x] enhance tab character rendering (right now it enters num of spaces for current tab width). (iter 1)> made it to behave partially like natural tab behaviour e.g. only add the remaining spaces of tab width based on current cursor position. but it still uses actual spaces instead of the tab character. will probably stay that way.
-- [x] better error handling. (in case of error, save data to a temp file, prepare err feedback, panic and let the user know the err msg and recovery file path.)
+- [x] filename in status bar
+
+- [x] enhance tab character rendering
+    
+    (iter 1): made it to behave partially like natural tab behaviour e.g. only add the remaining spaces of tab width based on current cursor position. but it still uses actual spaces instead of the tab character. will probably stay that way.
+
+- [x] better error handling. 
+    
+    (in case of error, save data to a temp file, prepare err feedback, panic and let the user know the err msg and recovery file path.)
 
 
 **Planned**
@@ -40,7 +46,13 @@
 - [x] Ctrl+Backspace/Alt+Backspace, to delete previous word
 - [x] Ctrl+Del/Alt+Del, to delete next word
 - [x] Ctrl+Enter to auto indent new line
-- [ ] syntax highlighting
+
+- [x] syntax highlighting
+
+    (iter 1): highlights line-wise instead of complete file, for the sake of performance. but this can't parse multi-line tokens like comments, strings etc.
+    
+    (needs improvement) both performance-wise if possible and currently there is a bug if you paste over selected text, it doesn't highlight new text unless you move you cursor to those new lines.
+
 - [ ] improve file io err handling
 - [ ] find/search
 - [ ] word wrap

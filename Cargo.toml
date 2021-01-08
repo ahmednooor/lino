@@ -1,6 +1,6 @@
 [package]
 name = "lino"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["ahmednooor <ahmednooorr@gmail.com>"]
 description = "A command line text editor with notepad like key bindings."
 keywords = ["notepad-like", "terminal", "command-line", "text", "editor"]
@@ -18,3 +18,5 @@ crossterm = "0.18.2"
 ctrlc = "3.1.7"
 copypasta = "0.7.1"
 #clipboard = "0.5.0"
+#syntect = "4.5.0"
+syntect = { version = "4.5.0", default-features = false, features = ["default-onig"]}

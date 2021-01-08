@@ -10,19 +10,22 @@ extern crate copypasta;
 use super::*;
 
 impl Lino {
-    pub(crate) fn initiate_input_event_loop(&mut self) {
-        self.render();
+    pub(crate) fn initiate_input_event_loop(&mut self, syntect_config: &mut SyntectConfig) {
+
+        self.render(syntect_config, self.cursor.clone());
 
         loop {
             if self.is_rendering { continue; }
+
+            let previous_cursor = self.cursor.clone();
             
             // `read()` blocks until an `Event` is available
             let event = crossterm::event::read();
 
             if event.is_err() {
-                self.panic_gracefully(errors::ERR4.0.to_string(), errors::ERR4.1);
+                self.panic_gracefully(&Error::err4());
             }
-                
+
             match event.unwrap() {
                 crossterm::event::Event::Key(key_event) => {
                     self.handle_key_event(&key_event);
@@ -37,7 +40,7 @@ impl Lino {
             
             if self.should_exit { break; }
             
-            self.render();
+            self.render(syntect_config, previous_cursor);
         }
     }
 
@@ -377,7 +380,6 @@ impl Lino {
         if should_delete_current_line { self.delete_current_line(); }
 
         self.set_file_unsaved_if_applicable();
-
     }
 
     pub(crate) fn handle_unsaved_changes_frame_input(&mut self) {
@@ -385,7 +387,7 @@ impl Lino {
             let event = crossterm::event::read();
 
             if event.is_err() {
-                self.panic_gracefully(errors::ERR5.0.to_string(), errors::ERR5.1);
+                self.panic_gracefully(&Error::err5());
             }
 
             match event.unwrap() { // read is a blocking call
@@ -424,7 +426,7 @@ impl Lino {
             let event = crossterm::event::read();
 
             if event.is_err() {
-                self.panic_gracefully(errors::ERR6.0.to_string(), errors::ERR6.1);
+                self.panic_gracefully(&Error::err6());
             }
 
             match event.unwrap() { // read is a blocking call

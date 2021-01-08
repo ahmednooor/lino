@@ -3,6 +3,7 @@ use crossterm;
 mod init;
 mod handle;
 mod transform;
+mod highlight;
 mod render;
 mod util;
 mod errors;
@@ -70,13 +71,37 @@ pub(crate) struct Settings {
 #[derive(Clone)]
 pub(crate) struct Error {
     is_occured: bool,
-    code: isize,
     message: String,
+    code: isize,
 }
 
 #[derive(Clone)]
+pub(crate) struct Theming {
+    line_nums_frame_bg: crossterm::style::Color,
+    line_nums_frame_fg: crossterm::style::Color,
+    line_nums_frame_highlighted_bg: crossterm::style::Color,
+    line_nums_frame_highlighted_fg: crossterm::style::Color,
+    
+    text_frame_bg: crossterm::style::Color,
+    text_frame_fg: crossterm::style::Color,
+    text_frame_highlighted_bg: crossterm::style::Color,
+    text_frame_highlighted_fg: crossterm::style::Color,
+    text_frame_selection_bg: crossterm::style::Color,
+    text_frame_selection_fg: crossterm::style::Color,
+
+    status_frame_bg: crossterm::style::Color,
+    status_frame_fg: crossterm::style::Color,
+}
+
+
+// #[derive(Clone)]
+// pub(crate) struct SyntaxHighlightingFlags {
+//     previous_row: usize,
+// }
+
+#[derive(Clone)]
 pub struct Lino {
-    saved_lines: Vec<Vec<Character>>,
+    saved_text: String,
     lines: Vec<Vec<Character>>,
     term_width: usize,
     term_height: usize,
@@ -93,5 +118,8 @@ pub struct Lino {
     file: FileData,
     clipboard: String,
     settings: Settings,
-    error: Error
+    error: Error,
+    theming: Theming,
 }
+
+use highlight::SyntectConfig;

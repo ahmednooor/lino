@@ -1,3 +1,4 @@
+
 <div align="center">
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" class="center" /></span>
     <h3 align="center">A command line text editor with notepad like key bindings.</h3>
@@ -27,10 +28,10 @@
 | <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Backspace</kbd> | `Delete backward by word` |
 | <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Delete</kbd> | `Delete forward by word` |
 | <kbd>Shift</kbd> + <kbd>Delete</kbd> | `Delete current line` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↑</kbd> | `Swap current line with the line above` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↓</kbd> | `Swap current line with the line below` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↑</kbd> | `Move current line up` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↓</kbd> | `Move current line down` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal)` |
+| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal)` |
 | <kbd>Alt</kbd> + <kbd>]</kbd> | `Increase indentation` |
 | <kbd>Alt</kbd> + <kbd>[</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter new line` |
@@ -42,6 +43,8 @@
 | <kbd>Ctrl</kbd> + <kbd>Y</kbd> | `Redo` |
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
 | <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Quit` |
+
+> Some keys don't work on Linux.
 
 ## Install
 > You will need to have Rust (2018 or higher) installed on your system before proceeding.\
@@ -94,4 +97,5 @@ sudo apt install gcc gcc-multilib binutils
 - [**crossterm**](https://crates.io/crates/crossterm) (to interact with the terminal)
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
+- [**syntect**](https://github.com/trishume/syntect) (for syntax highlighting)
 > A big Thanks to the authors of these libraries.

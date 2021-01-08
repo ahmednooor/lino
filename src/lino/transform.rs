@@ -42,7 +42,8 @@ impl Lino {
             self.input_character(character);
         }
         self.reset_cursor();
-        self.saved_lines = self.lines.clone();
+        self.last_cursor_col = self.cursor.col;
+        self.saved_text = Lino::convert_2d_text_to_string(&self.lines);
         self.file.should_save_as = false;
     }
 
@@ -63,16 +64,16 @@ impl Lino {
             Ok(_) => (),
         }
 
-        self.saved_lines = self.lines.clone();
+        self.saved_text = Lino::convert_2d_text_to_string(&self.lines);
         self.file.is_saved = true;
         self.file.should_save_as = false;
     }
 
     pub(crate) fn set_file_unsaved_if_applicable(&mut self) {
-        let current_text_string = Lino::convert_2d_text_to_string(&self.lines);
-        let saved_text_string = Lino::convert_2d_text_to_string(&self.saved_lines);
+        let current_text = Lino::convert_2d_text_to_string(&self.lines);
+        // let saved_text_string = Lino::convert_2d_text_to_string(&self.saved_text);
 
-        if current_text_string != saved_text_string {
+        if current_text != self.saved_text {
             self.file.is_saved = false;
         } else {
             self.file.is_saved = true;
@@ -115,13 +116,14 @@ impl Lino {
         self.lines[self.cursor.row].insert(
             self.cursor.col,
             Character{
-                background: crossterm::style::Color::Black,
-                foreground: crossterm::style::Color::White,
+                background: self.theming.text_frame_bg,
+                foreground: self.theming.text_frame_fg,
                 character: character,
             }
         );
         
         self.cursor.col += 1;
+        self.last_cursor_col = self.cursor.col;
     }
 
     pub(crate) fn input_tab(&mut self) {
@@ -131,12 +133,13 @@ impl Lino {
             self.lines[self.cursor.row].insert(
                 self.cursor.col,
                 Character{
-                    background: crossterm::style::Color::Black,
-                    foreground: crossterm::style::Color::White,
+                    background: self.theming.text_frame_bg,
+                    foreground: self.theming.text_frame_fg,
                     character: ' ',
                 });
             self.cursor.col += 1;
         }
+        self.last_cursor_col = self.cursor.col;
     }
 
     pub(crate) fn enter_newline(&mut self) {
@@ -281,6 +284,7 @@ impl Lino {
     pub(crate) fn reset_cursor(&mut self) {
         self.cursor.row = 0;
         self.cursor.col = 0;
+        // self.last_cursor_col = 0;
     }
 
     pub(crate) fn move_cursor_left(&mut self) {
@@ -435,8 +439,8 @@ impl Lino {
     pub(crate) fn increase_indentation(&mut self) {
         for _ in 0..self.settings.tab_width {
             self.lines[self.cursor.row].insert(0, Character{
-                background: crossterm::style::Color::Black,
-                foreground: crossterm::style::Color::White,
+                background: self.theming.text_frame_bg,
+                foreground: self.theming.text_frame_fg,
                 character: ' ',
             });
             self.move_cursor_right();
@@ -655,18 +659,17 @@ impl Lino {
         self.cursor.col = selection.start_point.col;
 
         loop {
-            let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
-            let is_cursor_at_file_end = 
-                self.cursor.row == self.lines.len() - 1
-                && self.cursor.col == self.lines[self.cursor.row].len();
+            // let is_cursor_at_line_end = self.cursor.col == self.lines[self.cursor.row].len();
+            // let is_cursor_at_file_end = 
+            //     self.cursor.row == self.lines.len() - 1
+            //     && self.cursor.col == self.lines[self.cursor.row].len();
             
-            if (self.cursor.row == selection.end_point.row
-            && self.cursor.col > selection.end_point.col)
-            || is_cursor_at_file_end {
+            if self.is_cursor_greater_than(&self.selection.end_point)
+            || self.is_cursor_at_file_end() { 
                 break;
             }
 
-            if is_cursor_at_line_end {
+            if self.is_cursor_at_line_end() {
                 copied_string.push('\n');
             } else {
                 copied_string.push(self.lines[self.cursor.row][self.cursor.col].character);
@@ -812,11 +815,14 @@ impl Lino {
             }
         }
 
-        let is_cursor_left_from_frame = self.cursor.col < self.text_frame.start_col;
+        let is_cursor_left_from_frame = self.cursor.col < self.text_frame.start_col + 2;
         let is_cursor_right_from_frame = self.cursor.col > self.text_frame.start_col + self.text_frame.width - 2;
 
         if is_cursor_left_from_frame {
-            while self.text_frame.start_col > self.cursor.col {
+            while self.text_frame.start_col + 2 > self.cursor.col {
+                if self.text_frame.start_col < 1 {
+                    break;
+                }
                 self.text_frame.start_col -= 1;
             }
         }

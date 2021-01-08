@@ -1,8 +1,8 @@
 
 <div align="center">
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-logo.png" alt="lino" width="240" class="center" /></span>
-    <h3 align="center">A command line text editor with notepad like key bindings.</h3>
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/lino-screenshot.png" alt="screenshot" class="center" /></span>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="148" height="148" class="center" /></span>
+    <h2 align="center">A command line text editor with notepad like key bindings.</h2>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot-2.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
 

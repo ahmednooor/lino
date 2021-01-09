@@ -664,7 +664,7 @@ impl Lino {
             //     self.cursor.row == self.lines.len() - 1
             //     && self.cursor.col == self.lines[self.cursor.row].len();
             
-            if self.is_cursor_greater_than(&self.selection.end_point)
+            if self.is_cursor_greater_than(&selection.end_point)
             || self.is_cursor_at_file_end() { 
                 break;
             }

@@ -39,7 +39,7 @@
 
 
 **Planned**
-- [x] Alt+[, Alt+] for indentation
+- [x] Alt+[, Alt+] for indentation (Alt+[ doesn't work on linux)
 - [x] Ctrl/Alt+Up, Ctrl/Alt+Down to swap current line up and down (Alt with Arrow Keys doesn't work on WT)
 - [x] Ctrl/Alt+Shift+Up, Ctrl/Alt+Shift+Down to duplicate current line up and down (doesn't work on WT, works on CMD)
 - [x] Shift+Del to delete whole line
@@ -49,13 +49,15 @@
 
 - [x] syntax highlighting
 
-    (iter 1): highlights line-wise instead of complete file, for the sake of performance. but this can't parse multi-line tokens like comments, strings etc.
+    (iter 1): highlights line-wise instead of complete file, for the sake of performance. but this can't parse multi-line tokens like multiline comments & strings etc.
     
     (needs improvement) both performance-wise if possible and currently there is a bug if you paste over selected text, it doesn't highlight new text unless you move you cursor to those new lines.
 
 - [ ] improve file io err handling
+- [ ] improve unicode and tab char rendering (width-wise)
 - [ ] find/search
 - [ ] word wrap
+- [ ] help screen
 - [ ] settings
 - [ ] logging*
 - [ ] tests*

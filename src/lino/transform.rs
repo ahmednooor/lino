@@ -119,6 +119,7 @@ impl Lino {
                 background: self.theming.text_frame_bg,
                 foreground: self.theming.text_frame_fg,
                 character: character,
+                width: 1,
             }
         );
         
@@ -130,14 +131,7 @@ impl Lino {
         let tab_width = self.calculate_tab_width();
                     
         for _ in 0..tab_width {
-            self.lines[self.cursor.row].insert(
-                self.cursor.col,
-                Character{
-                    background: self.theming.text_frame_bg,
-                    foreground: self.theming.text_frame_fg,
-                    character: ' ',
-                });
-            self.cursor.col += 1;
+            self.input_character(' ');
         }
         self.last_cursor_col = self.cursor.col;
     }
@@ -175,6 +169,13 @@ impl Lino {
             }
 
             self.input_character(' ');
+        }
+
+        if self.lines[self.cursor.row - 1].len() > 0 
+        && ['(', '[', '{', '<'].contains(&self.lines[self.cursor.row - 1].last().unwrap().character) {
+            for _ in 0..4 {
+                self.input_character(' ');
+            }
         }
     }
 
@@ -437,14 +438,12 @@ impl Lino {
     }
 
     pub(crate) fn increase_indentation(&mut self) {
+        let backup_cursor = self.cursor.clone();
+        self.cursor.col = 0;
         for _ in 0..self.settings.tab_width {
-            self.lines[self.cursor.row].insert(0, Character{
-                background: self.theming.text_frame_bg,
-                foreground: self.theming.text_frame_fg,
-                character: ' ',
-            });
-            self.move_cursor_right();
+            self.input_character(' ');
         }
+        self.cursor.col = backup_cursor.col + self.settings.tab_width;
     }
 
     pub(crate) fn decrease_indentation(&mut self) {

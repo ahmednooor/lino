@@ -74,6 +74,7 @@ impl Lino {
                     background: crossterm::style::Color::Black,
                     foreground: crossterm::style::Color::White,
                     character: character.clone(),
+                    width: 1,
                 })
             }
         }

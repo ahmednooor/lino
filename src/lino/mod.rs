@@ -8,11 +8,13 @@ mod render;
 mod util;
 mod errors;
 
+#[allow(dead_code)]
 #[derive(Copy, Clone)]
 pub(crate) struct Character {
     background: crossterm::style::Color,
     foreground: crossterm::style::Color,
-    character: char
+    character: char,
+    width: u8,
 }
 
 #[derive(Copy, Clone)]
@@ -92,12 +94,6 @@ pub(crate) struct Theming {
     status_frame_bg: crossterm::style::Color,
     status_frame_fg: crossterm::style::Color,
 }
-
-
-// #[derive(Clone)]
-// pub(crate) struct SyntaxHighlightingFlags {
-//     previous_row: usize,
-// }
 
 #[derive(Clone)]
 pub struct Lino {

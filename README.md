@@ -44,7 +44,7 @@
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
 | <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Quit` |
 
-> Some keys don't work on Linux.
+> Some key-bindings don't work on Linux.
 
 ## Install
 > You will need to have Rust (2018 or higher) installed on your system before proceeding.\
@@ -98,4 +98,4 @@ sudo apt install gcc gcc-multilib binutils
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
 - [**syntect**](https://github.com/trishume/syntect) (for syntax highlighting)
-> A big Thanks to the authors of these libraries.
+> A big Thanks to the authors/contributors/maintainers of these libraries.

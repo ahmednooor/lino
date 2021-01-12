@@ -1,10 +1,5 @@
-use std::io::{stdout, Write};
+use std::io::{stdout};
 use crossterm;
-extern crate copypasta;
-// use copypasta::ClipboardContext;
-// use copypasta::ClipboardProvider;
-// use std::fs::File;
-// use std::io::prelude::*;
 use std::path::Path;
 
 use super::*;
@@ -20,7 +15,6 @@ impl Lino {
         lino.read_from_file();
         lino.set_file_unsaved_if_applicable();
         lino.clear_history();
-        // lino.save_to_history();
 
         lino
     }
@@ -114,7 +108,6 @@ impl Lino {
         lino.update_line_nums_frame();
         lino.update_text_frame();
         lino.clear_history();
-        // lino.save_to_history();
 
         lino
     }

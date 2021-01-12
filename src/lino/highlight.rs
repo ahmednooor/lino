@@ -24,9 +24,9 @@ impl SyntectConfig {
         // let mut highlighter = syntect::easy::HighlightLines::new(&syntax.clone(), &theme_set.themes[SYNTECT_THEME_NAME].clone());
 
         SyntectConfig{
-            syntax_set : syntax_set,
+            syntax_set: syntax_set,
             theme_set: theme_set,
-            syntax : syntax,
+            syntax: syntax,
             // highlighter : highlighter,
         }
     }

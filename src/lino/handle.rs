@@ -443,14 +443,16 @@ impl Lino {
                             self.file.path.pop();
                         },
                         crossterm::event::KeyCode::Enter => {
-                            if self.file.path == "" {
-                                continue;
+                            if self.file.path != "" {
+                                self.save_to_file();
                             }
-                            self.save_to_file();
-                            break;
+                            if self.file.is_saved && self.file.save_error == "" {
+                                break;
+                            }
                         },
                         crossterm::event::KeyCode::Esc => {
                             self.file.path = "".to_string();
+                            self.file.save_error = "".to_string();
                             self.should_exit = false;
                             break;
                         },

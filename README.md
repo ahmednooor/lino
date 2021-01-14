@@ -98,4 +98,4 @@ sudo apt install gcc gcc-multilib binutils
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
 - [**syntect**](https://github.com/trishume/syntect) (for syntax highlighting)
-> A big Thanks to the authors/contributors/maintainers of these libraries.
+> A big Thanks to the authors/maintainers/contributors of these libraries.

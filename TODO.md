@@ -37,8 +37,6 @@
     
     (in case of error, save data to a temp file, prepare err feedback, panic and let the user know the err msg and recovery file path.)
 
-
-**Planned**
 - [x] Alt+[, Alt+] for indentation (Alt+[ doesn't work on linux)
 - [x] Ctrl/Alt+Up, Ctrl/Alt+Down to swap current line up and down (Alt with Arrow Keys doesn't work on WT)
 - [x] Ctrl/Alt+Shift+Up, Ctrl/Alt+Shift+Down to duplicate current line up and down (doesn't work on WT, works on CMD)
@@ -51,9 +49,10 @@
 
     (iter 1): highlights line-wise instead of complete file, for the sake of performance. but this can't parse multi-line tokens like multiline comments & strings etc.
     
-    (needs improvement) both performance-wise if possible and ([fixed for now] currently there is a bug if you paste over selected text, it doesn't highlight new text unless you move you cursor to those new lines).
+    (needs improvement) both performance-wise if possible and (currently there is a bug if you paste over selected text, it doesn't highlight new text unless you move you cursor to those new lines [fixed for now]).
 
-- [ ] improve file io err handling
+- [x] improve file io err handling
+- [ ] add clear mapping between keybindings and commands (refactoring required)
 - [ ] improve unicode and tab char rendering (width-wise)
 - [ ] find/search
 - [ ] word wrap

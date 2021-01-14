@@ -8,7 +8,7 @@ mod render;
 mod util;
 mod errors;
 mod cursor;
-mod file_io;
+mod file;
 mod history;
 mod selection;
 
@@ -67,6 +67,7 @@ pub(crate) struct FileData {
     path: String,
     is_saved: bool,
     should_save_as: bool,
+    save_error: String,
 }
 
 #[derive(Clone)]

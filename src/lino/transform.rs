@@ -7,26 +7,6 @@ use copypasta::ClipboardProvider;
 use super::*;
 
 impl Lino {
-    pub(crate) fn set_file_unsaved_if_applicable(&mut self) {
-        let current_text = Lino::convert_2d_text_to_string(&self.lines);
-        // let saved_text_string = Lino::convert_2d_text_to_string(&self.saved_text);
-
-        if current_text != self.saved_text {
-            self.file.is_saved = false;
-        } else {
-            self.file.is_saved = true;
-        }
-    }
-
-    pub(crate) fn perform_save(&mut self) {
-        if self.file.path == "" || self.file.should_save_as {
-            self.render_save_as_frame();
-            self.handle_save_as_frame_input();
-        } else {
-            self.save_to_file();
-        }
-    }
-
     pub(crate) fn exit_from_editor(&mut self) {
         self.should_exit = true;
         self.initiate_exit_procedure();

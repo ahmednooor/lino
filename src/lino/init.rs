@@ -68,6 +68,7 @@ impl Lino {
                 path: "".to_string(),
                 is_saved: true,
                 should_save_as: true,
+                save_error: "".to_string(),
             },
             clipboard: "".to_string(),
             settings: Settings{

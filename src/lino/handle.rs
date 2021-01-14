@@ -12,12 +12,12 @@ use super::*;
 impl Lino {
     pub(crate) fn initiate_input_event_loop(&mut self, syntect_config: &mut SyntectConfig) {
 
-        self.render(syntect_config, self.cursor.clone());
+        self.render(syntect_config);
 
         loop {
             if self.is_rendering { continue; }
 
-            let previous_cursor = self.cursor.clone();
+            // let previous_cursor = self.cursor.clone();
             
             // `read()` blocks until an `Event` is available
             let event = crossterm::event::read();
@@ -40,7 +40,7 @@ impl Lino {
             
             if self.should_exit { break; }
             
-            self.render(syntect_config, previous_cursor);
+            self.render(syntect_config);
         }
     }
 
@@ -54,10 +54,10 @@ impl Lino {
         let mut should_auto_indent_if_applicable = false;
         let mut should_perform_backspace = false;
         let mut should_perform_delete = false;
-        let mut should_goto_line_start = false;
-        let mut should_goto_line_end = false;
-        let mut should_scroll_up = false;
-        let mut should_scroll_down = false;
+        let mut should_move_cursor_to_line_start = false;
+        let mut should_move_cursor_to_line_end = false;
+        let mut should_move_cursor_up_by_page = false;
+        let mut should_move_cursor_down_by_page = false;
         let mut should_move_cursor_left = false;
         let mut should_move_cursor_right = false;
         let mut should_move_cursor_left_by_word = false;
@@ -84,6 +84,8 @@ impl Lino {
         let mut should_duplicate_line_upward = false;
         let mut should_duplicate_line_downward = false;
         let mut should_delete_current_line = false;
+
+        self.highlighting.start_row = self.cursor.row;
 
         match event.code {
             crossterm::event::KeyCode::Char(c) => {
@@ -216,7 +218,7 @@ impl Lino {
                 should_save_to_history = true;
             },
             crossterm::event::KeyCode::Home => {
-                should_goto_line_start = true;
+                should_move_cursor_to_line_start = true;
 
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
@@ -225,7 +227,7 @@ impl Lino {
                 }
             },
             crossterm::event::KeyCode::End => {
-                should_goto_line_end = true;
+                should_move_cursor_to_line_end = true;
 
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
@@ -234,7 +236,7 @@ impl Lino {
                 }
             },
             crossterm::event::KeyCode::PageUp => {
-                should_scroll_up = true;
+                should_move_cursor_up_by_page = true;
 
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
@@ -243,7 +245,7 @@ impl Lino {
                 }
             },
             crossterm::event::KeyCode::PageDown => {
-                should_scroll_down = true;
+                should_move_cursor_down_by_page = true;
 
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
                     should_make_selection = true;
@@ -352,10 +354,10 @@ impl Lino {
         if should_auto_indent_if_applicable { self.auto_indent_if_applicable(); }
         if should_perform_backspace { self.perform_backspace(); }
         if should_perform_delete { self.perform_delete(); }
-        if should_goto_line_start { self.goto_line_start(); }
-        if should_goto_line_end { self.goto_line_end(); }
-        if should_scroll_up { self.scroll_up(); }
-        if should_scroll_down { self.scroll_down(); }
+        if should_move_cursor_to_line_start { self.move_cursor_to_line_start(); }
+        if should_move_cursor_to_line_end { self.move_cursor_to_line_end(); }
+        if should_move_cursor_up_by_page { self.move_cursor_up_by_page(); }
+        if should_move_cursor_down_by_page { self.move_cursor_down_by_page(); }
         if should_move_cursor_left { self.move_cursor_left(); }
         if should_move_cursor_right { self.move_cursor_right(); }
         if should_move_cursor_left_by_word { self.move_cursor_left_by_word(); }
@@ -380,6 +382,8 @@ impl Lino {
         if should_delete_current_line { self.delete_current_line(); }
 
         self.set_file_unsaved_if_applicable();
+
+        self.highlighting.end_row = self.cursor.row;
     }
 
     pub(crate) fn handle_unsaved_changes_frame_input(&mut self) {

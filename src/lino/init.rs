@@ -94,6 +94,10 @@ impl Lino {
                 status_frame_bg: crossterm::style::Color::White,
                 status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
             },
+            highlighting: Highlighting{
+                start_row: 0,
+                end_row: 0,
+            }
         };
 
         for character in input_string.chars() {

@@ -5,7 +5,7 @@ extern crate copypasta;
 use super::*;
 
 impl Lino {
-    pub(crate) fn render(&mut self, syntect_config: &mut SyntectConfig, previous_cursor: Cursor) {
+    pub(crate) fn render(&mut self, syntect_config: &mut SyntectConfig) {
         self.is_rendering = true;
         self.update_terminal_size();
         self.update_status_frame();
@@ -23,7 +23,7 @@ impl Lino {
 
         // self.apply_syntax_highlighting_on_current_line(syntect_config);
         // self.apply_syntax_highlighting_on_changed_lines(syntect_config, previous_lines);
-        self.apply_syntax_highlighting_on_lines_range(syntect_config, previous_cursor);
+        self.apply_syntax_highlighting_on_lines_range(syntect_config);
 
         self.render_line_nums_frame_content();
         self.render_text_frame_content();
@@ -69,11 +69,19 @@ impl Lino {
             //     rendered_lines_col += 1;
             // }
             if i == self.cursor.row {
+                let line_num = num_string.get(0..num_string.len()-2).unwrap();
+                let boundary = num_string.get(num_string.len()-2..).unwrap();
                 crossterm::queue!(
                     stdout(),
                     crossterm::style::SetBackgroundColor(self.theming.line_nums_frame_highlighted_bg),
-                    crossterm::style::SetForegroundColor(self.theming.line_nums_frame_highlighted_fg)
+                    crossterm::style::SetForegroundColor(self.theming.line_nums_frame_highlighted_fg),
+                    crossterm::cursor::MoveTo(rendered_lines_col as u16, rendered_lines_row as u16),
+                    crossterm::style::Print(line_num),
+                    crossterm::style::SetForegroundColor(self.theming.line_nums_frame_fg),
+                    crossterm::style::Print(boundary),
+                    crossterm::style::SetBackgroundColor(self.theming.line_nums_frame_bg),
                 ).unwrap_or_else(|_| self.panic_gracefully(&Error::err29()));
+                continue;
             }
 
             crossterm::queue!(
@@ -81,14 +89,6 @@ impl Lino {
                 crossterm::cursor::MoveTo(rendered_lines_col as u16, rendered_lines_row as u16),
                 crossterm::style::Print(num_string),
             ).unwrap_or_else(|_| self.panic_gracefully(&Error::err10()));
-            
-            if i == self.cursor.row {
-                crossterm::queue!(
-                    stdout(),
-                    crossterm::style::SetBackgroundColor(self.theming.line_nums_frame_bg),
-                    crossterm::style::SetForegroundColor(self.theming.line_nums_frame_fg)
-                ).unwrap_or_else(|_| self.panic_gracefully(&Error::err30()));
-            }
         }
 
         let remaining_lines_start_row = (visible_frame_ending_line_num - visible_frame_starting_line_num) as usize;

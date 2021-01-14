@@ -7,6 +7,10 @@ mod highlight;
 mod render;
 mod util;
 mod errors;
+mod cursor;
+mod file_io;
+mod history;
+mod selection;
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
@@ -96,6 +100,12 @@ pub(crate) struct Theming {
 }
 
 #[derive(Clone)]
+pub(crate) struct Highlighting {
+    start_row: usize,
+    end_row: usize,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     saved_text: String,
     lines: Vec<Vec<Character>>,
@@ -116,6 +126,7 @@ pub struct Lino {
     settings: Settings,
     error: Error,
     theming: Theming,
+    highlighting: Highlighting,
 }
 
 use highlight::SyntectConfig;

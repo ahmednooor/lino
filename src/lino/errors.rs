@@ -146,9 +146,4 @@ impl Error {
         message: "Could not render.".to_string(),
         code: 29,
     } }
-    pub(crate) fn err30() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 30,
-    } }
 }

@@ -73,29 +73,27 @@ impl Lino {
         self.last_cursor_col = last_cursor_col;
     }
     
-    pub(crate) fn apply_syntax_highlighting_on_lines_range(
-        &mut self, syntect_config: &mut SyntectConfig, previous_cursor: Cursor
-    ) {
+    pub(crate) fn apply_syntax_highlighting_on_lines_range(&mut self, syntect_config: &mut SyntectConfig) {
         let cursor_backup = self.cursor.clone();
         let last_cursor_col = self.last_cursor_col;
 
-        let start_row = if self.cursor.row < previous_cursor.row {
-            self.cursor.row
-        } else {
-            previous_cursor.row
-        };
+        // let start_row = if self.cursor.row < previous_cursor.row {
+        //     self.cursor.row
+        // } else {
+        //     previous_cursor.row
+        // };
         
-        let end_row = if self.cursor.row > previous_cursor.row {
-            self.cursor.row
-        } else {
-            previous_cursor.row
-        };
+        // let end_row = if self.cursor.row > previous_cursor.row {
+        //     self.cursor.row
+        // } else {
+        //     previous_cursor.row
+        // };
 
-        self.cursor.row = start_row;
+        self.cursor.row = self.highlighting.start_row;
 
         let selection = self.get_sorted_selection_points().unwrap_or(self.selection.clone());
 
-        for _ in start_row..=end_row {
+        for _ in self.highlighting.start_row..=self.highlighting.end_row {
             if selection.is_selected && self.is_cursor_inside_selection(&selection, &self.cursor) {
                 self.move_cursor_down();
                 continue;
@@ -136,33 +134,10 @@ impl Lino {
         let cursor_backup = self.cursor.clone();
         let last_cursor_col = self.last_cursor_col;
         
-        // let mut syntax_highlight_start_row = self.text_frame.start_row;
-        // let mut syntax_highlight_end_row = self.text_frame.start_row + self.text_frame.height;
-        
-        // self.cursor.row = syntax_highlight_start_row;
-        // loop {
-        //     if self.is_current_line_empty() || self.is_cursor_at_first_line() {
-        //         break;
-        //     }
-        //     self.move_cursor_up();
-        // }
-        // syntax_highlight_start_row = self.cursor.row;
-
-        // self.cursor.row = syntax_highlight_end_row;
-        // loop {
-        //     if self.is_current_line_empty() || self.is_cursor_at_last_line() {
-        //         break;
-        //     }
-        //     self.move_cursor_down();
-        // }
-        // syntax_highlight_end_row = self.cursor.row;
-
-        // self.cursor.row = syntax_highlight_start_row;
         self.cursor.col = 0;
         
         let s = Lino::convert_2d_text_to_string(
             &self.lines[self.cursor.row..self.cursor.row + 1].to_vec()) + "\n";
-        // let s = Lino::convert_2d_text_to_string(&self.lines);
         
         let mut highlighter = syntect::easy::HighlightLines::new(
             &syntect_config.syntax, &syntect_config.theme_set.themes[SYNTECT_THEME_NAME]);
@@ -175,7 +150,6 @@ impl Lino {
             //     g: word.0.background.g,
             //     b: word.0.background.b,
             // };
-            // self.theming.text_frame_bg = background;
             let foreground = crossterm::style::Color::Rgb{
                 r: word.0.foreground.r,
                 g: word.0.foreground.g,
@@ -192,13 +166,6 @@ impl Lino {
                 self.move_cursor_right();
             }
         }
-        // let escaped = syntect::util::as_24_bit_terminal_escaped(&ranges[..], true);
-        // println!("{}", escaped);
-        // crossterm::queue!(
-        //     stdout(),
-        //     crossterm::style::Print(escaped),
-        // ).unwrap_or_else(|_| self.panic_gracefully(&Error::err25()));
-        // self.input_character('\n');
         self.cursor = cursor_backup;
         self.last_cursor_col = last_cursor_col;
     }

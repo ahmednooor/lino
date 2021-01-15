@@ -33,6 +33,32 @@ impl SyntectConfig {
 }
 
 impl Lino {
+    // pub(crate) fn load_theming_defaults_from_syntect_theme(&mut self) {
+    //     let theme_settings = syntect::highlighting::ThemeSet::load_defaults()
+    //         .themes[super::highlight::SYNTECT_THEME_NAME].settings.clone();
+    //     let editor_bg = crossterm::style::Color::Rgb{
+    //         r: theme_settings.background.unwrap().r,
+    //         g: theme_settings.background.unwrap().g,
+    //         b: theme_settings.background.unwrap().b,
+    //     };
+    //     let editor_fg = crossterm::style::Color::Rgb{
+    //         r: theme_settings.foreground.unwrap().r,
+    //         g: theme_settings.foreground.unwrap().g,
+    //         b: theme_settings.foreground.unwrap().b,
+    //     };
+    //     let highlighted_bg = crossterm::style::Color::Rgb{
+    //         r: theme_settings.line_highlight.unwrap().r,
+    //         g: theme_settings.line_highlight.unwrap().g,
+    //         b: theme_settings.line_highlight.unwrap().b,
+    //     };
+    //     self.theming.line_nums_frame_bg = editor_bg;
+    //     self.theming.line_nums_frame_fg = editor_fg;
+    //     self.theming.line_nums_frame_highlighted_bg = highlighted_bg;
+    //     self.theming.text_frame_bg = editor_bg;
+    //     self.theming.text_frame_fg = editor_fg;
+    //     self.theming.text_frame_highlighted_bg = highlighted_bg;
+    // }
+
     pub(crate) fn create_syntect_config(&mut self) -> SyntectConfig {
         let mut file_ext = "txt";
         if !std::path::Path::new(self.file.path.as_str()).extension().is_none() {

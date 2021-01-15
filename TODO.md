@@ -52,7 +52,9 @@
     (needs improvement) both performance-wise if possible and (currently there is a bug if you paste over selected text, it doesn't highlight new text unless you move you cursor to those new lines [fixed for now]).
 
 - [x] improve file io err handling
-- [ ] add clear mapping between keybindings and commands (refactoring required)
+- [x] add clear mapping between keybindings and operations (refactoring required)
+- [ ] improve rendering (maintain render buffers and only render edited cells)
+- [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve unicode and tab char rendering (width-wise)
 - [ ] find/search
 - [ ] word wrap

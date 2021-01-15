@@ -49,6 +49,7 @@ impl Lino {
 
         if path.is_dir() {
             self.file.save_error = format!("[ERROR] Couldn't save at \"{}\": {}", display, "Is a directory.");
+            return;
         }
 
         let file = File::create(&path);

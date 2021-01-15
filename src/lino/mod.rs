@@ -2,15 +2,18 @@ use crossterm;
 
 mod init;
 mod handle;
-mod transform;
+mod cursor;
+mod edit;
 mod highlight;
 mod render;
 mod util;
 mod errors;
-mod cursor;
 mod file;
 mod history;
 mod selection;
+mod operations;
+mod keybindings;
+mod frames;
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
@@ -108,8 +111,9 @@ pub(crate) struct Highlighting {
 
 #[derive(Clone)]
 pub struct Lino {
-    saved_text: String,
     lines: Vec<Vec<Character>>,
+    input_char_buf: Option<char>,
+    saved_text: String,
     term_width: usize,
     term_height: usize,
     cursor: Cursor,
@@ -128,6 +132,7 @@ pub struct Lino {
     error: Error,
     theming: Theming,
     highlighting: Highlighting,
+    keybindings: std::collections::HashMap<String, fn(&mut Lino) -> ()>,
 }
 
 use highlight::SyntectConfig;

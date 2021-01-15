@@ -25,8 +25,9 @@ impl Lino {
 
     pub(crate) fn init(input_string: &String) -> Lino {
         let mut lino = Lino {
-            saved_text: "".to_string(),
             lines: vec![vec![]],
+            input_char_buf: None,
+            saved_text: "".to_string(),
             term_width: 0,
             term_height: 0,
             cursor: Cursor{
@@ -82,12 +83,12 @@ impl Lino {
             theming: Theming {
                 line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
                 line_nums_frame_fg: crossterm::style::Color::DarkGrey,
-                line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
                 line_nums_frame_highlighted_fg: crossterm::style::Color::White,
                 
                 text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
                 text_frame_fg: crossterm::style::Color::White,
-                text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
                 text_frame_highlighted_fg: crossterm::style::Color::White,
                 text_frame_selection_bg: crossterm::style::Color::White,
                 text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
@@ -98,8 +99,12 @@ impl Lino {
             highlighting: Highlighting{
                 start_row: 0,
                 end_row: 0,
-            }
+            },
+            keybindings: std::collections::HashMap::new(),
         };
+
+        lino.bind_operations_to_keys();
+        // lino.load_theming_defaults_from_syntect_theme();
 
         for character in input_string.chars() {
             lino.input_character(character);

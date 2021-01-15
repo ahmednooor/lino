@@ -23,17 +23,18 @@
 | <kbd>Shift</kbd> + <kbd>Page Up</kbd> , <kbd>Page down</kbd> | `Select by page` |
 | <kbd>Shift</kbd> + <kbd>Home</kbd> | `Select upto line start` |
 | <kbd>Shift</kbd> + <kbd>End</kbd> | `Select upto line end` |
+| <kbd>Ctrl</kbd> + <kbd>A</kbd> | `Select all` |
 | <kbd>Backspace</kbd> | `Delete backward` |
 | <kbd>Delete</kbd> | `Delete forward` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Backspace</kbd> | `Delete backward by word` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Delete</kbd> | `Delete forward by word` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Backspace</kbd> | `Delete backward by word` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Delete</kbd> | `Delete forward by word` |
 | <kbd>Shift</kbd> + <kbd>Delete</kbd> | `Delete current line` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↑</kbd> | `Move current line up` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>↓</kbd> | `Move current line down` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal)` |
-| <kbd>Ctrl</kbd>/<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal)` |
-| <kbd>Alt</kbd> + <kbd>]</kbd> | `Increase indentation` |
-| <kbd>Alt</kbd> + <kbd>[</kbd> | `Decrease indentation` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>↑</kbd> | `Move current line up` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>↓</kbd> | `Move current line down` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal)` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal)` |
+| <kbd>Alt</kbd> + <kbd>]</kbd> / <kbd>→</kbd> | `Increase indentation` |
+| <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter new line` |
 | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter auto-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |

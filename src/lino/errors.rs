@@ -1,5 +1,6 @@
 use super:: Error;
 
+#[allow(dead_code)]
 impl Error {
     pub(crate) fn err1() -> Error { Error{
         is_occured: true,

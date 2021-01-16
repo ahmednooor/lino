@@ -53,7 +53,10 @@
 
 - [x] improve file io err handling
 - [x] add clear mapping between keybindings and operations (refactoring required)
-- [ ] improve rendering (maintain render buffers and only render edited cells)
+- [x] improve rendering (maintain render buffers and only render edited cells)
+
+    (iter 1): turns out that rendering individual cells takes more time than rendering the complete frame. that is because rendering character by character and setting bg and fg colors for each character takes more time.
+
 - [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve unicode and tab char rendering (width-wise)
 - [ ] find/search

@@ -100,12 +100,14 @@ impl Lino {
                 start_row: 0,
                 end_row: 0,
             },
+            rendering: Rendering{
+                buffer: vec![]
+            },
             keybindings: std::collections::HashMap::new(),
         };
 
-        lino.bind_operations_to_keys();
         // lino.load_theming_defaults_from_syntect_theme();
-
+        
         for character in input_string.chars() {
             lino.input_character(character);
         }
@@ -117,6 +119,8 @@ impl Lino {
         lino.update_status_frame();
         lino.update_line_nums_frame();
         lino.update_text_frame();
+        lino.init_render_buffer();
+        lino.bind_keys_to_operations();
         lino.clear_history();
 
         lino

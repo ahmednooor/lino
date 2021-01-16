@@ -331,10 +331,10 @@ impl Lino {
 
     pub(crate) fn exit_from_editor(&mut self) {
         self.should_exit = true;
-        self.initiate_exit_procedure();
+        self.initiate_exit_routine();
     }
 
-    pub(crate) fn initiate_exit_procedure(&mut self) {
+    pub(crate) fn initiate_exit_routine(&mut self) {
         if self.file.is_saved {
             return;
         }

@@ -12,8 +12,6 @@ use super::keybindings::keys;
 
 impl Lino {
     pub(crate) fn initiate_input_event_loop(&mut self, syntect_config: &mut SyntectConfig) {
-
-        
         loop {
             if self.is_rendering { continue; }
             self.render(syntect_config);
@@ -30,12 +28,10 @@ impl Lino {
             match event.unwrap() {
                 crossterm::event::Event::Key(key_event) => {
                     self.handle_key_event(&key_event);
-                    // self.render()?;
                 },
                 crossterm::event::Event::Mouse(_) => (),
                 crossterm::event::Event::Resize(_, _) => {
                     self.update_terminal_size();
-                    // self.render()?;
                 },
             }
             

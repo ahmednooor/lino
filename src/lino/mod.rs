@@ -110,6 +110,11 @@ pub(crate) struct Highlighting {
 }
 
 #[derive(Clone)]
+pub(crate) struct Rendering {
+    buffer: Vec<Vec<Character>>,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     lines: Vec<Vec<Character>>,
     input_char_buf: Option<char>,
@@ -132,6 +137,7 @@ pub struct Lino {
     error: Error,
     theming: Theming,
     highlighting: Highlighting,
+    rendering: Rendering,
     keybindings: std::collections::HashMap<String, fn(&mut Lino) -> ()>,
 }
 

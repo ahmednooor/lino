@@ -22,7 +22,7 @@ pub(crate) mod keys {
 use keys::*;
 
 impl Lino {
-    pub(crate) fn bind_operations_to_keys(&mut self) {
+    pub(crate) fn bind_keys_to_operations(&mut self) {
         let kbs = &mut self.keybindings;
         
         kbs.insert(format!("{}",         UP),                    Lino::operation_move_up);

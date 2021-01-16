@@ -7,6 +7,7 @@ impl Lino {
         let (term_width, term_height) = crossterm::terminal::size().unwrap_or((80, 40));
         self.term_width = term_width as usize;
         self.term_height = term_height as usize;
+        self.init_render_buffer();
     }
     
     pub(crate) fn update_status_frame(&mut self) {

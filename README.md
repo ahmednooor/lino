@@ -1,5 +1,6 @@
 
 <div align="center">
+    <br />
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="148" height="148" class="center" /></span>
     <h2 align="center">A command line text editor with notepad like key bindings. [WIP]</h2>
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot-2.png" alt="screenshot" class="center" /></span>

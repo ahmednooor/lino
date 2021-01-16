@@ -101,3 +101,6 @@ sudo apt install gcc gcc-multilib binutils
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
 - [**syntect**](https://github.com/trishume/syntect) (for syntax highlighting)
 > A big Thanks to the authors/maintainers/contributors of these libraries.
+
+## Motivation
+Imagine you're a mortal who is accustomed to VS Code or some other GUI Text Editor/IDE, and suddenly you have to login to some SSH or fire up a Linux Server Distro with no GUI. You find yourself treading in the territory of the gods where beasts like Vim, Emacs and others like them reside. You find a friend called Nano, but it doesn't speak your tongue (i.e. key bindings), so you waste your time trying to learn a new way to communicate instead of getting the job done and get the hell out of there. This editor can be your friend that speaks the same-ish tongue and you can take it there with you. It isn't the only one though, there is another one called [Micro](https://github.com/zyedidia/micro).

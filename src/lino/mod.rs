@@ -11,7 +11,7 @@ mod errors;
 mod file;
 mod history;
 mod selection;
-mod operations;
+mod commands;
 mod keybindings;
 mod frames;
 

@@ -298,7 +298,7 @@ impl Lino {
         if !operation_to_perform.is_none() {
             operation_to_perform.unwrap()(self);
         } else if !self.input_char_buf.is_none() {
-            self.operation_enter_character();
+            self.command_enter_character();
         }
 
         self.set_file_unsaved_if_applicable();

@@ -22,67 +22,67 @@ pub(crate) mod keys {
 use keys::*;
 
 impl Lino {
-    pub(crate) fn bind_keys_to_operations(&mut self) {
+    pub(crate) fn bind_keys_to_commands(&mut self) {
         let kbs = &mut self.keybindings;
         
-        kbs.insert(format!("{}",         UP),                    Lino::operation_move_up);
-        kbs.insert(format!("{}",         DOWN),                  Lino::operation_move_down);
-        kbs.insert(format!("{}",         LEFT),                  Lino::operation_move_left);
-        kbs.insert(format!("{}",         RIGHT),                 Lino::operation_move_right);
-        kbs.insert(format!("{}+{}",      CTRL, LEFT),            Lino::operation_move_left_by_word);
-        kbs.insert(format!("{}+{}",      CTRL, RIGHT),           Lino::operation_move_right_by_word);
-        kbs.insert(format!("{}",         PAGE_UP),               Lino::operation_move_up_by_page);
-        kbs.insert(format!("{}",         PAGE_DOWN),             Lino::operation_move_down_by_page);
-        kbs.insert(format!("{}",         HOME),                  Lino::operation_move_to_line_start);
-        kbs.insert(format!("{}",         END),                   Lino::operation_move_to_line_end);
+        kbs.insert(format!("{}",         UP),                    Lino::command_move_up);
+        kbs.insert(format!("{}",         DOWN),                  Lino::command_move_down);
+        kbs.insert(format!("{}",         LEFT),                  Lino::command_move_left);
+        kbs.insert(format!("{}",         RIGHT),                 Lino::command_move_right);
+        kbs.insert(format!("{}+{}",      CTRL, LEFT),            Lino::command_move_left_by_word);
+        kbs.insert(format!("{}+{}",      CTRL, RIGHT),           Lino::command_move_right_by_word);
+        kbs.insert(format!("{}",         PAGE_UP),               Lino::command_move_up_by_page);
+        kbs.insert(format!("{}",         PAGE_DOWN),             Lino::command_move_down_by_page);
+        kbs.insert(format!("{}",         HOME),                  Lino::command_move_to_line_start);
+        kbs.insert(format!("{}",         END),                   Lino::command_move_to_line_end);
         
-        kbs.insert(format!("{}+{}",      SHIFT, UP),             Lino::operation_select_up);
-        kbs.insert(format!("{}+{}",      SHIFT, DOWN),           Lino::operation_select_down);
-        kbs.insert(format!("{}+{}",      SHIFT, LEFT),           Lino::operation_select_left);
-        kbs.insert(format!("{}+{}",      SHIFT, RIGHT),          Lino::operation_select_right);
-        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, LEFT),     Lino::operation_select_left_by_word);
-        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, RIGHT),    Lino::operation_select_right_by_word);
-        kbs.insert(format!("{}+{}",      SHIFT, PAGE_UP),        Lino::operation_select_up_by_page);
-        kbs.insert(format!("{}+{}",      SHIFT, PAGE_DOWN),      Lino::operation_select_down_by_page);
-        kbs.insert(format!("{}+{}",      SHIFT, HOME),           Lino::operation_select_to_line_start);
-        kbs.insert(format!("{}+{}",      SHIFT, END),            Lino::operation_select_to_line_end);
-        kbs.insert(format!("{}+{}",      CTRL, 'a'),             Lino::operation_select_all);
+        kbs.insert(format!("{}+{}",      SHIFT, UP),             Lino::command_select_up);
+        kbs.insert(format!("{}+{}",      SHIFT, DOWN),           Lino::command_select_down);
+        kbs.insert(format!("{}+{}",      SHIFT, LEFT),           Lino::command_select_left);
+        kbs.insert(format!("{}+{}",      SHIFT, RIGHT),          Lino::command_select_right);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, LEFT),     Lino::command_select_left_by_word);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, RIGHT),    Lino::command_select_right_by_word);
+        kbs.insert(format!("{}+{}",      SHIFT, PAGE_UP),        Lino::command_select_up_by_page);
+        kbs.insert(format!("{}+{}",      SHIFT, PAGE_DOWN),      Lino::command_select_down_by_page);
+        kbs.insert(format!("{}+{}",      SHIFT, HOME),           Lino::command_select_to_line_start);
+        kbs.insert(format!("{}+{}",      SHIFT, END),            Lino::command_select_to_line_end);
+        kbs.insert(format!("{}+{}",      CTRL, 'a'),             Lino::command_select_all);
         
-        kbs.insert(format!("{}",         BACKSPACE),             Lino::operation_delete_left_character);
-        kbs.insert(format!("{}",         DELETE),                Lino::operation_delete_right_character);
-        kbs.insert(format!("{}+{}",      CTRL, BACKSPACE),       Lino::operation_delete_left_word);
-        kbs.insert(format!("{}+{}",      ALT, BACKSPACE),        Lino::operation_delete_left_word);
-        kbs.insert(format!("{}+{}",      CTRL, DELETE),          Lino::operation_delete_right_word);
-        kbs.insert(format!("{}+{}",      ALT, DELETE),           Lino::operation_delete_right_word);
-        kbs.insert(format!("{}+{}",      SHIFT, DELETE),         Lino::operation_delete_current_line);
+        kbs.insert(format!("{}",         BACKSPACE),             Lino::command_delete_left_character);
+        kbs.insert(format!("{}",         DELETE),                Lino::command_delete_right_character);
+        kbs.insert(format!("{}+{}",      CTRL, BACKSPACE),       Lino::command_delete_left_word);
+        kbs.insert(format!("{}+{}",      ALT, BACKSPACE),        Lino::command_delete_left_word);
+        kbs.insert(format!("{}+{}",      CTRL, DELETE),          Lino::command_delete_right_word);
+        kbs.insert(format!("{}+{}",      ALT, DELETE),           Lino::command_delete_right_word);
+        kbs.insert(format!("{}+{}",      SHIFT, DELETE),         Lino::command_delete_current_line);
         
-        kbs.insert(format!("{}+{}",      CTRL, UP),              Lino::operation_move_current_line_up);
-        kbs.insert(format!("{}+{}",      ALT, UP),               Lino::operation_move_current_line_up);
-        kbs.insert(format!("{}+{}",      CTRL, DOWN),            Lino::operation_move_current_line_down);
-        kbs.insert(format!("{}+{}",      ALT, DOWN),             Lino::operation_move_current_line_down);
+        kbs.insert(format!("{}+{}",      CTRL, UP),              Lino::command_move_current_line_up);
+        kbs.insert(format!("{}+{}",      ALT, UP),               Lino::command_move_current_line_up);
+        kbs.insert(format!("{}+{}",      CTRL, DOWN),            Lino::command_move_current_line_down);
+        kbs.insert(format!("{}+{}",      ALT, DOWN),             Lino::command_move_current_line_down);
         
-        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, UP),       Lino::operation_duplicate_current_line_up);
-        kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, UP),        Lino::operation_duplicate_current_line_up);
-        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, DOWN),     Lino::operation_duplicate_current_line_down);
-        kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, DOWN),      Lino::operation_duplicate_current_line_down);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, UP),       Lino::command_duplicate_current_line_up);
+        kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, UP),        Lino::command_duplicate_current_line_up);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, DOWN),     Lino::command_duplicate_current_line_down);
+        kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, DOWN),      Lino::command_duplicate_current_line_down);
 
-        kbs.insert(format!("{}+{}",      ALT, ']'),              Lino::operation_increase_indentation);
-        kbs.insert(format!("{}+{}",      ALT, RIGHT),            Lino::operation_increase_indentation);
-        kbs.insert(format!("{}+{}",      ALT, '['),              Lino::operation_decrease_indentation);
-        kbs.insert(format!("{}+{}",      ALT, LEFT),            Lino::operation_decrease_indentation);
+        kbs.insert(format!("{}+{}",      ALT, ']'),              Lino::command_increase_indentation);
+        kbs.insert(format!("{}+{}",      ALT, RIGHT),            Lino::command_increase_indentation);
+        kbs.insert(format!("{}+{}",      ALT, '['),              Lino::command_decrease_indentation);
+        kbs.insert(format!("{}+{}",      ALT, LEFT),             Lino::command_decrease_indentation);
 
-        kbs.insert(format!("{}",         TAB),                   Lino::operation_enter_tab);
-        kbs.insert(format!("{}",         ENTER),                 Lino::operation_enter_new_line);
-        kbs.insert(format!("{}+{}",      CTRL, ENTER),           Lino::operation_enter_auto_indented_new_line);
+        kbs.insert(format!("{}",         TAB),                   Lino::command_enter_tab);
+        kbs.insert(format!("{}",         ENTER),                 Lino::command_enter_new_line);
+        kbs.insert(format!("{}+{}",      CTRL, ENTER),           Lino::command_enter_auto_indented_new_line);
 
-        kbs.insert(format!("{}+{}",      CTRL, 'x'),             Lino::operation_cut);
-        kbs.insert(format!("{}+{}",      CTRL, 'c'),             Lino::operation_copy);
-        kbs.insert(format!("{}+{}",      CTRL, 'v'),             Lino::operation_paste);
-        kbs.insert(format!("{}+{}",      CTRL, 'z'),             Lino::operation_undo);
-        kbs.insert(format!("{}+{}",      CTRL, 'y'),             Lino::operation_redo);
-        kbs.insert(format!("{}+{}",      CTRL, 's'),             Lino::operation_save);
-        kbs.insert(format!("{}+{}",      CTRL, 'q'),             Lino::operation_quit);
+        kbs.insert(format!("{}+{}",      CTRL, 'x'),             Lino::command_cut);
+        kbs.insert(format!("{}+{}",      CTRL, 'c'),             Lino::command_copy);
+        kbs.insert(format!("{}+{}",      CTRL, 'v'),             Lino::command_paste);
+        kbs.insert(format!("{}+{}",      CTRL, 'z'),             Lino::command_undo);
+        kbs.insert(format!("{}+{}",      CTRL, 'y'),             Lino::command_redo);
+        kbs.insert(format!("{}+{}",      CTRL, 's'),             Lino::command_save);
+        kbs.insert(format!("{}+{}",      CTRL, 'q'),             Lino::command_quit);
 
-        kbs.insert(format!("{}",         ESC),                   Lino::operation_clear_selection);
+        kbs.insert(format!("{}",         ESC),                   Lino::command_clear_selection);
     }
 }

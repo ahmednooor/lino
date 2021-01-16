@@ -120,7 +120,7 @@ impl Lino {
         lino.update_line_nums_frame();
         lino.update_text_frame();
         lino.init_render_buffer();
-        lino.bind_keys_to_operations();
+        lino.bind_keys_to_commands();
         lino.clear_history();
 
         lino

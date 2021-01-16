@@ -95,6 +95,21 @@ impl Lino {
 
                 status_frame_bg: crossterm::style::Color::White,
                 status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                
+                // line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
+                // line_nums_frame_fg: crossterm::style::Color::Rgb{r: 0x77, g: 0x77, b: 0x77},
+                // line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x22, g: 0x22, b: 0x22},
+                // line_nums_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                
+                // text_frame_bg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
+                // text_frame_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                // text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x22, g: 0x22, b: 0x22},
+                // text_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                // text_frame_selection_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                // text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
+
+                // status_frame_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                // status_frame_fg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
             },
             highlighting: Highlighting{
                 start_row: 0,

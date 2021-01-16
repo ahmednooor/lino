@@ -237,7 +237,6 @@ impl Lino {
                     stdout(),
                     // crossterm::cursor::MoveTo(col as u16, row as u16),
                     crossterm::style::Print(same_styled_text.clone()),
-                    crossterm::style::ResetColor,
                 ).unwrap_or_else(|_| self.panic_gracefully(&Error::err16()));
             }
         }
@@ -246,15 +245,15 @@ impl Lino {
     pub(crate) fn render_unsaved_changes_frame(&mut self) {
         crossterm::queue!(
             stdout(),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
             crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_fg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_bg),
             crossterm::cursor::MoveTo(0, 0),
             crossterm::style::Print("UNSAVED CHANGES"),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("Would you like to save changes before you quit?"),
@@ -273,15 +272,15 @@ impl Lino {
     pub(crate) fn render_save_as_frame(&mut self) {
         crossterm::queue!(
             stdout(),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
             crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::Black),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_fg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_bg),
             crossterm::cursor::MoveTo(0, 0),
             crossterm::style::Print("SAVE FILE"),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::Black),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("Enter file name. "),

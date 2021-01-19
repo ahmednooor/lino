@@ -158,4 +158,28 @@ impl Lino {
 
         return None;
     }
+
+    pub(crate) fn get_selected_count(&mut self) -> usize {
+        if !self.selection.is_selected { return 0; }
+
+        let selection = self.get_sorted_selection_points().unwrap();
+        let mut selected_count = 0;
+        let backup_cursor = self.cursor.clone();
+        self.cursor = selection.start_point.clone();
+        
+        loop {
+            if self.is_cursor_at_file_end() {
+                break;
+            }
+            if self.cursor.row >= selection.end_point.row && self.cursor.col >= selection.end_point.col {
+                selected_count += 1;
+                break;
+            }
+            self.move_cursor_right();
+            selected_count += 1;
+        }
+
+        self.cursor = backup_cursor;
+        selected_count
+    }
 }

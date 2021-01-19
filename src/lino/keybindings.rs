@@ -81,7 +81,7 @@ impl Lino {
         kbs.insert(format!("{}+{}",      CTRL, 'z'),             Lino::command_undo);
         kbs.insert(format!("{}+{}",      CTRL, 'y'),             Lino::command_redo);
         kbs.insert(format!("{}+{}",      CTRL, 's'),             Lino::command_save);
-        kbs.insert(format!("{}+{}",      CTRL, 'q'),             Lino::command_quit);
+        kbs.insert(format!("{}+{}",      CTRL, 'w'),             Lino::command_quit);
 
         kbs.insert(format!("{}",         ESC),                   Lino::command_clear_selection);
     }

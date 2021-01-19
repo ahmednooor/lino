@@ -13,7 +13,7 @@ use super::keybindings::keys;
 impl Lino {
     pub(crate) fn initiate_input_event_loop(&mut self, syntect_config: &mut SyntectConfig) {
         loop {
-            if self.is_rendering { continue; }
+            if self.rendering.is_rendering { continue; }
             self.render(syntect_config);
 
             // let previous_cursor = self.cursor.clone();
@@ -52,8 +52,8 @@ impl Lino {
                 }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
-                && (c == 'q' || c == 'Q') {
-                    key_binding = format!("{}+{}", keys::CTRL, 'q');
+                && (c == 'w' || c == 'W') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'w');
                 }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL

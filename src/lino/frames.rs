@@ -12,7 +12,7 @@ impl Lino {
     
     pub(crate) fn update_status_frame(&mut self) {
         self.status_frame.width = self.term_width;
-        self.status_frame.height = 1;
+        self.status_frame.height = 2;
     }
 
     pub(crate) fn update_line_nums_frame(&mut self) {

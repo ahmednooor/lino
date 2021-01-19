@@ -57,11 +57,13 @@
 
     (iter 1): turns out that rendering individual cells takes more time than rendering the complete frame. that is because rendering character by character and setting bg and fg colors for each character takes more time.
 
+- [x] show command/task feedback or error below status bar
+- [x] Ctrl+w to close as this is the dominant shortcut to close in GUI apps
+- [ ] help screen
+- [ ] word wrap
+- [ ] find, replace
 - [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve unicode and tab char rendering (width-wise)
-- [ ] find/search
-- [ ] word wrap
-- [ ] help screen
 - [ ] settings
 - [ ] logging*
 - [ ] tests*

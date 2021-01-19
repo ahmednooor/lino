@@ -14,6 +14,7 @@ mod selection;
 mod commands;
 mod keybindings;
 mod frames;
+mod task_feedback;
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
@@ -101,6 +102,8 @@ pub(crate) struct Theming {
 
     status_frame_bg: crossterm::style::Color,
     status_frame_fg: crossterm::style::Color,
+
+    error_red: crossterm::style::Color,
 }
 
 #[derive(Clone)]
@@ -111,7 +114,16 @@ pub(crate) struct Highlighting {
 
 #[derive(Clone)]
 pub(crate) struct Rendering {
+    is_rendering: bool,
     buffer: Vec<Vec<Character>>,
+}
+
+#[derive(Clone)]
+pub(crate) struct TaskFeedback {
+    bg: crossterm::style::Color,
+    fg: crossterm::style::Color,
+    text: String,
+    default_text: String,
 }
 
 #[derive(Clone)]
@@ -127,8 +139,8 @@ pub struct Lino {
     text_frame: TextFrame,
     line_nums_frame: LineNumsFrame,
     status_frame: StatusFrame,
+    task_feedback: TaskFeedback,
     should_exit: bool,
-    is_rendering: bool,
     undo_list: Vec<History>,
     redo_list: Vec<History>,
     file: FileData,

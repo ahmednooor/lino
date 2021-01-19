@@ -61,8 +61,13 @@ impl Lino {
                 width: 0,
                 height: 0,
             },
+            task_feedback: TaskFeedback{
+                bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
+                text: "".to_string(),
+                default_text: "[Ctrl+W] Close".to_string(),
+            },
             should_exit: false,
-            is_rendering: false,
             undo_list: vec![],
             redo_list: vec![],
             file: FileData{
@@ -81,42 +86,45 @@ impl Lino {
                 code: 0,
             },
             theming: Theming {
+                // line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                // line_nums_frame_fg: crossterm::style::Color::DarkGrey,
+                // line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
+                // line_nums_frame_highlighted_fg: crossterm::style::Color::White,
+                
+                // text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                // text_frame_fg: crossterm::style::Color::White,
+                // text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
+                // text_frame_highlighted_fg: crossterm::style::Color::White,
+                // text_frame_selection_bg: crossterm::style::Color::White,
+                // text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+
+                // status_frame_bg: crossterm::style::Color::White,
+                // status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                
                 line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                line_nums_frame_fg: crossterm::style::Color::DarkGrey,
+                line_nums_frame_fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
                 line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
-                line_nums_frame_highlighted_fg: crossterm::style::Color::White,
+                line_nums_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 
                 text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                text_frame_fg: crossterm::style::Color::White,
+                text_frame_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
-                text_frame_highlighted_fg: crossterm::style::Color::White,
-                text_frame_selection_bg: crossterm::style::Color::White,
+                text_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
+                text_frame_selection_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
 
-                status_frame_bg: crossterm::style::Color::White,
+                status_frame_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                
-                // line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
-                // line_nums_frame_fg: crossterm::style::Color::Rgb{r: 0x77, g: 0x77, b: 0x77},
-                // line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x22, g: 0x22, b: 0x22},
-                // line_nums_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                
-                // text_frame_bg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
-                // text_frame_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                // text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x22, g: 0x22, b: 0x22},
-                // text_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                // text_frame_selection_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                // text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
 
-                // status_frame_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                // status_frame_fg: crossterm::style::Color::Rgb{r: 0x00, g: 0x00, b: 0x00},
+                error_red: crossterm::style::Color::Rgb{r: 0xff, g: 0x58, b: 0x58},
             },
             highlighting: Highlighting{
                 start_row: 0,
                 end_row: 0,
             },
             rendering: Rendering{
-                buffer: vec![]
+                is_rendering: false,
+                buffer: vec![],
             },
             keybindings: std::collections::HashMap::new(),
         };

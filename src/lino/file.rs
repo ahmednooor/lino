@@ -49,6 +49,7 @@ impl Lino {
 
         if path.is_dir() {
             self.file.save_error = format!("[ERROR] Couldn't save at \"{}\": {}", display, "Is a directory.");
+            self.set_task_feedback_error(self.file.save_error.clone());
             return;
         }
 
@@ -56,6 +57,7 @@ impl Lino {
         
         if file.is_err() {
             self.file.save_error = format!("[ERROR] Couldn't create \"{}\": {}", display, file.unwrap_err());
+            self.set_task_feedback_error(self.file.save_error.clone());
             return;
         }
 
@@ -65,6 +67,7 @@ impl Lino {
         match file.write_all(output_string.as_bytes()) {
             Err(why) => {
                 self.file.save_error = format!("[ERROR] Couldn't write to \"{}\": {}", display, why);
+                self.set_task_feedback_error(self.file.save_error.clone());
                 return;
             },
             Ok(_) => (),
@@ -74,6 +77,7 @@ impl Lino {
         self.file.is_saved = true;
         self.file.should_save_as = false;
         self.file.save_error = "".to_string();
+        self.set_task_feedback_normal("File Saved.".to_string());
     }
 
     pub(crate) fn set_file_unsaved_if_applicable(&mut self) {

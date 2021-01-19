@@ -6,7 +6,7 @@ use super::*;
 
 impl Lino {
     pub(crate) fn render(&mut self, syntect_config: &mut SyntectConfig) {
-        self.is_rendering = true;
+        self.rendering.is_rendering = true;
         self.update_terminal_size();
         self.update_status_frame();
         self.update_line_nums_frame();
@@ -32,7 +32,7 @@ impl Lino {
         stdout().flush()
             .unwrap_or_else(|_| self.panic_gracefully(&Error::err8()));
         
-        self.is_rendering = false;
+        self.rendering.is_rendering = false;
     }
 
     pub(crate) fn update_render_buffer(&mut self) {
@@ -100,7 +100,8 @@ impl Lino {
                         }
                         match &sorted_selection_points {
                             Some(selection) => {
-                                if self.is_cursor_inside_selection(&selection, &Cursor{row: row, col: col}) {
+                                if self.is_cursor_inside_selection(&selection, &Cursor{row: row, col: col})
+                                && col == self.lines[row].len() && row < self.lines.len() - 1 {
                                     background = self.theming.text_frame_selection_bg;
                                     foreground = self.theming.text_frame_selection_fg;
                                 }
@@ -157,9 +158,46 @@ impl Lino {
         let background = self.theming.status_frame_bg;
         let foreground = self.theming.status_frame_fg;
 
-        for i in self.term_height-self.status_frame.height..self.term_height {
+        for i in self.term_height-self.status_frame.height..self.term_height-1 {
             for j in 0..self.status_frame.width {
                 let character = status_string.chars().nth(j);
+                if character.is_none() {
+                    self.rendering.buffer[i][j] = Character{
+                        background: background,
+                        foreground: foreground,
+                        character: ' ',
+                        width: 1,
+                    };
+                    continue;
+                }
+                let character = character.unwrap();
+                self.rendering.buffer[i][j] = Character{
+                    background: background,
+                    foreground: foreground,
+                    character: character,
+                    width: 1,
+                };
+            }
+        }
+
+        let task_feedback = if self.task_feedback.text == "" {
+            self.task_feedback.default_text.clone()
+        } else {
+            self.task_feedback.text.clone()
+        };
+
+        let task_feedback = if task_feedback.len() > self.term_width {
+            task_feedback[..self.term_width].to_string()
+        } else {
+            task_feedback
+        };
+
+        let background = self.task_feedback.bg;
+        let foreground = self.task_feedback.fg;
+
+        for i in self.term_height-self.status_frame.height+1..self.term_height {
+            for j in 0..self.status_frame.width {
+                let character = task_feedback.chars().nth(j);
                 if character.is_none() {
                     self.rendering.buffer[i][j] = Character{
                         background: background,
@@ -259,7 +297,7 @@ impl Lino {
             crossterm::style::Print("Would you like to save changes before you quit?"),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("[Y] yes, [N] no, [Esc] go back"),
+            crossterm::style::Print("[Y] Yes, [N] No, [Esc] Go Back"),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("> "),
@@ -284,13 +322,19 @@ impl Lino {
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("Enter file name. "),
-            crossterm::style::Print(&self.file.save_error),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("[Enter] save, [Esc] go back"),
+            crossterm::style::Print("[Enter] Save, [Esc] Go Back"),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::Print("> ".to_string() + self.file.path.as_str()),
+            crossterm::cursor::SavePosition,
+            crossterm::style::Print("\n\n"),
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::style::SetForegroundColor(self.theming.error_red),
+            crossterm::style::Print(&self.file.save_error),
+            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
+            crossterm::cursor::RestorePosition,
         ).unwrap_or_else(|_| self.panic_gracefully(&Error::err22()));
 
         stdout().flush()

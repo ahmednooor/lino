@@ -44,7 +44,7 @@
 | <kbd>Ctrl</kbd> + <kbd>Z</kbd> | `Undo` |
 | <kbd>Ctrl</kbd> + <kbd>Y</kbd> | `Redo` |
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
-| <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Quit` |
+| <kbd>Ctrl</kbd> + <kbd>W</kbd> | `Close` |
 
 > Some key-bindings don't work on Linux.
 

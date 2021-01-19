@@ -9,6 +9,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_up();
         self.clear_selection(&previous_cursor);
+        self.restore_last_cursor_col_if_applicable();
     }
     pub(crate) fn command_move_down(&mut self) {
         self.clear_task_feedback();
@@ -18,6 +19,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_down();
         self.clear_selection(&previous_cursor);
+        self.restore_last_cursor_col_if_applicable();
     }
     pub(crate) fn command_move_left(&mut self) {
         self.clear_task_feedback();
@@ -27,6 +29,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_left();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_move_right(&mut self) {
         self.clear_task_feedback();
@@ -36,6 +39,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_right();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_move_left_by_word(&mut self) {
         self.clear_task_feedback();
@@ -45,6 +49,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_left_by_word();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_move_right_by_word(&mut self) {
         self.clear_task_feedback();
@@ -54,6 +59,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_right_by_word();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_move_up_by_page(&mut self) {
         self.clear_task_feedback();
@@ -63,6 +69,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_up_by_page();
         self.clear_selection(&previous_cursor);
+        self.restore_last_cursor_col_if_applicable();
     }
     pub(crate) fn command_move_down_by_page(&mut self) {
         self.clear_task_feedback();
@@ -72,6 +79,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_down_by_page();
         self.clear_selection(&previous_cursor);
+        self.restore_last_cursor_col_if_applicable();
     }
     pub(crate) fn command_move_to_line_start(&mut self) {
         self.clear_task_feedback();
@@ -81,6 +89,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_to_line_start();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_move_to_line_end(&mut self) {
         self.clear_task_feedback();
@@ -90,6 +99,7 @@ impl Lino {
         let previous_cursor = self.cursor.clone();
         self.move_cursor_to_line_end();
         self.clear_selection(&previous_cursor);
+        self.update_last_cursor_col();
     }
     
     
@@ -98,6 +108,7 @@ impl Lino {
         self.clear_task_feedback();
         let previous_cursor = self.cursor.clone();
         self.move_cursor_up();
+        self.restore_last_cursor_col_if_applicable();
         self.make_selection(&previous_cursor);
         if self.selection.is_selected {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
@@ -108,6 +119,7 @@ impl Lino {
         self.clear_task_feedback();
         let previous_cursor = self.cursor.clone();
         self.move_cursor_down();
+        self.restore_last_cursor_col_if_applicable();
         self.make_selection(&previous_cursor);
         if self.selection.is_selected {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
@@ -123,6 +135,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_right(&mut self) {
         self.clear_task_feedback();
@@ -133,6 +146,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_left_by_word(&mut self) {
         self.clear_task_feedback();
@@ -143,6 +157,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_right_by_word(&mut self) {
         self.clear_task_feedback();
@@ -153,11 +168,13 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_up_by_page(&mut self) {
         self.clear_task_feedback();
         let previous_cursor = self.cursor.clone();
         self.move_cursor_up_by_page();
+        self.restore_last_cursor_col_if_applicable();
         self.make_selection(&previous_cursor);
         if self.selection.is_selected {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
@@ -168,6 +185,7 @@ impl Lino {
         self.clear_task_feedback();
         let previous_cursor = self.cursor.clone();
         self.move_cursor_down_by_page();
+        self.restore_last_cursor_col_if_applicable();
         self.make_selection(&previous_cursor);
         if self.selection.is_selected {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
@@ -183,6 +201,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_to_line_end(&mut self) {
         self.clear_task_feedback();
@@ -193,6 +212,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_select_all(&mut self) {
         self.clear_task_feedback();
@@ -202,6 +222,7 @@ impl Lino {
             let selected_count = self.get_selected_count().to_string() + " characters selected.";
             self.set_task_feedback_normal(selected_count);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_clear_selection(&mut self) {
         self.clear_task_feedback();
@@ -209,6 +230,7 @@ impl Lino {
             self.set_task_feedback_normal("Selection cancelled.".to_string());
         }
         self.clear_selection(&self.cursor.clone());
+        self.update_last_cursor_col();
     }
     
 
@@ -229,6 +251,7 @@ impl Lino {
         if should_show_feedback && task_feedback_text != "" {
             self.set_task_feedback_normal(task_feedback_text);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_delete_right_character(&mut self) {
         self.clear_task_feedback();
@@ -245,6 +268,7 @@ impl Lino {
         if should_show_feedback && task_feedback_text != "" {
             self.set_task_feedback_normal(task_feedback_text);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_delete_left_word(&mut self) {
         self.clear_task_feedback();
@@ -261,6 +285,7 @@ impl Lino {
         if should_show_feedback && task_feedback_text != "" {
             self.set_task_feedback_normal(task_feedback_text);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_delete_right_word(&mut self) {
         self.clear_task_feedback();
@@ -277,6 +302,7 @@ impl Lino {
         if should_show_feedback && task_feedback_text != "" {
             self.set_task_feedback_normal(task_feedback_text);
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_delete_current_line(&mut self) {
         self.clear_task_feedback();
@@ -293,6 +319,7 @@ impl Lino {
         if should_show_feedback && task_feedback_text != "" {
             self.set_task_feedback_normal(task_feedback_text);
         }
+        self.restore_last_cursor_col_if_applicable();
     }
 
 
@@ -340,6 +367,7 @@ impl Lino {
         self.set_task_feedback_normal("Increased indent.".to_string());
         self.save_to_history();
         self.increase_indentation();
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_decrease_indentation(&mut self) {
         self.clear_task_feedback();
@@ -348,6 +376,7 @@ impl Lino {
         }
         self.save_to_history();
         self.decrease_indentation();
+        self.update_last_cursor_col();
     }
 
 
@@ -363,6 +392,7 @@ impl Lino {
         }
         self.input_character(self.input_char_buf.unwrap());
         self.input_char_buf = None;
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_enter_tab(&mut self) {
         self.clear_task_feedback();
@@ -371,6 +401,7 @@ impl Lino {
             self.delete_selected();
         }
         self.input_tab();
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_enter_new_line(&mut self) {
         self.clear_task_feedback();
@@ -379,6 +410,7 @@ impl Lino {
             self.delete_selected();
         }
         self.enter_newline();
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_enter_auto_indented_new_line(&mut self) {
         self.clear_task_feedback();
@@ -388,6 +420,7 @@ impl Lino {
         }
         self.enter_newline();
         self.auto_indent_if_applicable();
+        self.update_last_cursor_col();
     }
 
 
@@ -400,6 +433,7 @@ impl Lino {
             self.delete_selected();
             self.set_task_feedback_normal("Cut.".to_string());
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_copy(&mut self) {
         self.clear_task_feedback();
@@ -407,6 +441,7 @@ impl Lino {
         if self.selection.is_selected {
             self.set_task_feedback_normal("Copied.".to_string());
         }
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_paste(&mut self) {
         self.clear_task_feedback();
@@ -416,6 +451,7 @@ impl Lino {
         }
         self.perform_paste();
         self.set_task_feedback_normal("Pasted.".to_string());
+        self.update_last_cursor_col();
     }
     
     
@@ -426,6 +462,7 @@ impl Lino {
             self.set_task_feedback_normal("Undid.".to_string());
         }
         self.perform_undo();
+        self.update_last_cursor_col();
     }
     pub(crate) fn command_redo(&mut self) {
         self.clear_task_feedback();
@@ -433,6 +470,7 @@ impl Lino {
             self.set_task_feedback_normal("Redid.".to_string());
         }
         self.perform_redo();
+        self.update_last_cursor_col();
     }
 
 

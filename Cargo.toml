@@ -1,6 +1,6 @@
 [package]
 name = "lino"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["ahmednooor <ahmednooorr@gmail.com>"]
 description = "A command line text editor with notepad like key bindings."
 keywords = ["notepad-like", "terminal", "command-line", "text", "editor"]

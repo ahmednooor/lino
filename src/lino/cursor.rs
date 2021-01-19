@@ -9,12 +9,10 @@ impl Lino {
     
     pub(crate) fn move_cursor_to_line_start(&mut self) {
         self.cursor.col = 0;
-        self.last_cursor_col = self.cursor.col;
     }
 
     pub(crate) fn move_cursor_to_line_end(&mut self) {
         self.cursor.col = self.lines[self.cursor.row].len();
-        self.last_cursor_col = self.cursor.col;
     }
 
     pub(crate) fn move_cursor_up_by_page(&mut self) {
@@ -27,8 +25,6 @@ impl Lino {
         if self.cursor.col > self.lines[self.cursor.row].len() {
             self.cursor.col = self.lines[self.cursor.row].len();
         }
-
-        self.restore_last_cursor_col_if_applicable();
     }
 
     pub(crate) fn move_cursor_down_by_page(&mut self) {
@@ -41,14 +37,11 @@ impl Lino {
         if self.cursor.col > self.lines[self.cursor.row].len() {
             self.cursor.col = self.lines[self.cursor.row].len();
         }
-
-        self.restore_last_cursor_col_if_applicable();
     }
 
     pub(crate) fn reset_cursor(&mut self) {
         self.cursor.row = 0;
         self.cursor.col = 0;
-        // self.last_cursor_col = 0;
     }
 
     pub(crate) fn move_cursor_left(&mut self) {
@@ -64,13 +57,11 @@ impl Lino {
         if !is_first_line && is_cursor_at_line_start {
             self.cursor.row -= 1;
             self.cursor.col = self.lines[self.cursor.row].len();
-            self.last_cursor_col = self.cursor.col;
             return;
         }
 
         if is_cursor_mid_line_or_end {
             self.cursor.col -= 1;
-            self.last_cursor_col = self.cursor.col;
             return;
         }
     }
@@ -87,13 +78,11 @@ impl Lino {
         if !is_last_line && is_cursor_at_line_end {
             self.cursor.row += 1;
             self.cursor.col = 0;
-            self.last_cursor_col = self.cursor.col;
             return;
         }
         
         if is_cursor_mid_line_or_start {
             self.cursor.col += 1;
-            self.last_cursor_col = self.cursor.col;
             return;
         }
     }
@@ -164,8 +153,6 @@ impl Lino {
                 self.cursor.col = self.lines[self.cursor.row].len();
             }
         }
-        
-        self.restore_last_cursor_col_if_applicable();
     }
 
     pub(crate) fn move_cursor_down(&mut self) {
@@ -180,10 +167,12 @@ impl Lino {
                 self.cursor.col = self.lines[self.cursor.row].len();
             }
         }
-        
-        self.restore_last_cursor_col_if_applicable();
     }
     
+    pub(crate) fn update_last_cursor_col(&mut self) {
+        self.last_cursor_col = self.cursor.col;
+    }
+
     pub(crate) fn restore_last_cursor_col_if_applicable(&mut self) {
         if self.last_cursor_col <= self.lines[self.cursor.row].len() {
             self.cursor.col = self.last_cursor_col;

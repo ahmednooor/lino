@@ -55,8 +55,6 @@ impl Lino {
             self.selection.end_point = self.cursor.clone();
             self.move_cursor_right();
         }
-        
-        self.last_cursor_col = self.cursor.col;
     }
 
     pub(crate) fn clear_selection(&mut self, previous_cursor: &Cursor) {

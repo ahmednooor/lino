@@ -478,9 +478,24 @@ impl Lino {
     pub(crate) fn command_save(&mut self) {
         self.clear_task_feedback();
         self.perform_save();
+        // if self.file.save_error != "" {
+        //     self.set_task_feedback_error(self.file.save_error.clone());
+        // } else if self.file.save_error == "" && self.file.is_saved {
+        //     self.set_task_feedback_normal("File Saved.".to_string());
+        // }
+    }
+    pub(crate) fn command_save_as(&mut self) {
+        self.clear_task_feedback();
+        self.file.should_save_as = true;
+        self.perform_save();
+        // if self.file.save_error != "" {
+        //     self.set_task_feedback_error(self.file.save_error.clone());
+        // } else if self.file.save_error == "" && self.file.is_saved {
+        //     self.set_task_feedback_normal("File Saved.".to_string());
+        // }
     }
     pub(crate) fn command_quit(&mut self) {
-        self.clear_task_feedback();
+        self.set_task_feedback_normal("Closing.".to_string());
         self.exit_from_editor();
     }
 }

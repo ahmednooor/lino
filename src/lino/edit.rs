@@ -70,7 +70,7 @@ impl Lino {
         }
 
         if self.lines[self.cursor.row - 1].len() > 0 
-        && ['(', '[', '{', '<'].contains(&self.lines[self.cursor.row - 1].last().unwrap().character) {
+        && ['(', '[', '{', '<', ':'].contains(&self.lines[self.cursor.row - 1].last().unwrap().character) {
             for _ in 0..4 {
                 self.input_character(' ');
             }

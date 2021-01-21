@@ -12,6 +12,7 @@ impl Lino {
     pub fn from_file(file_path: &String) -> Lino {
         let mut lino = Lino::new();
         lino.file.path = Path::new(file_path.as_str()).to_str().unwrap().to_string();
+        lino.file.cursor_col_offset = lino.file.path.len();
         lino.read_from_file();
         lino.set_file_unsaved_if_applicable();
         lino.clear_history();
@@ -75,6 +76,7 @@ impl Lino {
                 is_saved: true,
                 should_save_as: true,
                 save_error: "".to_string(),
+                cursor_col_offset: 0,
             },
             clipboard: "".to_string(),
             settings: Settings{

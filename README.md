@@ -1,9 +1,9 @@
 
 <div align="center">
     <br />
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="148" height="148" class="center" /></span>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="156" height="156" class="center" /></span>
     <h2 align="center">A command line text editor with notepad like key bindings. [WIP]</h2>
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot-2.png" alt="screenshot" class="center" /></span>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot-4.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
 
@@ -36,14 +36,15 @@
 | <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal)` |
 | <kbd>Alt</kbd> + <kbd>]</kbd> / <kbd>→</kbd> | `Increase indentation` |
 | <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> | `Decrease indentation` |
-| <kbd>Enter</kbd> | `Enter new line` |
-| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter auto-indented new line` |
+| <kbd>Enter</kbd> | `Enter auto-indented new line` |
+| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | `Paste` |
 | <kbd>Ctrl</kbd> + <kbd>Z</kbd> | `Undo` |
 | <kbd>Ctrl</kbd> + <kbd>Y</kbd> | `Redo` |
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
+| <kbd>Alt</kbd> + <kbd>S</kbd> | `Save as` |
 | <kbd>Ctrl</kbd> + <kbd>W</kbd> | `Close` |
 
 > Some key-bindings don't work on Linux.

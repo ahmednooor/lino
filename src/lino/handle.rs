@@ -60,6 +60,16 @@ impl Lino {
                 && (c == 's' || c == 'S') {
                     key_binding = format!("{}+{}", keys::CTRL, 's');
                 }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::ALT
+                && (c == 's' || c == 'S') {
+                    key_binding = format!("{}+{}", keys::ALT, 's');
+                }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                | crossterm::event::KeyModifiers::SHIFT && (c == 's' || c == 'S') {
+                    key_binding = format!("{}+{}+{}", keys::CTRL, keys::SHIFT, 's');
+                }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'a' || c == 'A') {
@@ -319,12 +329,7 @@ impl Lino {
                     match key_event.code {
                         crossterm::event::KeyCode::Char(c) => {
                             if c == 'y' || c == 'Y' {
-                                if self.file.path == "" {
-                                    self.file.should_save_as = true;
-                                } else {
-                                    self.file.should_save_as = false;
-                                    self.save_to_file();
-                                }
+                                self.file.should_save_as = true;
                                 break;
                             }
                             if c == 'n' || c == 'N' {
@@ -346,6 +351,9 @@ impl Lino {
     }
     
     pub(crate) fn handle_save_as_frame_input(&mut self) {
+        let file_path_backup = self.file.path.clone();
+        self.file.cursor_col_offset = self.file.path.len();
+
         loop {
             let event = crossterm::event::read();
 
@@ -357,10 +365,35 @@ impl Lino {
                 crossterm::event::Event::Key(key_event) => {
                     match key_event.code {
                         crossterm::event::KeyCode::Char(c) => {
-                            self.file.path.push(c);
+                            self.file.path.insert(self.file.cursor_col_offset, c);
+                            self.file.cursor_col_offset += 1;
                         },
                         crossterm::event::KeyCode::Backspace => {
-                            self.file.path.pop();
+                            if self.file.path.len() > 0 && self.file.cursor_col_offset > 0 {
+                                self.file.cursor_col_offset -= 1;
+                                self.file.path.remove(self.file.cursor_col_offset);
+                            }
+                        },
+                        crossterm::event::KeyCode::Delete => {
+                            if self.file.path.len() > 0 && self.file.cursor_col_offset < self.file.path.len() {
+                                self.file.path.remove(self.file.cursor_col_offset);
+                            }
+                        },
+                        crossterm::event::KeyCode::Left => {
+                            if self.file.cursor_col_offset > 0 {
+                                self.file.cursor_col_offset -= 1;
+                            }
+                        },
+                        crossterm::event::KeyCode::Right => {
+                            if self.file.cursor_col_offset < self.file.path.len() {
+                                self.file.cursor_col_offset += 1;
+                            }
+                        },
+                        crossterm::event::KeyCode::Home => {
+                            self.file.cursor_col_offset = 0;
+                        },
+                        crossterm::event::KeyCode::End => {
+                            self.file.cursor_col_offset = self.file.path.len();
                         },
                         crossterm::event::KeyCode::Enter => {
                             if self.file.path != "" {
@@ -371,7 +404,8 @@ impl Lino {
                             }
                         },
                         crossterm::event::KeyCode::Esc => {
-                            self.file.path = "".to_string();
+                            self.file.path = file_path_backup;
+                            self.file.cursor_col_offset = self.file.path.len();
                             self.file.save_error = "".to_string();
                             self.should_exit = false;
                             break;

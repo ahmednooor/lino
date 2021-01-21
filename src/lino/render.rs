@@ -327,14 +327,16 @@ impl Lino {
             crossterm::style::Print("[Enter] Save, [Esc] Go Back"),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("> ".to_string() + self.file.path.as_str()),
+            crossterm::style::Print("> "),
             crossterm::cursor::SavePosition,
+            crossterm::style::Print(&self.file.path),
             crossterm::style::Print("\n\n"),
             crossterm::cursor::MoveToColumn(0),
             crossterm::style::SetForegroundColor(self.theming.error_red),
             crossterm::style::Print(&self.file.save_error),
             crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
             crossterm::cursor::RestorePosition,
+            crossterm::cursor::MoveRight(self.file.cursor_col_offset as u16),
         ).unwrap_or_else(|_| self.panic_gracefully(&Error::err22()));
 
         stdout().flush()

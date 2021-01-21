@@ -72,6 +72,7 @@ pub(crate) struct FileData {
     is_saved: bool,
     should_save_as: bool,
     save_error: String,
+    cursor_col_offset: usize,
 }
 
 #[derive(Clone)]

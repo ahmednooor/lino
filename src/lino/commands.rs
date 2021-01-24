@@ -477,25 +477,28 @@ impl Lino {
 
     pub(crate) fn command_save(&mut self) {
         self.clear_task_feedback();
+        let was_file_not_saved_before = !self.file.is_saved;
         self.perform_save();
-        // if self.file.save_error != "" {
-        //     self.set_task_feedback_error(self.file.save_error.clone());
-        // } else if self.file.save_error == "" && self.file.is_saved {
-        //     self.set_task_feedback_normal("File Saved.".to_string());
-        // }
+        if self.file.save_error != "" {
+            self.set_task_feedback_error(self.file.save_error.clone());
+        } else if self.file.save_error == "" && self.file.is_saved && was_file_not_saved_before {
+            self.set_task_feedback_normal("File Saved.".to_string());
+        }
     }
     pub(crate) fn command_save_as(&mut self) {
         self.clear_task_feedback();
-        self.file.should_save_as = true;
-        self.perform_save();
-        // if self.file.save_error != "" {
-        //     self.set_task_feedback_error(self.file.save_error.clone());
-        // } else if self.file.save_error == "" && self.file.is_saved {
-        //     self.set_task_feedback_normal("File Saved.".to_string());
-        // }
+        let was_file_not_saved_before = !self.file.is_saved;
+        self.perform_save_as();
+        if self.file.save_error != "" {
+            self.set_task_feedback_error(self.file.save_error.clone());
+        } else if self.file.save_error == "" && self.file.is_saved && was_file_not_saved_before {
+            self.set_task_feedback_normal("File Saved.".to_string());
+        }
     }
     pub(crate) fn command_quit(&mut self) {
-        self.set_task_feedback_normal("Closing.".to_string());
         self.exit_from_editor();
+        if self.file.save_error != "" {
+            self.set_task_feedback_error(self.file.save_error.clone());
+        }
     }
 }

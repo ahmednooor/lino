@@ -60,13 +60,13 @@
 - [x] show command/task feedback or error below status bar
 - [x] Ctrl+w to close as this is the dominant shortcut to close in GUI apps
 - [x] Alt+s to save as (Ctrl+Shift+s isn't detected for now so had to pick Alt+s for save as)
-- [ ] help screen
-- [ ] word wrap
 - [ ] find, replace
+- [ ] word wrap
+- [ ] help screen
+
+#### Maybe
+- [ ] tests
+- [ ] settings
+- [ ] logging
 - [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve unicode and tab char rendering (width-wise)
-- [ ] settings
-- [ ] logging*
-- [ ] tests*
-
-\* Maybe

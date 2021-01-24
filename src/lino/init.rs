@@ -81,6 +81,8 @@ impl Lino {
             clipboard: "".to_string(),
             settings: Settings{
                 tab_width: 4,
+                show_line_nums_frame: true,
+                show_status_frame: true,
             },
             error: Error{
                 is_occured: false,
@@ -144,7 +146,7 @@ impl Lino {
         lino.update_status_frame();
         lino.update_line_nums_frame();
         lino.update_text_frame();
-        lino.init_render_buffer();
+        lino.init_new_render_buffer();
         lino.bind_keys_to_commands();
         lino.clear_history();
 
@@ -172,6 +174,7 @@ impl Lino {
     pub fn close(&mut self) {
         crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap_or(());
         crossterm::terminal::disable_raw_mode().unwrap_or(());
+        println!();
     }
 
     pub(crate) fn panic_gracefully(&mut self, error: &Error) {

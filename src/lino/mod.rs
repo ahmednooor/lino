@@ -78,6 +78,8 @@ pub(crate) struct FileData {
 #[derive(Clone)]
 pub(crate) struct Settings {
     tab_width: usize,
+    show_line_nums_frame: bool,
+    show_status_frame: bool,
 }
 
 #[derive(Clone)]

@@ -339,11 +339,9 @@ impl Lino {
             return;
         }
 
-        self.render_unsaved_changes_frame();
         self.handle_unsaved_changes_frame_input();
 
         if self.file.should_save_as {
-            self.render_save_as_frame();
             self.handle_save_as_frame_input();
         }
     }

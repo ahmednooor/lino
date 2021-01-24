@@ -1,6 +1,6 @@
 use super:: Error;
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 impl Error {
     pub(crate) fn err1() -> Error { Error{
         is_occured: true,
@@ -42,26 +42,26 @@ impl Error {
         message: "Could not write to stdout.".to_string(),
         code: 8,
     } }
-    pub(crate) fn err9() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 9,
-    } }
-    pub(crate) fn err10() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 10,
-    } }
-    pub(crate) fn err11() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 11,
-    } }
-    pub(crate) fn err12() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 12,
-    } }
+    // pub(crate) fn err9() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 9,
+    // } }
+    // pub(crate) fn err10() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 10,
+    // } }
+    // pub(crate) fn err11() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 11,
+    // } }
+    // pub(crate) fn err12() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 12,
+    // } }
     pub(crate) fn err13() -> Error { Error{
         is_occured: true,
         message: "Could not render.".to_string(),
@@ -82,21 +82,21 @@ impl Error {
         message: "Could not render.".to_string(),
         code: 16,
     } }
-    pub(crate) fn err17() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 17,
-    } }
-    pub(crate) fn err18() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 18,
-    } }
-    pub(crate) fn err19() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 19,
-    } }
+    // pub(crate) fn err17() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 17,
+    // } }
+    // pub(crate) fn err18() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 18,
+    // } }
+    // pub(crate) fn err19() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 19,
+    // } }
     pub(crate) fn err20() -> Error { Error{
         is_occured: true,
         message: "Could not render.".to_string(),
@@ -137,14 +137,14 @@ impl Error {
         message: "Could not render.".to_string(),
         code: 27,
     } }
-    pub(crate) fn err28() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 28,
-    } }
-    pub(crate) fn err29() -> Error { Error{
-        is_occured: true,
-        message: "Could not render.".to_string(),
-        code: 29,
-    } }
+    // pub(crate) fn err28() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 28,
+    // } }
+    // pub(crate) fn err29() -> Error { Error{
+    //     is_occured: true,
+    //     message: "Could not render.".to_string(),
+    //     code: 29,
+    // } }
 }

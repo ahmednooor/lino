@@ -317,6 +317,8 @@ impl Lino {
     }
 
     pub(crate) fn handle_unsaved_changes_frame_input(&mut self) {
+        self.render_unsaved_changes_frame();
+        
         loop {
             let event = crossterm::event::read();
 
@@ -355,6 +357,8 @@ impl Lino {
         self.file.cursor_col_offset = self.file.path.len();
 
         loop {
+            self.render_save_as_frame();
+
             let event = crossterm::event::read();
 
             if event.is_err() {
@@ -406,7 +410,6 @@ impl Lino {
                         crossterm::event::KeyCode::Esc => {
                             self.file.path = file_path_backup;
                             self.file.cursor_col_offset = self.file.path.len();
-                            self.file.save_error = "".to_string();
                             self.should_exit = false;
                             break;
                         },
@@ -415,8 +418,6 @@ impl Lino {
                 },
                 _ => ()
             };
-
-            self.render_save_as_frame();
         };
     }
 

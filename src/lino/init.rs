@@ -12,7 +12,6 @@ impl Lino {
     pub fn from_file(file_path: &String) -> Lino {
         let mut lino = Lino::new();
         lino.file.path = Path::new(file_path.as_str()).to_str().unwrap().to_string();
-        lino.file.cursor_col_offset = lino.file.path.len();
         lino.read_from_file();
         lino.set_file_unsaved_if_applicable();
         lino.clear_history();
@@ -63,7 +62,7 @@ impl Lino {
                 height: 0,
             },
             task_feedback: TaskFeedback{
-                bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
                 fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
                 text: "".to_string(),
                 default_text: "[Ctrl+W] Close".to_string(),
@@ -76,7 +75,6 @@ impl Lino {
                 is_saved: true,
                 should_save_as: true,
                 save_error: "".to_string(),
-                cursor_col_offset: 0,
             },
             clipboard: "".to_string(),
             settings: Settings{
@@ -90,35 +88,22 @@ impl Lino {
                 code: 0,
             },
             theming: Theming {
-                // line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                // line_nums_frame_fg: crossterm::style::Color::DarkGrey,
-                // line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
-                // line_nums_frame_highlighted_fg: crossterm::style::Color::White,
-                
-                // text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                // text_frame_fg: crossterm::style::Color::White,
-                // text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
-                // text_frame_highlighted_fg: crossterm::style::Color::White,
-                // text_frame_selection_bg: crossterm::style::Color::White,
-                // text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-
-                // status_frame_bg: crossterm::style::Color::White,
-                // status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
-                
-                line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                line_nums_frame_bg: crossterm::style::Color::Rgb{r: 0x28, g: 0x30, b: 0x42},
                 line_nums_frame_fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
-                line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
+                line_nums_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x38, g: 0x42, b: 0x52},
                 line_nums_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 
-                text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                text_frame_bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
                 text_frame_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x33, g: 0x35, b: 0x47},
+                text_frame_highlighted_bg: crossterm::style::Color::Rgb{r: 0x38, g: 0x42, b: 0x52},
                 text_frame_highlighted_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
                 text_frame_selection_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                text_frame_selection_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
+                text_frame_found_text_bg: crossterm::style::Color::Rgb{r: 0xa4, g: 0x54, b: 0x0e},
+                text_frame_found_text_fg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
 
                 status_frame_bg: crossterm::style::Color::Rgb{r: 0xff, g: 0xff, b: 0xff},
-                status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x25, b: 0x37},
+                status_frame_fg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
 
                 error_red: crossterm::style::Color::Rgb{r: 0xff, g: 0x58, b: 0x58},
             },
@@ -131,6 +116,13 @@ impl Lino {
                 buffer: vec![],
             },
             keybindings: std::collections::HashMap::new(),
+            find: Find{
+                is_finding: false,
+                find_string: "".to_string(),
+                find_error: "".to_string(),
+                found_instances: vec![],
+                selected_instance_index: 0,
+            }
         };
 
         // lino.load_theming_defaults_from_syntect_theme();
@@ -147,7 +139,8 @@ impl Lino {
         lino.update_line_nums_frame();
         lino.update_text_frame();
         lino.init_new_render_buffer();
-        lino.bind_keys_to_commands();
+        lino.clear_all_keybindings();
+        lino.add_default_keybindings();
         lino.clear_history();
 
         lino
@@ -169,6 +162,12 @@ impl Lino {
         self.clear_history();
 
         self.initiate_input_event_loop(&mut syntect_config);
+    }
+
+    pub fn run_as_read_only(&mut self) {
+        self.clear_all_keybindings();
+        self.add_read_only_mode_keybindings();
+        self.run();
     }
 
     pub fn close(&mut self) {

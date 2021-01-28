@@ -1,6 +1,6 @@
 use std::io::{stdout, Write};
 use crossterm;
-extern crate copypasta;
+// extern crate copypasta;
 
 use super::*;
 
@@ -12,19 +12,19 @@ impl Lino {
         self.update_line_nums_frame();
         self.update_text_frame();
 
-        crossterm::queue!(
-            stdout(),
-            // crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
-            // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
-            // crossterm::style::Print(' '),
-            crossterm::cursor::Hide,
-            crossterm::cursor::MoveTo(0, 0),
-        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err7()));
+        // crossterm::queue!(
+        //     stdout(),
+        //     // crossterm::style::SetBackgroundColor(crossterm::style::Color::White),
+        //     // crossterm::style::SetForegroundColor(crossterm::style::Color::White),
+        //     // crossterm::style::Print(' '),
+        //     crossterm::cursor::Hide,
+        //     crossterm::cursor::MoveTo(0, 0),
+        // ).unwrap_or_else(|_| self.panic_gracefully(&Error::err7()));
 
         // self.apply_syntax_highlighting_on_current_line(syntect_config);
         // self.apply_syntax_highlighting_on_changed_lines(syntect_config, previous_lines);
         self.apply_syntax_highlighting_on_lines_range(syntect_config);
-
+        
         self.populate_line_nums_frame_in_render_buffer();
         self.populate_text_frame_in_render_buffer();
         self.populate_status_frame_in_render_buffer();
@@ -47,6 +47,10 @@ impl Lino {
 
             if row >= self.lines.len() {
                 for j in 0..self.line_nums_frame.width {
+                    if j == self.line_nums_frame.width - 1 && self.line_nums_frame.boundary_r != "" {
+                        background = self.theming.text_frame_bg;
+                    }
+
                     self.rendering.buffer[i][j] = Character{
                         background: background,
                         foreground: foreground,
@@ -58,13 +62,15 @@ impl Lino {
             }
 
             let num_string_with_boundary = if self.line_nums_frame.width != 0 {
-                format!(" {:width$}", row + 1, width = line_num_width) 
+                format!(" {:width$} ", row + 1, width = line_num_width) 
                 + &self.line_nums_frame.boundary_r
             } else {
                 "".to_string()
             };
 
-            for j in 0..line_num_width+1 {
+            let num_string_with_boundary: Vec<char> = num_string_with_boundary.chars().collect();
+
+            for j in 0..line_num_width+2 {
                 if row == self.cursor.row {
                     background = self.theming.line_nums_frame_highlighted_bg;
                     foreground = self.theming.line_nums_frame_highlighted_fg;
@@ -72,17 +78,23 @@ impl Lino {
                 self.rendering.buffer[i][j] = Character{
                     background: background,
                     foreground: foreground,
-                    character: num_string_with_boundary.chars().nth(j).unwrap_or(' '),
+                    character: num_string_with_boundary.get(j).unwrap_or(&' ').clone(),
                     width: 1,
                 };
             }
             
-            for j in line_num_width+1..num_string_with_boundary.len() {
+            for j in line_num_width+2..num_string_with_boundary.len() {
+                background = self.theming.text_frame_bg;
                 foreground = self.theming.line_nums_frame_fg;
+
+                // if row == self.cursor.row {
+                //     background = self.theming.line_nums_frame_highlighted_bg;
+                // }
+
                 self.rendering.buffer[i][j] = Character{
                     background: background,
                     foreground: foreground,
-                    character: num_string_with_boundary.chars().nth(j).unwrap_or(' '),
+                    character: num_string_with_boundary.get(j).unwrap_or(&' ').clone(),
                     width: 1,
                 };
             }
@@ -123,6 +135,23 @@ impl Lino {
                     character = self.lines[row][col].character;
                 }
 
+                if self.find.is_finding {
+                    for instance in &self.find.found_instances {
+                        if row < instance.start.row || row > instance.end.row {
+                            continue;
+                        }
+                        let selection = Selection{
+                            is_selected: true,
+                            start_point: instance.start.clone(),
+                            end_point: instance.end.clone(),
+                        };
+                        if self.is_cursor_inside_selection(&selection, &Cursor{row: row, col: col}) {
+                            background = self.theming.text_frame_found_text_bg;
+                            foreground = self.theming.text_frame_found_text_fg;
+                        }
+                    }
+                }
+
                 match &sorted_selection_points {
                     Some(selection) => {
                         if self.is_cursor_inside_selection(&selection, &Cursor{row: row, col: col})
@@ -146,19 +175,7 @@ impl Lino {
     }
     
     pub(crate) fn populate_status_frame_in_render_buffer(&mut self) {
-        let file_name = 
-            if self.file.path != "" { String::from(&self.file.path) }
-            else { String::from("[NEW]") };
-        let status_string = 
-            file_name + if !self.file.is_saved { &"* - "} else { &" - "}
-            + &String::from("Ln:") + &(self.cursor.row + 1).to_string()
-            + &String::from(", Col:") + &(self.cursor.col + 1).to_string();
-        
-        let status_string = if status_string.len() > self.term_width {
-            status_string[status_string.len()-self.term_width..].to_string()
-        } else {
-            status_string
-        };
+        let status_string = self.make_status_bar_string();
 
         let background = self.theming.status_frame_bg;
         let foreground = self.theming.status_frame_fg;
@@ -188,17 +205,7 @@ impl Lino {
             }
         }
 
-        let task_feedback = if self.task_feedback.text == "" {
-            self.task_feedback.default_text.clone()
-        } else {
-            self.task_feedback.text.clone()
-        };
-
-        let task_feedback = if task_feedback.len() > self.term_width {
-            task_feedback[..self.term_width].to_string()
-        } else {
-            task_feedback
-        };
+        let task_feedback = self.get_task_feedback();
 
         let background = self.task_feedback.bg;
         let foreground = self.task_feedback.fg;
@@ -229,14 +236,74 @@ impl Lino {
         }
     }
 
-    
+    pub(crate) fn make_status_bar_string(&mut self) -> String {
+        if self.find.is_finding {
+            return self.make_find_mode_status_bar_string();
+        }
+        
+        let file_name = 
+            if self.file.path != "" { String::from(&self.file.path) }
+            else { String::from("[NEW]") };
+        let status_string = 
+            file_name + if !self.file.is_saved { &"* - "} else { &" - "}
+            + &String::from("Ln:") + &(self.cursor.row + 1).to_string()
+            + &String::from(", Col:") + &(self.cursor.col + 1).to_string();
+        
+        let status_string = if status_string.len() > self.term_width {
+            status_string[status_string.len()-self.term_width..].to_string()
+        } else {
+            status_string
+        };
+        
+        status_string
+    }
+
+    pub(crate) fn make_find_mode_status_bar_string(&mut self) -> String {
+        if !self.find.is_finding || self.find.found_instances.len() < 1 {
+            return "".to_string();
+        }
+
+        let status_string = 
+            format!("Finds: {}/{} - [Down] Next, [Up] Previous",
+            self.find.selected_instance_index + 1, self.find.found_instances.len());
+        
+        let status_string = if status_string.len() > self.term_width {
+            status_string[..self.term_width].to_string()
+        } else {
+            status_string
+        };
+        
+        status_string
+    }
+
+    pub(crate) fn get_task_feedback(&mut self) -> String {
+        if self.find.is_finding {
+            self.set_task_feedback_normal("[Enter] Edit, [Esc] Cancel".to_string());
+        }
+
+        let task_feedback = if self.task_feedback.text == "" {
+            self.task_feedback.default_text.clone()
+        } else {
+            self.task_feedback.text.clone()
+        };
+
+        let task_feedback = if task_feedback.len() > self.term_width {
+            task_feedback[..self.term_width].to_string()
+        } else {
+            task_feedback
+        };
+        
+        task_feedback
+    }
 
     pub(crate) fn render_updated_buffer(&mut self) {
         let mut prev_background = self.theming.text_frame_bg;
         let mut prev_foreground = self.theming.text_frame_fg;
-            
+        
         crossterm::queue!(
             stdout(),
+            crossterm::cursor::Hide,
+            crossterm::cursor::MoveTo(0, 0),
             crossterm::style::SetBackgroundColor(prev_background),
             crossterm::style::SetForegroundColor(prev_foreground),
         ).unwrap_or_else(|_| self.panic_gracefully(&Error::err13()));
@@ -255,7 +322,7 @@ impl Lino {
                     crossterm::queue!(
                         stdout(),
                         // crossterm::cursor::MoveTo(col as u16, row as u16),
-                        crossterm::style::Print(same_styled_text.clone()),
+                        crossterm::style::Print(same_styled_text),
                     ).unwrap_or_else(|_| self.panic_gracefully(&Error::err25()));
 
                     // col += same_styled_text.chars().count();
@@ -283,123 +350,19 @@ impl Lino {
                 same_styled_text.push(self.rendering.buffer[i][j].character);
             }
 
-            if same_styled_text.len() > 0 {
+            // if same_styled_text.len() > 0 {
                 crossterm::queue!(
                     stdout(),
                     // crossterm::cursor::MoveTo(col as u16, row as u16),
-                    crossterm::style::Print(same_styled_text.clone()),
+                    crossterm::style::Print(same_styled_text),
+                    crossterm::style::ResetColor,
                 ).unwrap_or_else(|_| self.panic_gracefully(&Error::err16()));
-            }
+            // }
         }
-    }
-    
-    pub(crate) fn render_unsaved_changes_frame(&mut self) {
-        crossterm::queue!(
-            stdout(),
-            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
-            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-            crossterm::style::SetBackgroundColor(self.theming.text_frame_fg),
-            crossterm::style::SetForegroundColor(self.theming.text_frame_bg),
-            crossterm::cursor::MoveTo(0, 0),
-            crossterm::style::Print("UNSAVED CHANGES"),
-            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
-            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
-            crossterm::style::Print("\n\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("Would you like to save changes before you quit?"),
-            crossterm::style::Print("\n\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("[Y] Yes, [N] No, [Esc] Go Back"),
-            crossterm::style::Print("\n\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("> "),
-        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err20()));
-
-        stdout().flush()
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err21()));
-    }
-
-    pub(crate) fn render_save_as_frame(&mut self) {
-        crossterm::queue!(
-            stdout(),
-            crossterm::cursor::Hide,
-
-            crossterm::style::SetBackgroundColor(self.theming.text_frame_fg),
-            crossterm::style::SetForegroundColor(self.theming.text_frame_bg),
-            crossterm::cursor::MoveTo(0, 0),
-            crossterm::style::Print("SAVE FILE"),
-            crossterm::style::SetBackgroundColor(self.theming.text_frame_bg),
-            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            
-
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-            
-            crossterm::style::Print("Enter file name. "),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            crossterm::style::Print("\n"),
-            
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("[Enter] Save, [Esc] Go Back"),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            crossterm::style::Print("\n"),
-            
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::Print("> "),
-            crossterm::cursor::SavePosition,
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            
-            crossterm::style::Print(&self.file.path),
-            
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            crossterm::style::Print("\n"),
-            
-            crossterm::cursor::MoveToColumn(0),
-            crossterm::style::SetForegroundColor(self.theming.error_red),
-            crossterm::style::Print(&self.file.save_error),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
-            
-            crossterm::style::SetForegroundColor(self.theming.text_frame_fg),
-            crossterm::style::Print("\n"),
-            crossterm::cursor::MoveToColumn(0),
-        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err22()));
-
-        for _ in 0..self.term_width {
-            crossterm::queue!(
-                stdout(),
-                crossterm::terminal::Clear(crossterm::terminal::ClearType::FromCursorDown),
-                crossterm::cursor::MoveRight(1),
-            ).unwrap_or_else(|_| self.panic_gracefully(&Error::err26()));
-        }
-        
-        crossterm::queue!(
-            stdout(),
-            crossterm::cursor::RestorePosition,
-            crossterm::cursor::MoveRight(self.file.cursor_col_offset as u16),
-            crossterm::cursor::Show,
-        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err27()));
-
-        stdout().flush()
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err23()));
     }
 
     pub(crate) fn update_visible_cursor(&mut self) {
-        let col = (self.cursor.col - self.text_frame.start_col) + (self.line_nums_frame.width);
+        let col = (self.cursor.col - self.text_frame.start_col) + self.line_nums_frame.width;
         let row = self.cursor.row - self.text_frame.start_row;
 
         // let mut background = crossterm::style::Color::Black;
@@ -434,8 +397,10 @@ impl Lino {
 
     pub(crate) fn init_new_render_buffer(&mut self) {
         self.rendering.buffer = vec![];
+
         for _ in 0..self.term_height {
             self.rendering.buffer.push(vec![]);
+            
             for _ in 0..self.term_width {
                 self.rendering.buffer.last_mut().unwrap().push(Character{
                     background: self.theming.line_nums_frame_bg,
@@ -446,4 +411,30 @@ impl Lino {
             }
         }
     }
+
+    // pub(crate) fn has_render_buffer_changed(&mut self, old_render_buffer: Vec<Vec<Character>>) -> bool {
+    //     for i in 0..self.rendering.buffer.len() {
+    //         for j in 0..self.rendering.buffer[i].len() {
+                
+    //             if old_render_buffer[i][j].background != self.rendering.buffer[i][j].background {
+    //                 return true;
+    //             }
+                
+    //             if old_render_buffer[i][j].foreground != self.rendering.buffer[i][j].foreground {
+    //                 return true;
+    //             }
+                
+    //             if old_render_buffer[i][j].character != self.rendering.buffer[i][j].character {
+    //                 return true;
+    //             }
+
+    //             if old_render_buffer[i][j].width != self.rendering.buffer[i][j].width {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+
+    //     false
+    // }
+    
 }

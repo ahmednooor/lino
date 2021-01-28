@@ -15,6 +15,13 @@ mod commands;
 mod keybindings;
 mod frames;
 mod task_feedback;
+mod exit;
+mod save;
+mod find;
+mod input_dialog;
+mod confirmation_dialog;
+
+use highlight::SyntectConfig;
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
@@ -72,7 +79,6 @@ pub(crate) struct FileData {
     is_saved: bool,
     should_save_as: bool,
     save_error: String,
-    cursor_col_offset: usize,
 }
 
 #[derive(Clone)]
@@ -102,6 +108,8 @@ pub(crate) struct Theming {
     text_frame_highlighted_fg: crossterm::style::Color,
     text_frame_selection_bg: crossterm::style::Color,
     text_frame_selection_fg: crossterm::style::Color,
+    text_frame_found_text_bg: crossterm::style::Color,
+    text_frame_found_text_fg: crossterm::style::Color,
 
     status_frame_bg: crossterm::style::Color,
     status_frame_fg: crossterm::style::Color,
@@ -130,6 +138,21 @@ pub(crate) struct TaskFeedback {
 }
 
 #[derive(Clone)]
+pub(crate) struct CursorRange {
+    start: Cursor,
+    end: Cursor,
+}
+
+#[derive(Clone)]
+pub(crate) struct Find {
+    is_finding: bool,
+    find_string: String,
+    find_error: String,
+    found_instances: Vec<CursorRange>,
+    selected_instance_index: usize,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     lines: Vec<Vec<Character>>,
     input_char_buf: Option<char>,
@@ -154,6 +177,5 @@ pub struct Lino {
     highlighting: Highlighting,
     rendering: Rendering,
     keybindings: std::collections::HashMap<String, fn(&mut Lino) -> ()>,
+    find: Find,
 }
-
-use highlight::SyntectConfig;

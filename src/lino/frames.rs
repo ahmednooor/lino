@@ -31,15 +31,15 @@ impl Lino {
 
         let mut should_update_text_frame = false;
         
-        if self.text_frame.start_col > 0 && self.line_nums_frame.boundary_r != String::from(" |") {
-            self.line_nums_frame.boundary_r = String::from(" |");
+        if self.text_frame.start_col > 0 && self.line_nums_frame.boundary_r != String::from("") {
+            self.line_nums_frame.boundary_r = String::from("");
             should_update_text_frame = true;
-        } else if self.text_frame.start_col == 0 && self.line_nums_frame.boundary_r != String::from(" | ") {
-            self.line_nums_frame.boundary_r = String::from(" | ");
+        } else if self.text_frame.start_col == 0 && self.line_nums_frame.boundary_r != String::from(" ") {
+            self.line_nums_frame.boundary_r = String::from(" ");
             should_update_text_frame = true;
         }
         
-        self.line_nums_frame.width = self.lines.len().to_string().len() + 1 + self.line_nums_frame.boundary_r.len();
+        self.line_nums_frame.width = self.lines.len().to_string().len() + 2 + self.line_nums_frame.boundary_r.len();
         self.line_nums_frame.height = self.term_height - self.status_frame.height;
         
         if should_update_text_frame {

@@ -1,6 +1,7 @@
 use super::*;
 
 pub(crate) mod keys {
+    pub(crate) static CHAR_INPUT: &str = "__command_enter_character__";
     pub(crate) static UP: &str = "up";
     pub(crate) static DOWN: &str = "down";
     pub(crate) static LEFT: &str = "left";
@@ -22,7 +23,11 @@ pub(crate) mod keys {
 use keys::*;
 
 impl Lino {
-    pub(crate) fn bind_keys_to_commands(&mut self) {
+    pub(crate) fn clear_all_keybindings(&mut self) {
+        self.keybindings.clear();
+    }
+
+    pub(crate) fn add_default_keybindings(&mut self) {
         let kbs = &mut self.keybindings;
         
         kbs.insert(format!("{}",         UP),                    Lino::command_move_up);
@@ -71,6 +76,7 @@ impl Lino {
         kbs.insert(format!("{}+{}",      ALT, '['),              Lino::command_decrease_indentation);
         kbs.insert(format!("{}+{}",      ALT, LEFT),             Lino::command_decrease_indentation);
 
+        kbs.insert(format!("{}",         CHAR_INPUT),            Lino::command_enter_character);
         kbs.insert(format!("{}",         TAB),                   Lino::command_enter_tab);
         kbs.insert(format!("{}",         ENTER),                 Lino::command_enter_auto_indented_new_line);
         kbs.insert(format!("{}+{}",      CTRL, ENTER),           Lino::command_enter_new_line);
@@ -80,11 +86,60 @@ impl Lino {
         kbs.insert(format!("{}+{}",      CTRL, 'v'),             Lino::command_paste);
         kbs.insert(format!("{}+{}",      CTRL, 'z'),             Lino::command_undo);
         kbs.insert(format!("{}+{}",      CTRL, 'y'),             Lino::command_redo);
+        kbs.insert(format!("{}+{}",      CTRL, 'f'),             Lino::command_find);
         kbs.insert(format!("{}+{}",      CTRL, 's'),             Lino::command_save);
         kbs.insert(format!("{}+{}",      ALT, 's'),              Lino::command_save_as);
         // kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, 's'),      Lino::command_save_as);
         kbs.insert(format!("{}+{}",      CTRL, 'w'),             Lino::command_quit);
 
-        kbs.insert(format!("{}",         ESC),                   Lino::command_clear_selection);
+        kbs.insert(format!("{}",         ESC),                   Lino::command_escape);
     }
+    
+    pub(crate) fn add_read_only_mode_keybindings(&mut self) {
+        let kbs = &mut self.keybindings;
+        
+        kbs.insert(format!("{}",         UP),                    Lino::command_move_up);
+        kbs.insert(format!("{}",         DOWN),                  Lino::command_move_down);
+        kbs.insert(format!("{}",         LEFT),                  Lino::command_move_left);
+        kbs.insert(format!("{}",         RIGHT),                 Lino::command_move_right);
+        kbs.insert(format!("{}+{}",      CTRL, LEFT),            Lino::command_move_left_by_word);
+        kbs.insert(format!("{}+{}",      CTRL, RIGHT),           Lino::command_move_right_by_word);
+        kbs.insert(format!("{}",         PAGE_UP),               Lino::command_move_up_by_page);
+        kbs.insert(format!("{}",         PAGE_DOWN),             Lino::command_move_down_by_page);
+        kbs.insert(format!("{}",         HOME),                  Lino::command_move_to_line_start);
+        kbs.insert(format!("{}",         END),                   Lino::command_move_to_line_end);
+        
+        kbs.insert(format!("{}+{}",      SHIFT, UP),             Lino::command_select_up);
+        kbs.insert(format!("{}+{}",      SHIFT, DOWN),           Lino::command_select_down);
+        kbs.insert(format!("{}+{}",      SHIFT, LEFT),           Lino::command_select_left);
+        kbs.insert(format!("{}+{}",      SHIFT, RIGHT),          Lino::command_select_right);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, LEFT),     Lino::command_select_left_by_word);
+        kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, RIGHT),    Lino::command_select_right_by_word);
+        kbs.insert(format!("{}+{}",      SHIFT, PAGE_UP),        Lino::command_select_up_by_page);
+        kbs.insert(format!("{}+{}",      SHIFT, PAGE_DOWN),      Lino::command_select_down_by_page);
+        kbs.insert(format!("{}+{}",      SHIFT, HOME),           Lino::command_select_to_line_start);
+        kbs.insert(format!("{}+{}",      SHIFT, END),            Lino::command_select_to_line_end);
+        kbs.insert(format!("{}+{}",      CTRL, 'a'),             Lino::command_select_all);
+        
+        kbs.insert(format!("{}+{}",      CTRL, 'c'),             Lino::command_copy);
+        kbs.insert(format!("{}+{}",      CTRL, 'f'),             Lino::command_find);
+        kbs.insert(format!("{}+{}",      CTRL, 'w'),             Lino::command_quit);
+
+        kbs.insert(format!("{}",         ESC),                   Lino::command_escape);
+    }
+    
+    pub(crate) fn add_find_mode_keybindings(&mut self) {
+        let kbs = &mut self.keybindings;
+        
+        kbs.insert(format!("{}",         DOWN),                  Lino::command_select_next_found_instance);
+        kbs.insert(format!("{}",         UP),                    Lino::command_select_previous_found_instance);
+        kbs.insert(format!("{}",         RIGHT),                 Lino::command_select_next_found_instance);
+        kbs.insert(format!("{}",         LEFT),                  Lino::command_select_previous_found_instance);
+        
+        // kbs.insert(format!("{}+{}",      CTRL, 'r'),             Lino::command_replace_all);
+
+        kbs.insert(format!("{}",         ENTER),                 Lino::command_exit_find_mode);
+        kbs.insert(format!("{}",         ESC),                   Lino::command_escape);
+    }
+    
 }

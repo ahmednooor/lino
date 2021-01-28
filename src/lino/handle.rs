@@ -49,6 +49,7 @@ impl Lino {
                 if event.modifiers == crossterm::event::KeyModifiers::SHIFT
                 || event.modifiers == crossterm::event::KeyModifiers::NONE {
                     self.input_char_buf = Some(c);
+                    key_binding = format!("{}", keys::CHAR_INPUT);
                 }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
@@ -104,6 +105,21 @@ impl Lino {
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'y' || c == 'Y') {
                     key_binding = format!("{}+{}", keys::CTRL, 'y');
+                }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'f' || c == 'F') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'f');
+                }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'n' || c == 'N') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'n');
+                }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'p' || c == 'P') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'p');
                 }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::ALT
@@ -307,118 +323,10 @@ impl Lino {
         
         if !operation_to_perform.is_none() {
             operation_to_perform.unwrap()(self);
-        } else if !self.input_char_buf.is_none() {
-            self.command_enter_character();
         }
 
         self.set_file_unsaved_if_applicable();
 
         self.highlighting.end_row = self.cursor.row;
     }
-
-    pub(crate) fn handle_unsaved_changes_frame_input(&mut self) {
-        self.render_unsaved_changes_frame();
-        
-        loop {
-            let event = crossterm::event::read();
-
-            if event.is_err() {
-                self.panic_gracefully(&Error::err5());
-            }
-
-            match event.unwrap() { // read is a blocking call
-                crossterm::event::Event::Key(key_event) => {
-                    match key_event.code {
-                        crossterm::event::KeyCode::Char(c) => {
-                            if c == 'y' || c == 'Y' {
-                                self.file.should_save_as = true;
-                                break;
-                            }
-                            if c == 'n' || c == 'N' {
-                                self.file.should_save_as = false;
-                                break;
-                            }
-                        },
-                        crossterm::event::KeyCode::Esc => {
-                            self.file.should_save_as = false;
-                            self.should_exit = false;
-                            break;
-                        },
-                        _ => ()
-                    }
-                },
-                _ => ()
-            }
-        };
-    }
-    
-    pub(crate) fn handle_save_as_frame_input(&mut self) {
-        let file_path_backup = self.file.path.clone();
-        self.file.cursor_col_offset = self.file.path.len();
-
-        loop {
-            self.render_save_as_frame();
-
-            let event = crossterm::event::read();
-
-            if event.is_err() {
-                self.panic_gracefully(&Error::err6());
-            }
-
-            match event.unwrap() { // read is a blocking call
-                crossterm::event::Event::Key(key_event) => {
-                    match key_event.code {
-                        crossterm::event::KeyCode::Char(c) => {
-                            self.file.path.insert(self.file.cursor_col_offset, c);
-                            self.file.cursor_col_offset += 1;
-                        },
-                        crossterm::event::KeyCode::Backspace => {
-                            if self.file.path.len() > 0 && self.file.cursor_col_offset > 0 {
-                                self.file.cursor_col_offset -= 1;
-                                self.file.path.remove(self.file.cursor_col_offset);
-                            }
-                        },
-                        crossterm::event::KeyCode::Delete => {
-                            if self.file.path.len() > 0 && self.file.cursor_col_offset < self.file.path.len() {
-                                self.file.path.remove(self.file.cursor_col_offset);
-                            }
-                        },
-                        crossterm::event::KeyCode::Left => {
-                            if self.file.cursor_col_offset > 0 {
-                                self.file.cursor_col_offset -= 1;
-                            }
-                        },
-                        crossterm::event::KeyCode::Right => {
-                            if self.file.cursor_col_offset < self.file.path.len() {
-                                self.file.cursor_col_offset += 1;
-                            }
-                        },
-                        crossterm::event::KeyCode::Home => {
-                            self.file.cursor_col_offset = 0;
-                        },
-                        crossterm::event::KeyCode::End => {
-                            self.file.cursor_col_offset = self.file.path.len();
-                        },
-                        crossterm::event::KeyCode::Enter => {
-                            if self.file.path != "" {
-                                self.save_to_file();
-                            }
-                            if self.file.is_saved && self.file.save_error == "" {
-                                break;
-                            }
-                        },
-                        crossterm::event::KeyCode::Esc => {
-                            self.file.path = file_path_backup;
-                            self.file.cursor_col_offset = self.file.path.len();
-                            self.should_exit = false;
-                            break;
-                        },
-                        _ => ()
-                    }
-                },
-                _ => ()
-            };
-        };
-    }
-
 }

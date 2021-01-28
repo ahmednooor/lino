@@ -77,29 +77,4 @@ impl Lino {
         self.file.save_error = "".to_string();
     }
 
-    pub(crate) fn set_file_unsaved_if_applicable(&mut self) {
-        let current_text = Lino::convert_2d_text_to_string(&self.lines);
-        // let saved_text_string = Lino::convert_2d_text_to_string(&self.saved_text);
-
-        if current_text != self.saved_text {
-            self.file.is_saved = false;
-        } else {
-            self.file.is_saved = true;
-        }
-    }
-
-    pub(crate) fn perform_save_as(&mut self) {
-        self.file.should_save_as = true;
-        self.perform_save();
-    }
-
-    pub(crate) fn perform_save(&mut self) {
-        self.file.save_error = "".to_string();
-
-        if self.file.path == "" || self.file.should_save_as {
-            self.handle_save_as_frame_input();
-        } else {
-            self.save_to_file();
-        }
-    }
 }

@@ -3,7 +3,7 @@
     <br />
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="156" height="156" class="center" /></span>
     <h2 align="center">A command line text editor with notepad like key bindings. [WIP]</h2>
-    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot-4.png" alt="screenshot" class="center" /></span>
+    <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
 
@@ -38,6 +38,7 @@
 | <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter auto-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> | `Find` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | `Paste` |
@@ -104,4 +105,4 @@ sudo apt install gcc gcc-multilib binutils
 > A big Thanks to the authors/maintainers/contributors of these libraries.
 
 ## Motivation
-Imagine you're a mortal who is accustomed to VS Code or some other GUI Text Editor/IDE, and suddenly you have to login to some SSH or fire up a Linux Server Distro with no GUI. You find yourself treading in the territory of the gods where beasts like Vim, Emacs and others like them reside. You find a friend called Nano, but it doesn't speak your tongue (i.e. key bindings), so you waste your time trying to learn a new way to communicate instead of getting the job done and get the hell out of there. This editor can be your friend that speaks the same-ish tongue and you can take it there with you. It isn't the only one though, there is another one called [Micro](https://github.com/zyedidia/micro).
+Imagine you're a mortal who is accustomed to VS Code or some other GUI Text Editor/IDE, and suddenly you have to login to some SSH or fire up a Linux Server Distro with no GUI. You find yourself treading in the territory of immortals where beasts like Vim, Emacs and others reside. You find a friend called Nano, but it doesn't speak your tongue (i.e. key bindings), so you waste your time trying to learn a new way to communicate instead of getting the job done and get the hell out of there. This editor can be your friend that speaks the same-ish tongue and you can take it there with you. It isn't the only one though, there is another one (a better one) called [Micro](https://github.com/zyedidia/micro).

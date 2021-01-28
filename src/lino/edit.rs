@@ -142,6 +142,8 @@ impl Lino {
         }
     }
 
+
+    
     pub(crate) fn delete_left_by_word(&mut self) {
         if self.is_cursor_at_first_line() && self.is_cursor_at_line_start() {
             return;
@@ -164,7 +166,38 @@ impl Lino {
         self.delete_selected();
     }
 
+
+
     pub(crate) fn increase_indentation(&mut self) {
+        if self.selection.is_selected {
+            self.increase_selected_lines_indentation();
+        } else {
+            self.increase_current_line_indentation();
+        }
+    }
+
+    pub(crate) fn increase_selected_lines_indentation(&mut self) {
+        if !self.selection.is_selected {
+            return;
+        }
+
+        let selection = self.get_sorted_selection_points().unwrap();
+        let backup_cursor = self.cursor.clone();
+        
+        self.cursor = selection.start_point.clone();
+
+        for _ in selection.start_point.row..=selection.end_point.row {
+            self.increase_current_line_indentation();
+            self.move_cursor_down();
+        }
+
+        self.cursor = backup_cursor;
+        self.cursor.col += self.settings.tab_width;
+        self.selection.start_point.col += self.settings.tab_width;
+        self.selection.end_point.col += self.settings.tab_width;
+    }
+
+    pub(crate) fn increase_current_line_indentation(&mut self) {
         let backup_cursor = self.cursor.clone();
         self.cursor.col = 0;
         for _ in 0..self.settings.tab_width {
@@ -173,7 +206,66 @@ impl Lino {
         self.cursor.col = backup_cursor.col + self.settings.tab_width;
     }
 
+
+
     pub(crate) fn decrease_indentation(&mut self) {
+        if self.selection.is_selected {
+            self.decrease_selected_lines_indentation();
+        } else {
+            self.decrease_current_line_indentation();
+        }
+    }
+
+    pub(crate) fn decrease_selected_lines_indentation(&mut self) {
+        if !self.selection.is_selected {
+            return;
+        }
+
+        let selection = self.get_sorted_selection_points().unwrap();
+        let backup_cursor = self.cursor.clone();
+        let mut should_adjust_selection_start = false;
+        let mut should_adjust_selection_end = false;
+
+        self.cursor = self.selection.start_point.clone();
+        if !self.is_current_line_empty() && self.lines[self.cursor.row][0].character == ' ' {
+            should_adjust_selection_start = true;
+        }
+        self.cursor = self.selection.end_point.clone();
+        if !self.is_current_line_empty() && self.lines[self.cursor.row][0].character == ' ' {
+            should_adjust_selection_end = true;
+        }
+
+        self.cursor = selection.start_point.clone();
+
+        for _ in selection.start_point.row..=selection.end_point.row {
+            self.decrease_current_line_indentation();
+            self.move_cursor_down();
+        }
+
+        self.cursor = backup_cursor;
+
+        if self.cursor.col >= self.settings.tab_width && should_adjust_selection_start{
+            self.cursor.col -= self.settings.tab_width;
+        } else if should_adjust_selection_start {
+            self.cursor.col = 0;
+        }
+        
+        if self.selection.start_point.col >= self.settings.tab_width 
+        && should_adjust_selection_start {
+            self.selection.start_point.col -= self.settings.tab_width;
+        } else if should_adjust_selection_start {
+            self.selection.start_point.col = 0;
+        }
+
+        if self.selection.end_point.col >= self.settings.tab_width 
+        && should_adjust_selection_end {
+            self.selection.end_point.col -= self.settings.tab_width;
+        } else if should_adjust_selection_end {
+            self.selection.end_point.col = 0;
+        }
+    }
+    
+    pub(crate) fn decrease_current_line_indentation(&mut self) {
         if self.is_current_line_empty() {
             return;
         }
@@ -189,13 +281,17 @@ impl Lino {
 
         for _ in 0..indent_width {
             if self.lines[self.cursor.row][0].character == ' ' {
-                self.move_cursor_left();
+                if !self.is_cursor_at_line_start() {
+                    self.move_cursor_left();
+                }
                 self.lines[self.cursor.row].remove(0);
             } else {
                 break;
             }
         }
     }
+
+
 
     pub(crate) fn swap_line_upward(&mut self) {
         if self.is_cursor_at_first_line() {
@@ -326,23 +422,6 @@ impl Lino {
 
         for character in copied_string.chars() {
             self.input_character(character);
-        }
-    }
-
-    pub(crate) fn exit_from_editor(&mut self) {
-        self.should_exit = true;
-        self.initiate_exit_routine();
-    }
-
-    pub(crate) fn initiate_exit_routine(&mut self) {
-        if self.file.is_saved {
-            return;
-        }
-
-        self.handle_unsaved_changes_frame_input();
-
-        if self.file.should_save_as {
-            self.handle_save_as_frame_input();
         }
     }
 }

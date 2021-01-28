@@ -223,16 +223,7 @@ impl Lino {
             self.set_task_feedback_normal(selected_count);
         }
         self.update_last_cursor_col();
-    }
-    pub(crate) fn command_clear_selection(&mut self) {
-        self.clear_task_feedback();
-        if self.selection.is_selected {
-            self.set_task_feedback_normal("Selection cancelled.".to_string());
-        }
-        self.clear_selection(&self.cursor.clone());
-        self.update_last_cursor_col();
-    }
-    
+    }    
 
 
 
@@ -475,10 +466,44 @@ impl Lino {
 
 
 
+    pub(crate) fn command_find(&mut self) {
+        self.clear_task_feedback();
+        self.initiate_find_routine();
+    }
+    pub(crate) fn command_select_next_found_instance(&mut self) {
+        self.clear_task_feedback();
+        self.select_next_found_instance();
+    }
+    pub(crate) fn command_select_previous_found_instance(&mut self) {
+        self.clear_task_feedback();
+        self.select_previous_found_instance();
+    }
+    pub(crate) fn command_exit_find_mode(&mut self) {
+        self.clear_task_feedback();
+        self.reset_find();
+    }
+
+
+    
+    pub(crate) fn command_escape(&mut self) {
+        self.clear_task_feedback();
+        if self.selection.is_selected {
+            self.clear_selection(&self.cursor.clone());
+            self.update_last_cursor_col();
+            self.set_task_feedback_normal("Selection cancelled.".to_string());
+        }
+        if self.find.is_finding {
+            self.reset_find();
+            self.set_task_feedback_normal("Exited find mode.".to_string());
+        }
+    }
+
+
+
     pub(crate) fn command_save(&mut self) {
         self.clear_task_feedback();
         let was_file_not_saved_before = !self.file.is_saved;
-        self.perform_save();
+        self.initiate_save_routine();
         if self.file.save_error != "" {
             self.set_task_feedback_error(self.file.save_error.clone());
         } else if self.file.save_error == "" && self.file.is_saved && was_file_not_saved_before {
@@ -488,7 +513,7 @@ impl Lino {
     pub(crate) fn command_save_as(&mut self) {
         self.clear_task_feedback();
         let was_file_not_saved_before = !self.file.is_saved;
-        self.perform_save_as();
+        self.initiate_save_as_routine();
         if self.file.save_error != "" {
             self.set_task_feedback_error(self.file.save_error.clone());
         } else if self.file.save_error == "" && self.file.is_saved && was_file_not_saved_before {
@@ -496,7 +521,7 @@ impl Lino {
         }
     }
     pub(crate) fn command_quit(&mut self) {
-        self.exit_from_editor();
+        self.initiate_exit_routine();
         if self.file.save_error != "" {
             self.set_task_feedback_error(self.file.save_error.clone());
         }

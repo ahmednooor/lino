@@ -1,12 +1,5 @@
 // use std::io::{stdout, Write};
 use crossterm;
-extern crate copypasta;
-// use copypasta::ClipboardContext;
-// use copypasta::ClipboardProvider;
-// use std::fs::File;
-// use std::io::prelude::*;
-// use std::path::Path;
-
 use super::*;
 use super::keybindings::keys;
 
@@ -110,6 +103,11 @@ impl Lino {
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'f' || c == 'F') {
                     key_binding = format!("{}+{}", keys::CTRL, 'f');
+                }
+                
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'r' || c == 'R') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'r');
                 }
                 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL

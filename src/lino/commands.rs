@@ -482,6 +482,10 @@ impl Lino {
         self.clear_task_feedback();
         self.reset_find();
     }
+    pub(crate) fn command_replace_all(&mut self) {
+        self.clear_task_feedback();
+        self.initiate_replace_routine()
+    }
 
 
     

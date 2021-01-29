@@ -3,7 +3,7 @@ use crossterm;
 
 use super::*;
 
-impl InputDialog {
+impl InputPrompt {
     pub(crate) fn render(&mut self) -> crossterm::Result<()> {
         crossterm::queue!(
             stdout(),

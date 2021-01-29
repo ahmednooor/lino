@@ -1,7 +1,7 @@
 use super::*;
 use super::super::Error;
 
-impl ConfirmationDialog {
+impl ConfirmationPrompt {
     pub(crate) fn initiate_event_handling_loop(&mut self) -> Result<(), Error>{
         let render_res = self.render();
         if !render_res.is_ok() {

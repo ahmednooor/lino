@@ -1,5 +1,5 @@
 use super::*;
-use super::confirmation_dialog::ConfirmationDialog;
+use super::confirmation_prompt::ConfirmationPrompt;
 
 impl Lino {
     pub(crate) fn initiate_exit_routine(&mut self) {
@@ -17,7 +17,7 @@ impl Lino {
     }
 
     pub(crate) fn ask_to_save_unsaved_changes(&mut self) {
-        let mut confirmation_dialog = ConfirmationDialog{
+        let mut confirmation_prompt = ConfirmationPrompt{
             title: "UNSAVED CHANGES".to_string(),
             description: "Would you like to save changes before you quit?".to_string(),
             key_hints: "[Y] Yes, [N] No, [Esc] Go Back".to_string(),
@@ -25,13 +25,13 @@ impl Lino {
             editor_theming: self.theming.clone(),
         };
         
-        let dialog_result = confirmation_dialog.collect_input();
-        match dialog_result {
+        let prompt_result = confirmation_prompt.collect_input();
+        match prompt_result {
             Err(e) => self.panic_gracefully(&e),
             Ok(_) => ()
         };
 
-        let dialog_input = confirmation_dialog.input;
+        let dialog_input = confirmation_prompt.input;
         if dialog_input.is_none() {
             self.file.should_save_as = false;
             self.should_exit = false;

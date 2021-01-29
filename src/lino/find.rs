@@ -1,9 +1,9 @@
 use super::*;
-use super::input_dialog::InputDialog;
+use super::input_prompt::InputPrompt;
 
 impl Lino {
     pub(crate) fn initiate_find_routine(&mut self) {
-        let mut input_dialog = InputDialog{
+        let mut input_prompt = InputPrompt{
             is_active: false,
             title: "FIND".to_string(),
             description: "Enter text to find. (Case Sensitive)".to_string(),
@@ -15,24 +15,28 @@ impl Lino {
         };
         
         loop {
-            input_dialog.input = self.find.find_string.chars().collect();
-            input_dialog.error = self.find.find_error.clone();
+            input_prompt.input = self.find.find_string.chars().collect();
+            input_prompt.error = self.find.find_error.clone();
 
-            let dialog_result = input_dialog.collect_input();
-            match dialog_result {
+            let prompt_result = input_prompt.collect_input();
+            match prompt_result {
                 Err(e) => self.panic_gracefully(&e),
                 Ok(_) => ()
             };
 
-            self.find.find_string = input_dialog.input.iter().collect();
+            self.find.find_string = input_prompt.input.iter().collect();
             self.find.found_instances = vec![];
 
-            if !input_dialog.is_active {
+            if !input_prompt.is_active {
                 self.reset_find();
                 break;
             }
 
-            self.find_string_in_text();
+            if self.find.find_string != "" {
+                self.find_string_in_text();
+            } else {
+                continue;
+            }
 
             if self.find.found_instances.len() > 0 {
                 break;

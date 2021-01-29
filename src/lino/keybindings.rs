@@ -136,7 +136,7 @@ impl Lino {
         kbs.insert(format!("{}",         RIGHT),                 Lino::command_select_next_found_instance);
         kbs.insert(format!("{}",         LEFT),                  Lino::command_select_previous_found_instance);
         
-        // kbs.insert(format!("{}+{}",      CTRL, 'r'),             Lino::command_replace_all);
+        kbs.insert(format!("{}+{}",      CTRL, 'r'),             Lino::command_replace_all);
 
         kbs.insert(format!("{}",         ENTER),                 Lino::command_exit_find_mode);
         kbs.insert(format!("{}",         ESC),                   Lino::command_escape);

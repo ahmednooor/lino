@@ -62,9 +62,9 @@
 - [x] Alt+s to save as (Ctrl+Shift+s isn't detected for now so had to pick Alt+s for save as)
 - [x] multi-line indentation in case of multi-line selection
 - [x] find
-- [ ] replace
-- [ ] word wrap
+- [x] replace
 - [ ] help screen
+- [ ] word wrap
 
 #### Maybe
 - [ ] tests

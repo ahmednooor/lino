@@ -18,8 +18,9 @@ mod task_feedback;
 mod exit;
 mod save;
 mod find;
-mod input_dialog;
-mod confirmation_dialog;
+mod replace;
+mod input_prompt;
+mod confirmation_prompt;
 
 use highlight::SyntectConfig;
 
@@ -153,6 +154,11 @@ pub(crate) struct Find {
 }
 
 #[derive(Clone)]
+pub(crate) struct Replace {
+    replace_string: String,
+}
+
+#[derive(Clone)]
 pub struct Lino {
     lines: Vec<Vec<Character>>,
     input_char_buf: Option<char>,
@@ -178,4 +184,5 @@ pub struct Lino {
     rendering: Rendering,
     keybindings: std::collections::HashMap<String, fn(&mut Lino) -> ()>,
     find: Find,
+    replace: Replace,
 }

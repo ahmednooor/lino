@@ -1,7 +1,7 @@
 use super::*;
 use super::super::Error;
 
-impl InputDialog {
+impl InputPrompt {
     pub(crate) fn initiate_event_handling_loop(&mut self) -> Result<(), Error>{
         loop {
             let render_res = self.render();
@@ -54,9 +54,7 @@ impl InputDialog {
                             self.cursor_col_offset = self.input.len();
                         },
                         crossterm::event::KeyCode::Enter => {
-                            if self.input.len() > 0 {
-                                break;
-                            }
+                            break;
                         },
                         crossterm::event::KeyCode::Esc => {
                             self.is_active = false;

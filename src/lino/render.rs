@@ -278,7 +278,7 @@ impl Lino {
 
     pub(crate) fn get_task_feedback(&mut self) -> String {
         if self.find.is_finding {
-            self.set_task_feedback_normal("[Enter] Edit, [Esc] Cancel".to_string());
+            self.set_task_feedback_normal("[Enter] Edit Current, [Ctrl+R] Replace All, [Esc] Cancel".to_string());
         }
 
         let task_feedback = if self.task_feedback.text == "" {

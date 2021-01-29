@@ -3,7 +3,7 @@ use crossterm;
 
 use super::*;
 
-impl ConfirmationDialog {
+impl ConfirmationPrompt {
     pub(crate) fn render(&mut self) -> crossterm::Result<()> {
         crossterm::queue!(
             stdout(),

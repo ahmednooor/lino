@@ -1,5 +1,5 @@
 use super::*;
-use super::input_dialog::InputDialog;
+use super::input_prompt::InputPrompt;
 
 impl Lino {
     pub(crate) fn set_file_unsaved_if_applicable(&mut self) {
@@ -31,7 +31,7 @@ impl Lino {
     pub(crate) fn ask_file_path_and_save(&mut self) {
         let file_data_backup = self.file.clone();
 
-        let mut input_dialog = InputDialog{
+        let mut input_prompt = InputPrompt{
             is_active: false,
             title: "SAVE FILE".to_string(),
             description: "Enter file name.".to_string(),
@@ -43,18 +43,18 @@ impl Lino {
         };
 
         loop {
-            input_dialog.input = self.file.path.chars().collect();
-            input_dialog.error = self.file.save_error.clone();
+            input_prompt.input = self.file.path.chars().collect();
+            input_prompt.error = self.file.save_error.clone();
 
-            let dialog_result = input_dialog.collect_input();
+            let dialog_result = input_prompt.collect_input();
             match dialog_result {
                 Err(e) => self.panic_gracefully(&e),
                 Ok(_) => ()
             };
 
-            self.file.path = input_dialog.input.iter().collect();
+            self.file.path = input_prompt.input.iter().collect();
             
-            if !input_dialog.is_active {
+            if !input_prompt.is_active {
                 self.file.path = file_data_backup.path;
                 self.should_exit = false;
                 self.file.should_save_as = false;
@@ -63,6 +63,8 @@ impl Lino {
 
             if self.file.path != "" {
                 self.save_to_file();
+            } else {
+                continue;
             }
 
             if self.file.is_saved && self.file.save_error == "" {

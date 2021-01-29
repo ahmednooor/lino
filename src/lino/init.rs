@@ -122,6 +122,9 @@ impl Lino {
                 find_error: "".to_string(),
                 found_instances: vec![],
                 selected_instance_index: 0,
+            },
+            replace: Replace{
+                replace_string: "".to_string(),
             }
         };
 

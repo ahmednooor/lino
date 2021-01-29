@@ -2,7 +2,7 @@
 <div align="center">
     <br />
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="156" height="156" class="center" /></span>
-    <h2 align="center">A command line text editor with notepad like key bindings. [WIP]</h2>
+    <h2 align="center">A command line text editor with notepad like key bindings</h2>
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
@@ -38,7 +38,7 @@
 | <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter auto-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
-| <kbd>Ctrl</kbd> + <kbd>F</kbd> | `Find` |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> | `Find, Replace` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | `Paste` |

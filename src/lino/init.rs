@@ -81,6 +81,7 @@ impl Lino {
                 tab_width: 4,
                 show_line_nums_frame: true,
                 show_status_frame: true,
+                read_only: false,
             },
             error: Error{
                 is_occured: false,
@@ -168,6 +169,7 @@ impl Lino {
     }
 
     pub fn run_as_read_only(&mut self) {
+        self.settings.read_only = true;
         self.clear_all_keybindings();
         self.add_read_only_mode_keybindings();
         self.run();

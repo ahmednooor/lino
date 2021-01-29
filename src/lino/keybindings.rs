@@ -70,6 +70,7 @@ impl Lino {
         kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, UP),        Lino::command_duplicate_current_line_up);
         kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, DOWN),     Lino::command_duplicate_current_line_down);
         kbs.insert(format!("{}+{}+{}",   ALT, SHIFT, DOWN),      Lino::command_duplicate_current_line_down);
+        kbs.insert(format!("{}+{}",      CTRL, 'd'),             Lino::command_duplicate_current_line_down);
 
         kbs.insert(format!("{}+{}",      ALT, ']'),              Lino::command_increase_indentation);
         kbs.insert(format!("{}+{}",      ALT, RIGHT),            Lino::command_increase_indentation);
@@ -78,6 +79,7 @@ impl Lino {
 
         kbs.insert(format!("{}",         CHAR_INPUT),            Lino::command_enter_character);
         kbs.insert(format!("{}",         TAB),                   Lino::command_enter_tab);
+        kbs.insert(format!("{}+{}",      SHIFT, TAB),            Lino::command_decrease_indentation);
         kbs.insert(format!("{}",         ENTER),                 Lino::command_enter_auto_indented_new_line);
         kbs.insert(format!("{}+{}",      CTRL, ENTER),           Lino::command_enter_new_line);
 

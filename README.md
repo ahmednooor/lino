@@ -2,7 +2,7 @@
 <div align="center">
     <br />
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/lino-icon.png" alt="lino" width="156" height="156" class="center" /></span>
-    <h2 align="center">A command line text editor with notepad like key bindings</h2>
+    <h2 align="center">A command line text editor with notepad like key bindings.</h2>
     <span align="center"><img src="https://raw.githubusercontent.com/ahmednooor/lino/main/assets/screenshot.png" alt="screenshot" class="center" /></span>
     <hr />
 </div>
@@ -32,10 +32,10 @@
 | <kbd>Shift</kbd> + <kbd>Delete</kbd> | `Delete current line` |
 | <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>↑</kbd> | `Move current line up` |
 | <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>↓</kbd> | `Move current line down` |
-| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward (Doesn't work on Windows Terminal)` |
-| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> | `Duplicate current line downward (Doesn't work on Windows Terminal)` |
-| <kbd>Alt</kbd> + <kbd>]</kbd> / <kbd>→</kbd> | `Increase indentation` |
-| <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> | `Decrease indentation` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> | `Duplicate current line upward` |
+| <kbd>Ctrl</kbd> / <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↓</kbd> , <kbd>Ctrl</kbd> + <kbd>D</kbd> | `Duplicate current line downward` |
+| <kbd>Alt</kbd> + <kbd>]</kbd> / <kbd>→</kbd> , <kbd>Tab</kbd> | `Increase indentation` |
+| <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> , <kbd>Shift</kbd> + <kbd>Tab</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter auto-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>F</kbd> | `Find, Replace` |
@@ -48,7 +48,7 @@
 | <kbd>Alt</kbd> + <kbd>S</kbd> | `Save as` |
 | <kbd>Ctrl</kbd> + <kbd>W</kbd> | `Close` |
 
-> Some key-bindings don't work on Linux.
+> Some key-bindings might not work on different terminals. But the most common ones should work on all.
 
 ## Install
 > You will need to have Rust (2018 or higher) installed on your system before proceeding.\

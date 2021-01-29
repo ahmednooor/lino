@@ -46,8 +46,8 @@ impl Lino {
             input_prompt.input = self.file.path.chars().collect();
             input_prompt.error = self.file.save_error.clone();
 
-            let dialog_result = input_prompt.collect_input();
-            match dialog_result {
+            let prompt_result = input_prompt.collect_input();
+            match prompt_result {
                 Err(e) => self.panic_gracefully(&e),
                 Ok(_) => ()
             };

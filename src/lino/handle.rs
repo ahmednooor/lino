@@ -74,6 +74,11 @@ impl Lino {
                 && (c == 'c' || c == 'C') {
                     key_binding = format!("{}+{}", keys::CTRL, 'c');
                 }
+
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'd' || c == 'D') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'd');
+                }
                 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 'x' || c == 'X') {
@@ -132,9 +137,10 @@ impl Lino {
                 
             },
             crossterm::event::KeyCode::Tab => {
-                if event.modifiers == crossterm::event::KeyModifiers::NONE {
-                    key_binding = format!("{}", keys::TAB);
-                }
+                key_binding = format!("{}", keys::TAB);
+            },
+            crossterm::event::KeyCode::BackTab => {
+                key_binding = format!("{}+{}", keys::SHIFT, keys::TAB);
             },
             crossterm::event::KeyCode::Enter => {
                 if event.modifiers == crossterm::event::KeyModifiers::NONE {

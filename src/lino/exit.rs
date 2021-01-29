@@ -31,14 +31,14 @@ impl Lino {
             Ok(_) => ()
         };
 
-        let dialog_input = confirmation_prompt.input;
-        if dialog_input.is_none() {
+        let prompt_input = confirmation_prompt.input;
+        if prompt_input.is_none() {
             self.file.should_save_as = false;
             self.should_exit = false;
             return;
         }
         
-        let should_save_before_quitting = dialog_input.unwrap();
+        let should_save_before_quitting = prompt_input.unwrap();
 
         if should_save_before_quitting {
             self.file.should_save_as = true;

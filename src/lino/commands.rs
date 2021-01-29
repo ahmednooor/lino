@@ -386,11 +386,12 @@ impl Lino {
         self.update_last_cursor_col();
     }
     pub(crate) fn command_enter_tab(&mut self) {
+        if self.selection.is_selected {
+            self.command_increase_indentation();
+            return;
+        }
         self.clear_task_feedback();
         self.save_to_history();
-        if self.selection.is_selected {
-            self.delete_selected();
-        }
         self.input_tab();
         self.update_last_cursor_col();
     }
@@ -484,6 +485,10 @@ impl Lino {
     }
     pub(crate) fn command_replace_all(&mut self) {
         self.clear_task_feedback();
+        if self.settings.read_only {
+            self.set_task_feedback_error("Can't edit text in read-only mode.".to_string());
+            return;
+        }
         self.initiate_replace_routine()
     }
 

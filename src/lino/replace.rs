@@ -39,23 +39,33 @@ impl Lino {
             return;
         }
 
-        
-        for instance in self.find.found_instances.clone() {
+        let found_instances: Vec<CursorRange> = self.find.found_instances.clone().into_iter().rev().collect();
+        let mut last_instance_col_offset_multiplier: isize = 0;
+        let last_instance_row: usize = found_instances[0].end.row;
+
+        for instance in &found_instances {
+            if instance.end.row == last_instance_row {
+                last_instance_col_offset_multiplier += 1;
+            }
             self.selection.is_selected = true;
             self.selection.start_point = instance.start;
             self.selection.end_point = instance.end;
             self.cursor = self.selection.start_point;
-            {
-                self.delete_selected();
-            }
+            self.delete_selected();
             for character in self.replace.replace_string.clone().chars() {
                 self.input_character(character);
             }
         }
         
-        self.highlighting.start_row = 0;
-        self.highlighting.end_row = self.lines.len() - 1;
-        self.replace.replace_string = "".to_string();
+        self.cursor = found_instances[0].end;
+
+        let find_replace_string_len_diff = 
+            self.replace.replace_string.len() as isize - self.find.find_string.len() as isize;
+
+        self.cursor.col = (self.cursor.col as isize + 1 + 
+            (last_instance_col_offset_multiplier * find_replace_string_len_diff)) as usize;
+
+            self.replace.replace_string = "".to_string();
         self.reset_find();
     }
 

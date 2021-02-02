@@ -63,13 +63,12 @@
 - [x] multi-line indentation in case of multi-line selection
 - [x] find
 - [x] replace
-- [ ] help screen
-- [ ] word wrap
+- [x] guide/help screen
 
 #### Maybe
-- [ ] tests
-- [ ] settings
-- [ ] logging
+- [ ] improve unicode and tab char rendering (width-wise)
+- [ ] word wrap
 - [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve rendering (speed-wise)
-- [ ] improve unicode and tab char rendering (width-wise)
+- [ ] settings
+- [ ] tests

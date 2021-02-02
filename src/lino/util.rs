@@ -53,4 +53,6 @@ impl Lino {
     pub(crate) fn calculate_tab_width(&self) -> usize {
         return self.settings.tab_width - (self.cursor.col % self.settings.tab_width);
     }
+
+    pub(crate) fn do_nothing(&mut self) {}
 }

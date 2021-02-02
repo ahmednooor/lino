@@ -38,6 +38,10 @@ impl Lino {
     }
 
     pub(crate) fn populate_line_nums_frame_in_render_buffer(&mut self) {
+        if !self.settings.show_line_nums_frame {
+            return;
+        }
+
         let line_num_width = self.lines.len().to_string().len();
 
         for i in 0..self.line_nums_frame.height {
@@ -61,12 +65,9 @@ impl Lino {
                 continue;
             }
 
-            let num_string_with_boundary = if self.line_nums_frame.width != 0 {
+            let num_string_with_boundary = 
                 format!(" {:width$} ", row + 1, width = line_num_width) 
-                + &self.line_nums_frame.boundary_r
-            } else {
-                "".to_string()
-            };
+                + &self.line_nums_frame.boundary_r;
 
             let num_string_with_boundary: Vec<char> = num_string_with_boundary.chars().collect();
 
@@ -175,6 +176,10 @@ impl Lino {
     }
     
     pub(crate) fn populate_status_frame_in_render_buffer(&mut self) {
+        if !self.settings.show_status_frame {
+            return;
+        }
+
         let status_string = self.make_status_bar_string();
 
         let background = self.theming.status_frame_bg;
@@ -277,8 +282,10 @@ impl Lino {
     }
 
     pub(crate) fn get_task_feedback(&mut self) -> String {
-        if self.find.is_finding {
+        if self.find.is_finding && !self.settings.read_only {
             self.set_task_feedback_normal("[Enter] Edit Current, [Ctrl+R] Replace All, [Esc] Cancel".to_string());
+        } else if self.find.is_finding && self.settings.read_only {
+            self.set_task_feedback_normal("[Esc] Cancel".to_string());
         }
 
         let task_feedback = if self.task_feedback.text == "" {
@@ -355,7 +362,7 @@ impl Lino {
                     stdout(),
                     // crossterm::cursor::MoveTo(col as u16, row as u16),
                     crossterm::style::Print(same_styled_text),
-                    crossterm::style::ResetColor,
+                    // crossterm::style::ResetColor,
                 ).unwrap_or_else(|_| self.panic_gracefully(&Error::err16()));
             // }
         }

@@ -1,5 +1,6 @@
 use super::*;
 use super::input_prompt::InputPrompt;
+use keybindings::keys;
 
 impl Lino {
     pub(crate) fn initiate_find_routine(&mut self) {
@@ -75,8 +76,13 @@ impl Lino {
         self.find.is_finding = true;
         self.find.selected_instance_index = self.find.found_instances.len();
         self.select_next_found_instance();
+        self.find.keybindings_backup = self.keybindings.clone();
         self.clear_all_keybindings();
         self.add_find_mode_keybindings();
+        if self.settings.read_only {
+            self.keybindings.remove(&format!("{}+{}", keys::CTRL, 'r'));
+            self.keybindings.remove(&format!("{}", keys::ENTER));
+        }
     }
 
     pub(crate) fn select_next_found_instance(&mut self) {
@@ -123,15 +129,17 @@ impl Lino {
     }
 
     pub(crate) fn reset_find(&mut self) {
+        self.clear_all_keybindings();
+        self.keybindings = self.find.keybindings_backup.clone();
+
         self.find = Find{
             is_finding: false,
             find_string: "".to_string(),
             find_error: "".to_string(),
             found_instances: vec![],
             selected_instance_index: 0,
+            keybindings_backup: std::collections::HashMap::new(),
         };
-        self.clear_all_keybindings();
-        self.add_default_keybindings();
     }
 
 }

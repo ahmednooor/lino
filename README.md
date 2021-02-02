@@ -11,6 +11,16 @@
 [![Crates.io](https://img.shields.io/crates/l/lino)](https://github.com/ahmednooor/lino/blob/main/LICENSE)
 [![Crates.io](https://img.shields.io/crates/d/lino)](https://crates.io/crates/lino)
 
+## Features
+- Notepad like keybindings.
+- Multi-line indentation.
+- Auto-indented new lines.
+- Line numbers.
+- Syntax highlighting.
+- Copy, Paste.
+- Undo, Redo.
+- Find, Replace.
+
 ## Usage (Key Bindings)
 | Key | Function |
 | --- | --- |
@@ -37,7 +47,7 @@
 | <kbd>Alt</kbd> + <kbd>]</kbd> / <kbd>→</kbd> , <kbd>Tab</kbd> | `Increase indentation` |
 | <kbd>Alt</kbd> + <kbd>[</kbd> / <kbd>←</kbd> , <kbd>Shift</kbd> + <kbd>Tab</kbd> | `Decrease indentation` |
 | <kbd>Enter</kbd> | `Enter auto-indented new line` |
-| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
+| <kbd>Ctrl</kbd> / <kbd>Shift</kbd> + <kbd>Enter</kbd> | `Enter non-indented new line` |
 | <kbd>Ctrl</kbd> + <kbd>F</kbd> | `Find, Replace` |
 | <kbd>Ctrl</kbd> + <kbd>X</kbd> | `Cut` |
 | <kbd>Ctrl</kbd> + <kbd>C</kbd> | `Copy` |
@@ -62,6 +72,11 @@ cargo install lino
 **2. Run**
 ```sh
 lino <optional-filename>
+```
+
+**3. Move binary to `/usr/bin/` on Linux (Optional)**
+```sh
+sudo mv `which lino` /usr/bin/
 ```
 
 > Tested on `Windows 10` and `WSL (Ubuntu 18.04)`

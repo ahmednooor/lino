@@ -19,6 +19,7 @@ mod exit;
 mod save;
 mod find;
 mod replace;
+mod guide;
 mod input_prompt;
 mod confirmation_prompt;
 
@@ -152,6 +153,7 @@ pub(crate) struct Find {
     find_error: String,
     found_instances: Vec<CursorRange>,
     selected_instance_index: usize,
+    keybindings_backup: std::collections::HashMap<String, fn(&mut Lino) -> ()>,
 }
 
 #[derive(Clone)]

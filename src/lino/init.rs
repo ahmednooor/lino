@@ -65,7 +65,7 @@ impl Lino {
                 bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
                 fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
                 text: "".to_string(),
-                default_text: "[Ctrl+W] Close".to_string(),
+                default_text: "[Ctrl+W] Close, [Alt+G] Guide".to_string(),
             },
             should_exit: false,
             undo_list: vec![],
@@ -123,6 +123,7 @@ impl Lino {
                 find_error: "".to_string(),
                 found_instances: vec![],
                 selected_instance_index: 0,
+                keybindings_backup: std::collections::HashMap::new(),
             },
             replace: Replace{
                 replace_string: "".to_string(),
@@ -151,21 +152,9 @@ impl Lino {
     }
 
     pub fn run(&mut self) {
-        ctrlc::set_handler(|| ())
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err1()));
-        
-        crossterm::terminal::enable_raw_mode()
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err2()));
-        
-        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
-        
-        let mut syntect_config = self.create_syntect_config();
-
-        self.apply_syntax_highlighting_on_all_lines(&mut syntect_config);
-        self.clear_history();
-
-        self.initiate_input_event_loop(&mut syntect_config);
+        self.bind_ctrlc_handler();
+        self.enter_alt_screen_and_enable_raw_mode();
+        self.start();
     }
 
     pub fn run_as_read_only(&mut self) {
@@ -174,11 +163,36 @@ impl Lino {
         self.add_read_only_mode_keybindings();
         self.run();
     }
+    
+    pub(crate) fn start(&mut self) {
+        let mut syntect_config = self.create_syntect_config();
 
-    pub fn close(&mut self) {
+        self.apply_syntax_highlighting_on_all_lines(&mut syntect_config);
+        self.clear_history();
+
+        self.initiate_input_event_loop(&mut syntect_config);
+    }
+
+    pub(crate) fn bind_ctrlc_handler(&mut self) {
+        ctrlc::set_handler(|| ())
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err1()));
+        // ctrlc::set_handler(|| ())
+        //     .unwrap_or_else(|_| {
+        //         self.set_task_feedback_error(self.error.message.clone());
+        //     });
+    }
+
+    pub(crate) fn enter_alt_screen_and_enable_raw_mode(&mut self) {
+        crossterm::terminal::enable_raw_mode()
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err2()));
+        
+        crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)
+            .unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
+    }
+
+    pub(crate) fn leave_alt_screen_and_disable_raw_mode(&mut self) {
         crossterm::execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).unwrap_or(());
         crossterm::terminal::disable_raw_mode().unwrap_or(());
-        println!();
     }
 
     pub(crate) fn panic_gracefully(&mut self, error: &Error) {
@@ -198,7 +212,7 @@ impl Lino {
 
 impl Drop for Lino {
     fn drop(&mut self) {
-        self.close();
+        self.leave_alt_screen_and_disable_raw_mode();
         
         let mut exiting_message = String::new();
         
@@ -213,9 +227,9 @@ impl Drop for Lino {
                 self.file.path);
             exiting_message.push_str(&err_str);
         }
-
+        
         if !exiting_message.is_empty() {
-            println!("{}", exiting_message);
+            println!("\n\n{}\n\n", exiting_message);
         }
     }
 }

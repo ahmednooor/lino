@@ -60,6 +60,11 @@ impl Lino {
                     key_binding = format!("{}+{}", keys::ALT, 's');
                 }
                 
+                else if event.modifiers == crossterm::event::KeyModifiers::ALT
+                && (c == 'g' || c == 'G') {
+                    key_binding = format!("{}+{}", keys::ALT, 'g');
+                }
+                
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 | crossterm::event::KeyModifiers::SHIFT && (c == 's' || c == 'S') {
                     key_binding = format!("{}+{}+{}", keys::CTRL, keys::SHIFT, 's');
@@ -149,6 +154,10 @@ impl Lino {
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL {
                     key_binding = format!("{}+{}", keys::CTRL, keys::ENTER);
+                }
+
+                else if event.modifiers == crossterm::event::KeyModifiers::SHIFT {
+                    key_binding = format!("{}+{}", keys::SHIFT, keys::ENTER);
                 }
             },
             crossterm::event::KeyCode::Backspace => {

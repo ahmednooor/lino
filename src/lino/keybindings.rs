@@ -82,6 +82,7 @@ impl Lino {
         kbs.insert(format!("{}+{}",      SHIFT, TAB),            Lino::command_decrease_indentation);
         kbs.insert(format!("{}",         ENTER),                 Lino::command_enter_auto_indented_new_line);
         kbs.insert(format!("{}+{}",      CTRL, ENTER),           Lino::command_enter_new_line);
+        kbs.insert(format!("{}+{}",      SHIFT, ENTER),          Lino::command_enter_new_line);
 
         kbs.insert(format!("{}+{}",      CTRL, 'x'),             Lino::command_cut);
         kbs.insert(format!("{}+{}",      CTRL, 'c'),             Lino::command_copy);
@@ -93,6 +94,7 @@ impl Lino {
         kbs.insert(format!("{}+{}",      ALT, 's'),              Lino::command_save_as);
         // kbs.insert(format!("{}+{}+{}",   CTRL, SHIFT, 's'),      Lino::command_save_as);
         kbs.insert(format!("{}+{}",      CTRL, 'w'),             Lino::command_quit);
+        kbs.insert(format!("{}+{}",      ALT, 'g'),              Lino::command_show_guide);
 
         kbs.insert(format!("{}",         ESC),                   Lino::command_escape);
     }
@@ -126,6 +128,7 @@ impl Lino {
         kbs.insert(format!("{}+{}",      CTRL, 'c'),             Lino::command_copy);
         kbs.insert(format!("{}+{}",      CTRL, 'f'),             Lino::command_find);
         kbs.insert(format!("{}+{}",      CTRL, 'w'),             Lino::command_quit);
+        kbs.insert(format!("{}+{}",      ALT, 'g'),              Lino::command_show_guide);
 
         kbs.insert(format!("{}",         ESC),                   Lino::command_escape);
     }

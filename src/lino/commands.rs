@@ -535,4 +535,10 @@ impl Lino {
             self.set_task_feedback_error(self.file.save_error.clone());
         }
     }
+
+
+
+    pub(crate) fn command_show_guide(&mut self) {
+        self.show_guide();
+    }
 }

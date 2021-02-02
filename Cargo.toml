@@ -1,6 +1,6 @@
 [package]
 name = "lino"
-version = "0.7.1"
+version = "0.8.0"
 authors = ["ahmednooor <ahmednooorr@gmail.com>"]
 description = "A command line text editor with notepad like key bindings."
 keywords = ["notepad-like", "terminal", "command-line", "text", "editor"]
@@ -14,7 +14,6 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-#crossterm = "0.18.2"
 crossterm = "0.19.0"
 ctrlc = "3.1.7"
 copypasta = "0.7.1"

@@ -51,6 +51,11 @@ impl Lino {
                 }
 
                 else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
+                && (c == 'q' || c == 'Q') {
+                    key_binding = format!("{}+{}", keys::CTRL, 'q');
+                }
+
+                else if event.modifiers == crossterm::event::KeyModifiers::CONTROL
                 && (c == 's' || c == 'S') {
                     key_binding = format!("{}+{}", keys::CTRL, 's');
                 }

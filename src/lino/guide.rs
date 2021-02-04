@@ -128,6 +128,7 @@ the selected lines.
 | Alt + S |
 
 * Close editor:
+| Ctrl + Q |
 | Ctrl + W |
 
 ~ End of document. ~";

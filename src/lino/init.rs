@@ -65,7 +65,7 @@ impl Lino {
                 bg: crossterm::style::Color::Rgb{r: 0x23, g: 0x29, b: 0x3c},
                 fg: crossterm::style::Color::Rgb{r: 0x88, g: 0x88, b: 0x88},
                 text: "".to_string(),
-                default_text: "[Ctrl+W] Close, [Alt+G] Guide".to_string(),
+                default_text: "[Ctrl+Q] Quit, [Alt+G] Guide".to_string(),
             },
             should_exit: false,
             undo_list: vec![],

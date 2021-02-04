@@ -56,7 +56,7 @@
 | <kbd>Ctrl</kbd> + <kbd>Y</kbd> | `Redo` |
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | `Save` |
 | <kbd>Alt</kbd> + <kbd>S</kbd> | `Save as` |
-| <kbd>Ctrl</kbd> + <kbd>W</kbd> | `Close` |
+| <kbd>Ctrl</kbd> + <kbd>W</kbd>, <kbd>Ctrl</kbd> + <kbd>Q</kbd> | `Close` |
 
 > Some key-bindings might not work on different terminals. But the most common ones should work on all.
 

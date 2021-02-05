@@ -4,6 +4,14 @@ use keybindings::keys;
 
 impl Lino {
     pub(crate) fn initiate_find_routine(&mut self) {
+        self.find.keybindings_backup = self.keybindings.clone();
+        self.clear_all_keybindings();
+        self.add_find_mode_keybindings();
+        if self.settings.read_only {
+            self.keybindings.remove(&format!("{}+{}", keys::CTRL, 'r'));
+            self.keybindings.remove(&format!("{}", keys::ENTER));
+        }
+
         let mut input_prompt = InputPrompt{
             is_active: false,
             title: "FIND".to_string(),
@@ -76,13 +84,6 @@ impl Lino {
         self.find.is_finding = true;
         self.find.selected_instance_index = self.find.found_instances.len();
         self.select_next_found_instance();
-        self.find.keybindings_backup = self.keybindings.clone();
-        self.clear_all_keybindings();
-        self.add_find_mode_keybindings();
-        if self.settings.read_only {
-            self.keybindings.remove(&format!("{}+{}", keys::CTRL, 'r'));
-            self.keybindings.remove(&format!("{}", keys::ENTER));
-        }
     }
 
     pub(crate) fn select_next_found_instance(&mut self) {

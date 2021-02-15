@@ -6,6 +6,8 @@
 // use std::fs::File;
 // use std::io::prelude::*;
 // use std::path::Path;
+extern crate unicode_width;
+use unicode_width::UnicodeWidthChar;
 
 use super::*;
 
@@ -36,7 +38,7 @@ impl Lino {
                     background: crossterm::style::Color::Black,
                     foreground: crossterm::style::Color::White,
                     character: character.clone(),
-                    width: 1,
+                    width: UnicodeWidthChar::width(character).unwrap_or(1) as u8,
                 })
             }
         }

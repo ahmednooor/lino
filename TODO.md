@@ -64,9 +64,10 @@
 - [x] find
 - [x] replace
 - [x] guide/help screen
+- [x] multi-width unicode characters
 
 #### Maybe
-- [ ] improve unicode and tab char rendering (width-wise)
+- [ ] improve tab char rendering (use actual tabs instead of spaces if possible)
 - [ ] word wrap
 - [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
 - [ ] improve rendering (speed-wise)

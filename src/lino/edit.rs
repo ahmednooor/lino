@@ -1,4 +1,6 @@
 // use std::io::{stdout, Write};
+extern crate unicode_width;
+use unicode_width::UnicodeWidthChar;
 extern crate copypasta;
 use copypasta::ClipboardContext;
 use copypasta::ClipboardProvider;
@@ -17,7 +19,7 @@ impl Lino {
                 background: self.theming.text_frame_bg,
                 foreground: self.theming.text_frame_fg,
                 character: character,
-                width: 1,
+                width: UnicodeWidthChar::width(character).unwrap_or(1) as u8,
             }
         );
         

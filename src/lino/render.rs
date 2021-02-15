@@ -125,6 +125,7 @@ impl Lino {
             for j in self.line_nums_frame.width..self.line_nums_frame.width+self.text_frame.width {
                 let col = self.text_frame.start_col + j - self.line_nums_frame.width;
                 let mut character = ' ';
+                let mut width = 1;
                 background = self.theming.text_frame_bg;
 
                 if row == self.cursor.row {
@@ -134,6 +135,7 @@ impl Lino {
                 if col < self.lines[row].len() {
                     foreground = self.lines[row][col].foreground;
                     character = self.lines[row][col].character;
+                    width = self.lines[row][col].width;
                 }
 
                 if self.find.is_finding {
@@ -169,8 +171,9 @@ impl Lino {
                     background: background,
                     foreground: foreground,
                     character: character,
-                    width: 1,
+                    width: width as u8,
                 };
+
             }
         }
     }
@@ -313,6 +316,7 @@ impl Lino {
             crossterm::cursor::MoveTo(0, 0),
             crossterm::style::SetBackgroundColor(prev_background),
             crossterm::style::SetForegroundColor(prev_foreground),
+            crossterm::terminal::DisableLineWrap,
         ).unwrap_or_else(|_| self.panic_gracefully(&Error::err13()));
 
         for i in 0..self.rendering.buffer.len() {
@@ -362,15 +366,28 @@ impl Lino {
                     stdout(),
                     // crossterm::cursor::MoveTo(col as u16, row as u16),
                     crossterm::style::Print(same_styled_text),
+                    crossterm::cursor::MoveDown(1),
+                    crossterm::cursor::MoveToColumn(0),
                     // crossterm::style::ResetColor,
                 ).unwrap_or_else(|_| self.panic_gracefully(&Error::err16()));
-            // }
+                // }
         }
+        
+        crossterm::queue!(
+            stdout(),
+            crossterm::terminal::EnableLineWrap,
+        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err16()));
     }
 
     pub(crate) fn update_visible_cursor(&mut self) {
-        let col = (self.cursor.col - self.text_frame.start_col) + self.line_nums_frame.width;
+        let mut col = (self.cursor.col - self.text_frame.start_col) + self.line_nums_frame.width;
         let row = self.cursor.row - self.text_frame.start_row;
+        
+        for i in self.text_frame.start_col..self.cursor.col {
+            if self.lines[self.cursor.row][i].width > 1 {
+                col += (self.lines[self.cursor.row][i].width - 1) as usize;
+            }
+        }
 
         // let mut background = crossterm::style::Color::Black;
         // let mut foreground = crossterm::style::Color::White;

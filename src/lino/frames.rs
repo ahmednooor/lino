@@ -87,6 +87,22 @@ impl Lino {
             }
         }
 
+        let mut unicode_width_offset = 0;
+        for i in self.text_frame.start_col..self.cursor.col {
+            let char_width = self.lines[self.cursor.row][i].width as usize;
+            if char_width > 1 {
+                unicode_width_offset += char_width - 1;
+            }
+        }
+
+        let is_cursor_right_from_frame = self.cursor.col > self.text_frame.start_col + self.text_frame.width - 1 - col_offset - unicode_width_offset;
+
+        if is_cursor_right_from_frame {
+            while self.text_frame.start_col + self.text_frame.width - 1 - col_offset - unicode_width_offset < self.cursor.col {
+                self.text_frame.start_col += 1;
+            }
+        }
+
         self.update_line_nums_frame();
     }
 }

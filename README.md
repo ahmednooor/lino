@@ -117,6 +117,7 @@ sudo apt install gcc gcc-multilib binutils
 - [**ctrlc**](https://crates.io/crates/ctrlc) (to prevent close on Ctrl+c)
 - [**copypasta**](https://crates.io/crates/copypasta) (for clipboard access)
 - [**syntect**](https://github.com/trishume/syntect) (for syntax highlighting)
+- [**unicode-width**](https://github.com/unicode-rs/unicode-width) (for multi-width unicode character rendering)
 > A big Thanks to the authors/maintainers/contributors of these libraries.
 
 ## Motivation

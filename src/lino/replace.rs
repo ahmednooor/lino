@@ -60,12 +60,12 @@ impl Lino {
         self.cursor = found_instances[0].end;
 
         let find_replace_string_len_diff = 
-            self.replace.replace_string.len() as isize - self.find.find_string.len() as isize;
+            self.replace.replace_string.chars().count() as isize - self.find.find_string.chars().count() as isize;
 
         self.cursor.col = (self.cursor.col as isize + 1 + 
             (last_instance_col_offset_multiplier * find_replace_string_len_diff)) as usize;
 
-            self.replace.replace_string = "".to_string();
+        self.replace.replace_string = "".to_string();
         self.reset_find();
     }
 

@@ -135,6 +135,8 @@ the selected lines.
 
 impl Lino {
     pub(crate) fn show_guide(&mut self) {
+        self.enter_alt_screen_and_enable_raw_mode();
+
         {
             let mut new_editor = Lino::from_string(&GUIDE_TEXT.to_string());
             new_editor.file.path = "GUIDE.md".to_string();

@@ -188,8 +188,12 @@ impl Lino {
         
         // crossterm::execute!(stdout(), crossterm::terminal::EnterAlternateScreen)
         //     .unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
-        crossterm::execute!(stdout(), crossterm::terminal::Clear(crossterm::terminal::ClearType::All))
-            .unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
+        crossterm::execute!(
+            stdout(),
+            crossterm::style::ResetColor,
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+            crossterm::cursor::MoveTo(0, 0),
+        ).unwrap_or_else(|_| self.panic_gracefully(&Error::err3()));
     }
 
     pub(crate) fn leave_alt_screen_and_disable_raw_mode(&mut self) {

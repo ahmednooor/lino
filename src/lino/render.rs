@@ -323,8 +323,13 @@ impl Lino {
             let mut same_styled_text = String::new();
             // let row = i;
             // let mut col = 0;
+            let mut rendered_str_width = 0;
             
             for j in 0..self.rendering.buffer[i].len() {
+                if rendered_str_width >= self.term_width - 1 {
+                    break;
+                }
+
                 let background = self.rendering.buffer[i][j].background;
                 let foreground = self.rendering.buffer[i][j].foreground;
 
@@ -359,6 +364,7 @@ impl Lino {
                 }
 
                 same_styled_text.push(self.rendering.buffer[i][j].character);
+                rendered_str_width += self.rendering.buffer[i][j].width as usize;
             }
 
             // if same_styled_text.len() > 0 {
@@ -380,13 +386,11 @@ impl Lino {
     }
 
     pub(crate) fn update_visible_cursor(&mut self) {
-        let mut col = (self.cursor.col - self.text_frame.start_col) + self.line_nums_frame.width;
+        // let mut col = (self.cursor.col - self.text_frame.start_col) + self.line_nums_frame.width;
         let row = self.cursor.row - self.text_frame.start_row;
-        
+        let mut col = self.term_width - self.text_frame.width;
         for i in self.text_frame.start_col..self.cursor.col {
-            if self.lines[self.cursor.row][i].width > 1 {
-                col += (self.lines[self.cursor.row][i].width - 1) as usize;
-            }
+            col += self.lines[self.cursor.row][i].width as usize;
         }
 
         // let mut background = crossterm::style::Color::Black;

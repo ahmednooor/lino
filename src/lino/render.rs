@@ -372,6 +372,7 @@ impl Lino {
                     stdout(),
                     // crossterm::cursor::MoveTo(col as u16, row as u16),
                     crossterm::style::Print(same_styled_text),
+                    crossterm::terminal::Clear(crossterm::terminal::ClearType::UntilNewLine),
                     crossterm::cursor::MoveDown(1),
                     crossterm::cursor::MoveToColumn(0),
                     // crossterm::style::ResetColor,

@@ -2,8 +2,8 @@
 extern crate unicode_width;
 use unicode_width::UnicodeWidthChar;
 extern crate copypasta;
-use copypasta::ClipboardContext;
-use copypasta::ClipboardProvider;
+// use copypasta::ClipboardContext;
+// use copypasta::ClipboardProvider;
 
 use super::*;
 
@@ -403,24 +403,27 @@ impl Lino {
         self.cursor.row = current_cursor_backup.row;
         self.cursor.col = current_cursor_backup.col;
 
-        let clipboard_ctx = ClipboardContext::new();
-        if clipboard_ctx.is_ok() {
-            let mut clipboard_ctx = clipboard_ctx.unwrap();
-            clipboard_ctx.set_contents(copied_string.clone()).unwrap();
-        } else {
-            self.clipboard = copied_string.clone();
-        }
+        self.clipboard = copied_string.clone();
+
+        // let clipboard_ctx = ClipboardContext::new();
+        // if clipboard_ctx.is_ok() {
+        //     let mut clipboard_ctx = clipboard_ctx.unwrap();
+        //     clipboard_ctx.set_contents(copied_string.clone()).unwrap();
+        // } else {
+        //     self.clipboard = copied_string.clone();
+        // }
     }
 
     pub(crate) fn perform_paste(&mut self) {
-        let clipboard_ctx = ClipboardContext::new();
-        let copied_string: String;
-        if clipboard_ctx.is_ok() {
-            let mut clipboard_ctx = clipboard_ctx.unwrap();
-            copied_string = clipboard_ctx.get_contents().unwrap();
-        } else {
-            copied_string = self.clipboard.clone();
-        }
+        // let clipboard_ctx = ClipboardContext::new();
+        // let copied_string: String;
+        // if clipboard_ctx.is_ok() {
+        //     let mut clipboard_ctx = clipboard_ctx.unwrap();
+        //     copied_string = clipboard_ctx.get_contents().unwrap();
+        // } else {
+        //     copied_string = self.clipboard.clone();
+        // }
+        let copied_string: String = self.clipboard.clone();
 
         for character in copied_string.chars() {
             self.input_character(character);

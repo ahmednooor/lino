@@ -243,6 +243,7 @@ impl Lino {
             self.set_task_feedback_normal(task_feedback_text);
         }
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_delete_right_character(&mut self) {
         self.clear_task_feedback();
@@ -260,6 +261,7 @@ impl Lino {
             self.set_task_feedback_normal(task_feedback_text);
         }
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_delete_left_word(&mut self) {
         self.clear_task_feedback();
@@ -277,6 +279,7 @@ impl Lino {
             self.set_task_feedback_normal(task_feedback_text);
         }
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_delete_right_word(&mut self) {
         self.clear_task_feedback();
@@ -294,6 +297,7 @@ impl Lino {
             self.set_task_feedback_normal(task_feedback_text);
         }
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_delete_current_line(&mut self) {
         self.clear_task_feedback();
@@ -311,6 +315,7 @@ impl Lino {
             self.set_task_feedback_normal(task_feedback_text);
         }
         self.restore_last_cursor_col_if_applicable();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -322,6 +327,7 @@ impl Lino {
         if !self.is_document_empty() {
             self.set_task_feedback_normal("Line moved up.".to_string());
         }
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_move_current_line_down(&mut self) {
         self.clear_task_feedback();
@@ -330,6 +336,7 @@ impl Lino {
         if !self.is_document_empty() {
             self.set_task_feedback_normal("Line moved down.".to_string());
         }
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -341,6 +348,7 @@ impl Lino {
         if !self.is_document_empty() {
             self.set_task_feedback_normal("Line duplicated.".to_string());
         }
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_duplicate_current_line_down(&mut self) {
         self.clear_task_feedback();
@@ -349,6 +357,7 @@ impl Lino {
         if !self.is_document_empty() {
             self.set_task_feedback_normal("Line duplicated.".to_string());
         }
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -359,6 +368,7 @@ impl Lino {
         self.save_to_history();
         self.increase_indentation();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_decrease_indentation(&mut self) {
         self.clear_task_feedback();
@@ -368,6 +378,7 @@ impl Lino {
         self.save_to_history();
         self.decrease_indentation();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -384,6 +395,7 @@ impl Lino {
         self.input_character(self.input_char_buf.unwrap());
         self.input_char_buf = None;
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_enter_tab(&mut self) {
         if self.selection.is_selected {
@@ -394,6 +406,7 @@ impl Lino {
         self.save_to_history();
         self.input_tab();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_enter_new_line(&mut self) {
         self.clear_task_feedback();
@@ -403,6 +416,7 @@ impl Lino {
         }
         self.enter_newline();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_enter_auto_indented_new_line(&mut self) {
         self.clear_task_feedback();
@@ -413,6 +427,7 @@ impl Lino {
         self.enter_newline();
         self.auto_indent_if_applicable();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -426,6 +441,7 @@ impl Lino {
             self.set_task_feedback_normal("Cut.".to_string());
         }
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_copy(&mut self) {
         self.clear_task_feedback();
@@ -444,6 +460,7 @@ impl Lino {
         self.perform_paste();
         self.set_task_feedback_normal("Pasted.".to_string());
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     
     
@@ -455,6 +472,7 @@ impl Lino {
         }
         self.perform_undo();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
     pub(crate) fn command_redo(&mut self) {
         self.clear_task_feedback();
@@ -463,6 +481,7 @@ impl Lino {
         }
         self.perform_redo();
         self.update_last_cursor_col();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 
@@ -489,7 +508,8 @@ impl Lino {
             self.set_task_feedback_error("Can't edit text in read-only mode.".to_string());
             return;
         }
-        self.initiate_replace_routine()
+        self.initiate_replace_routine();
+        self.highlighting.should_send_text_to_highlighting_thread = true;
     }
 
 

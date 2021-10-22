@@ -111,9 +111,11 @@ impl Lino {
             highlighting: Highlighting{
                 start_row: 0,
                 end_row: 0,
+                should_send_text_to_highlighting_thread: true,
             },
             rendering: Rendering{
                 is_rendering: false,
+                should_render: true,
                 buffer: vec![],
             },
             keybindings: std::collections::HashMap::new(),
@@ -157,6 +159,7 @@ impl Lino {
         self.start();
     }
 
+    #[allow(dead_code)]
     pub fn run_as_read_only(&mut self) {
         self.settings.read_only = true;
         self.clear_all_keybindings();
@@ -165,12 +168,8 @@ impl Lino {
     }
     
     pub(crate) fn start(&mut self) {
-        let mut syntect_config = self.create_syntect_config();
-
-        self.apply_syntax_highlighting_on_all_lines(&mut syntect_config);
-        self.clear_history();
-
-        self.initiate_input_event_loop(&mut syntect_config);
+        // self.load_theming_defaults_from_syntect_theme();
+        self.initiate_input_event_loop();
     }
 
     pub(crate) fn bind_ctrlc_handler(&mut self) {

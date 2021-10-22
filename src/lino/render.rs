@@ -5,7 +5,9 @@ use crossterm;
 use super::*;
 
 impl Lino {
-    pub(crate) fn render(&mut self, syntect_config: &mut SyntectConfig) {
+    pub(crate) fn render(&mut self) {
+        if !self.rendering.should_render { return; }
+
         self.rendering.is_rendering = true;
         self.update_terminal_size();
         self.update_status_frame();
@@ -23,7 +25,8 @@ impl Lino {
 
         // self.apply_syntax_highlighting_on_current_line(syntect_config);
         // self.apply_syntax_highlighting_on_changed_lines(syntect_config, previous_lines);
-        self.apply_syntax_highlighting_on_lines_range(syntect_config);
+        // self.apply_syntax_highlighting_on_lines_range(syntect_config);
+        // self.apply_syntax_highlighting_on_all_lines(syntect_config);
         
         self.populate_line_nums_frame_in_render_buffer();
         self.populate_text_frame_in_render_buffer();
@@ -35,6 +38,7 @@ impl Lino {
             .unwrap_or_else(|_| self.panic_gracefully(&Error::err8()));
         
         self.rendering.is_rendering = false;
+        self.rendering.should_render = false;
     }
 
     pub(crate) fn populate_line_nums_frame_in_render_buffer(&mut self) {

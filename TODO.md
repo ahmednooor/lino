@@ -69,7 +69,7 @@
 #### Maybe
 - [ ] improve tab char rendering (use actual tabs instead of spaces if possible)
 - [ ] word wrap
-- [ ] improve highlighting (speed up and highlight chunks or whole file instead of single line)
-- [ ] improve rendering (speed-wise)
+- [x] improve highlighting (speed up and highlight chunks or whole file instead of single line: done with the use of thread. still needs improvement, but better than before)
+- [x] improve rendering (speed-wise: moving highlighting to separate thread helped, but needs improvement)
 - [ ] settings
 - [ ] tests

@@ -2,33 +2,44 @@
 use crossterm;
 use super::*;
 use super::keybindings::keys;
+use std::time::Duration;
 
 impl Lino {
-    pub(crate) fn initiate_input_event_loop(&mut self, syntect_config: &mut SyntectConfig) {
+    pub(crate) fn initiate_input_event_loop(&mut self) {
+        let (main_thread_tx, main_thread_rx) = self.spawn_highlighting_thread();
+
         loop {
-            if self.rendering.is_rendering { continue; }
-            self.render(syntect_config);
+            if crossterm::event::poll(Duration::from_millis(5)).unwrap_or(false) {
+                let event = crossterm::event::read();
+                
+                if event.is_err() {
+                    self.panic_gracefully(&Error::err4());
+                }
+                
+                match event.unwrap() {
+                    crossterm::event::Event::Mouse(_) => (),
+                    crossterm::event::Event::Key(key_event) => {
+                        self.handle_key_event(&key_event);
+                        
+                        if self.should_exit { 
+                            main_thread_tx.send((
+                                HighlightingThreadMessage::Terminate, 
+                                self.cursor.clone())).unwrap_or(());
+                            break;
+                        }
 
-            // let previous_cursor = self.cursor.clone();
-            
-            // `read()` blocks until an `Event` is available
-            let event = crossterm::event::read();
-
-            if event.is_err() {
-                self.panic_gracefully(&Error::err4());
+                        self.rendering.should_render = true;
+                    },
+                    crossterm::event::Event::Resize(_, _) => {
+                        self.update_terminal_size();
+                        self.rendering.should_render = true;
+                    },
+                }
             }
 
-            match event.unwrap() {
-                crossterm::event::Event::Key(key_event) => {
-                    self.handle_key_event(&key_event);
-                },
-                crossterm::event::Event::Mouse(_) => (),
-                crossterm::event::Event::Resize(_, _) => {
-                    self.update_terminal_size();
-                },
-            }
-            
-            if self.should_exit { break; }
+            self.send_text_to_highlighting_thread(&main_thread_tx);
+            self.colorize_text_based_on_highlighting(&main_thread_rx);
+            self.render();
         }
     }
 

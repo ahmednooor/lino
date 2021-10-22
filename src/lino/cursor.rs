@@ -218,6 +218,10 @@ impl Lino {
         return self.cursor.row < other_cursor.row
         || (self.cursor.row == other_cursor.row && self.cursor.col < other_cursor.col);
     }
+    
+    pub(crate) fn is_cursor_equal_to(&self, other_cursor: &Cursor) -> bool {
+        return self.cursor.row == other_cursor.row && self.cursor.col == other_cursor.col;
+    }
 
     pub(crate) fn is_cursor_inside_selection(&self, selection: &Selection, cursor: &Cursor) -> bool {
         let is_single_line_selection_and_cursor_inside_points = 

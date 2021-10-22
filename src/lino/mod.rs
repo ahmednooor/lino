@@ -23,8 +23,6 @@ mod guide;
 mod input_prompt;
 mod confirmation_prompt;
 
-use highlight::SyntectConfig;
-
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
 pub(crate) struct Character {
@@ -120,15 +118,23 @@ pub(crate) struct Theming {
     error_red: crossterm::style::Color,
 }
 
+pub(crate) enum HighlightingThreadMessage {
+    Start(String),
+    Idle,
+    Terminate,
+}
+
 #[derive(Clone)]
 pub(crate) struct Highlighting {
     start_row: usize,
     end_row: usize,
+    should_send_text_to_highlighting_thread: bool,
 }
 
 #[derive(Clone)]
 pub(crate) struct Rendering {
     is_rendering: bool,
+    should_render: bool,
     buffer: Vec<Vec<Character>>,
 }
 
